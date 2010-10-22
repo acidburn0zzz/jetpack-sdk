@@ -79,8 +79,7 @@ function startApp(jQuery, window) {
       });
   }
 
-  function renderInterleavedAPIDocs(where, hunks) {
-    $(where).empty();
+  function doRender(where, hunks) {
     function render_hunk (hunk) {
       if (hunk[0] == "markdown") {
         var nh = $("<span>" + markdownToHtml(hunk[1]) + "</span>");
@@ -91,6 +90,55 @@ function startApp(jQuery, window) {
       }
     }
     hunks.forEach(render_hunk);
+  }
+
+  function renderInterleavedAPIDocs(where, hunks) {
+    $(where).empty();
+    doRender(where, hunks);
+  }
+
+  function renderStructuredDocs(where, hunks) {
+    $(where).empty();
+    var markdown = new Array();
+    var classes = new Array();
+    var functions = new Array();
+	for (var i = 0; i < hunks.length; i++) {
+	  hunk = hunks[i];
+	  if (hunk[0] == "markdown"){
+		markdown.push(hunk); 
+	   }
+	  else if (hunk[0] == "api-json") {
+	  	if (hunk[1].type == "class") {
+		  classes.push(hunk);
+		}
+		else if (hunk[1].type == "function") {
+		  functions.push(hunk);
+		}
+	  }
+	}	
+	doRender(where, markdown);
+	if (classes.length > 0) {
+	  var heading = $("<h2>Classes</h2>");  
+      heading.appendTo(where);
+      doRender(where, classes);
+	}
+	if (functions.length > 0) {
+	  var heading = $("<h2>Global Functions</h2>");  
+      heading.appendTo(where);
+      doRender(where, functions);
+	}
+  }
+
+  function hunksContainClasses(hunks) {
+	for (var i = 0; i < hunks.length; i++) {
+		hunk = hunks[i];
+		if (hunk[0] == "api-json") {
+			if (hunk[1].type == "class") {
+				return true;
+			}
+		}			
+	}
+	return false;
   }
 
   function getPkgFile(pkg, filename, filter, cb) {
@@ -132,7 +180,12 @@ function startApp(jQuery, window) {
         dataType: "json",
         success: function(json) {
           try {
-            renderInterleavedAPIDocs(where, json);
+	        if (hunksContainClasses(json)) {
+				renderStructuredDocs(where, json);
+			}
+			else {
+	            renderInterleavedAPIDocs(where, json);	
+			}
           } catch (e) {
             $(where).text("Oops, API docs renderer failed: " + e);
           }

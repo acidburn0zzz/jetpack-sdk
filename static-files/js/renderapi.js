@@ -8,17 +8,28 @@ function _indefiniteArticle(str) {
 }
 
 function _createTitle(doc){
-  return doc.type === "property" ?
-         _createPropertyTitle(doc) :
-         _createMethodTitle(doc);
+  if (doc.type == "property") {
+	return _createPropertyTitle(doc);
+  }
+  else if (doc.type == "class") {
+	return _createClassTitle(doc);
+  }
+  else {
+	return _createMethodTitle(doc);
+  }
 }
 
 function _createPropertyTitle(doc) {
-  var $title = $("<span class='name'/>").html(doc.name);
+  var $title = $("<div class='name'/>").html(doc.name);
   var text = " is " + _indefiniteArticle(doc.property_type) + " ";
   var $isSpan = $("<span class='property_type'/>").text(text);
   $("<span class='type'/>").text(doc.property_type).appendTo($isSpan);
   $isSpan.appendTo($title);
+  return $title;
+}
+
+function _createClassTitle(doc) {
+  var $title = $("<span class='name'/>").html(doc.name);
   return $title;
 }
 
@@ -111,7 +122,45 @@ function _createParams(doc){
   return $params;
 }
 
+function _createComponent($context, components, componentName){
+	var $componentHeader = $("<div class='api-subheader'/>").html(componentName);
+	$componentHeader.appendTo($context);
 
+	for(var i = 0; i < components.length; i++) {
+	  component = components[i];
+      _createTitle(component).appendTo($context);
+     _createDescription(component).appendTo($context);
+
+     if(component.params) {
+	  _createParams(component).appendTo($context);
+      }	
+
+     if(component.returns) {
+	  _createReturns(component).appendTo($context);
+      }
+
+    }
+  return $context;
+  }
+
+function _createClassComponents(doc){
+  var $classComponents = $("<div class='class-components'/>");  
+
+  if(doc.constructors) {
+	_createComponent($classComponents, doc.constructors, "Constructors");
+  }
+
+  if(doc.methods) {
+	_createComponent($classComponents, doc.methods, "Methods");
+  }
+
+  if(doc.properties) {
+	_createComponent($classComponents, doc.properties, "Properties");
+  }
+
+  return $classComponents;
+} 
+ 
 function render(doc, $where){
   var $home = $where;
   $home.html("");
@@ -123,6 +172,7 @@ function render(doc, $where){
   _createDescription(doc).appendTo($home);
   if( doc.params) _createParams(doc).appendTo($home);
   if( doc.returns ) _createReturns(doc).appendTo($home);
+  if( doc.type == "class" ) _createClassComponents(doc).appendTo($home);
 
   $home.find(".description").each(function(){
     var text = $(this).text();

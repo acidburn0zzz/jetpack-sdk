@@ -18,3 +18,14 @@
 .api .param>.description, .api .prop>.description{ width: 300px; display:inline-block;vertical-align:top;}
       
 .api .description p{ margin: 0;}
+
+
+.class-components>.params, .class-components>.returns{ background-color: #EEE; margin:3px; }
+.class-components>.params>.param, .class-components .prop{ padding: 3px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,.3);}
+.class-components>.params>.param>span:not(.description), .class-components .prop>span:not(.description){ display:inline-block; width:120px; vertical-align:top; overflow: hidden;}
+      
+.class-components>.params>.param>.prop{ padding-left: 10px;}
+.class-components .param>.description, .class-components .prop>.description{ width: 300px; display:inline-block;vertical-align:top;}
+
+ .class-components>.api-subheader{font-size: 120%; font-weight: bold;padding-top: 20px;}
+ .class-components>.name{ font-size: 110%; font-weight: bold;padding-top: 10px}
