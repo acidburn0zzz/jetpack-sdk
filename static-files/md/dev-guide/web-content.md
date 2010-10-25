@@ -38,14 +38,14 @@ access](#content-script-access).
 The add-on script and content script communicate by passing messages across 
 the process boundary rather than directly accessing each other's state. 
 
+The Jetpack core modules listed above, which we call _content modules_, define 
+a set of APIs to support working with content scripts. This section of the 
+tutorial provides a basic guide to these APIs.
+
 The diagram below shows an overview of the main components and their 
 relationships. The gray fill represents code written by the add-on developer. 
 
 ![Content script overview](media/content-scripting-overview.jpg)
-
-The Jetpack core modules listed above, which we call _content modules_, define 
-a set of APIs to support working with content scripts. This section of the 
-tutorial provides a basic guide to these APIs.  
 
 This might sound complicated but it doesn't need to be. The following add-on 
 uses the [page-mod](#module/jetpack-core/page-mod) module to replace the 
