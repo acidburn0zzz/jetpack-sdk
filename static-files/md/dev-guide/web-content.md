@@ -206,7 +206,7 @@ post messages back to the content script:
 
     // Create a function to handle messages from the content script
     function handleMessage(message) {
-        myWorker.postMessage("do not click this link again");
+      myWorker.postMessage("do not click this link again");
     }
 
     var pageMod = require("page-mod");
