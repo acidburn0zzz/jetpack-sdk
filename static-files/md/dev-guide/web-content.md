@@ -57,7 +57,7 @@ in the context of that page:
     pageMod.add(new pageMod.PageMod({
       include: ["*.co.uk"],
       contentScriptWhen: 'ready',
-      contentScript: 'document.body.innerHTML = ' + 
+      contentScript: 'document.body.innerHTML = ' +
                      '"<h1>this page has been eaten</h1>";'
     }));
 
