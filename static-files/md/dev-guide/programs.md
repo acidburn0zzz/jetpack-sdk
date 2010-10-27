@@ -182,7 +182,9 @@ To distribute your program, you can upload it to
 Eventually, this step may be automated via the SDK, streamlining the
 distribution process further.
 
-The next section provides an overview of the mechanisms Jetpack provides to access and modify web pages: [Interacting with Web Content](#guide/web-content).
+The next section provides an overview of the mechanisms Jetpack provides
+to access and modify web pages: [Interacting with Web
+Content](#guide/web-content).
 
   [Packaging]: #guide/packaging
   [troubleshooting]: #guide/troubleshooting

@@ -4,19 +4,19 @@ content of web pages or be notified when the user clicks a link.
 
 Jetpack provides several core modules to support this:
 
-***[panel](#module/addon-kit/panel)***  
+***[panel](#module/addon-kit/panel)***<br>
 Create a dialog that can host web content.
- 
-***[page-worker](#module/addon-kit/page-worker)***  
+
+***[page-worker](#module/addon-kit/page-worker)***<br>
 Retrieve a page and access its content, without displaying it to the user.
- 
-***[page-mod](#module/addon-kit/page-mod)***  
+
+***[page-mod](#module/addon-kit/page-mod)***<br>
 Execute scripts in the context of selected web pages.
 
-***[widget](#module/addon-kit/widget)***  
+***[widget](#module/addon-kit/widget)***<br>
 Host an add-on's user interface, including web content.
- 
-***[context-menu](#module/addon-kit/context-menu)***  
+
+***[context-menu](#module/addon-kit/context-menu)***<br>
 Add items to the browser's context menu.
 
 The Mozilla platform is moving towards a model in which it uses separate
@@ -63,7 +63,7 @@ in the context of that page:
 
 In this example the content script is supplied directly to the page mod via
 the `contentScript` option in its constructor, and does not need to be
-maintained as a separate file at all.  
+maintained as a separate file at all.
 
 Loading content scripts
 -----------------------
@@ -95,7 +95,7 @@ the content process:
     // "data" is supplied by the "self" module
     var data = require("self").data;
     ...
-    contentScriptURL: 
+    contentScriptURL:
         [data.url("jquery-1.4.2.min.js"), data.url("my-content-script.js")]
 
 Scripts specified using contentScriptURL are loaded before those specified
@@ -123,7 +123,7 @@ For example:
 scripts into the panel, then they can interact with each other
 
 * if an add-on creates two `panel` objects and loads a script into each
-one, they can't interact with each other. 	
+one, they can't interact with each other.
 
 * if an add-on creates a single `page-mod` object and loads several content
 scripts into the page mod, then only content scripts associated with the
@@ -239,7 +239,7 @@ This is the complete add-on script:
     const widgets = require("widget");
     const panels = require("panel");
     const data = require("self").data;
-    
+
     widgets.add(widgets.Widget({
       label: "Reddit",
       image: "http://www.reddit.com/static/favicon.ico",
@@ -269,17 +269,17 @@ This is the content script that intercepts the link clicks:
 
     $(window).click(function (event) {
       var t = event.target;
-      
+
       // Don't intercept the click if it isn't on a link.
       if (t.nodeName != "A")
         return;
-      
+
       // Don't intercept the click if it was on one of the links in the header
       // or next/previous footer, since those links should load in the panel
       // itself.
       if ($(t).parents('#header').length || $(t).parents('.nextprev').length)
         return;
-      
+
       // Intercept the click, passing it to the addon, which will load it in
       // a tab.
       event.stopPropagation();

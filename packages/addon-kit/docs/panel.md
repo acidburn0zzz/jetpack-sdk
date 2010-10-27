@@ -48,7 +48,8 @@ Create and show a simple panel with content from the `data/` directory:
     
     panel.show();
 
-The tutorial section on [web content](#guide/web-content) has a more complex example using panels. 
+The tutorial section on [web content](#guide/web-content) has a more complex
+example using panels.
 
 Reference
 ---------
