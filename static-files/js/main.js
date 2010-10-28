@@ -102,43 +102,43 @@ function startApp(jQuery, window) {
     var markdown = new Array();
     var classes = new Array();
     var functions = new Array();
-	for (var i = 0; i < hunks.length; i++) {
-	  hunk = hunks[i];
-	  if (hunk[0] == "markdown"){
-		markdown.push(hunk); 
-	   }
-	  else if (hunk[0] == "api-json") {
-	  	if (hunk[1].type == "class") {
-		  classes.push(hunk);
-		}
-		else if (hunk[1].type == "function") {
-		  functions.push(hunk);
-		}
-	  }
-	}	
-	doRender(where, markdown);
-	if (classes.length > 0) {
-	  var heading = $("<h2>Classes</h2>");  
+    for (var i = 0; i < hunks.length; i++) {
+      hunk = hunks[i];
+      if (hunk[0] == "markdown"){
+        markdown.push(hunk); 
+      }
+      else if (hunk[0] == "api-json") {
+        if (hunk[1].type == "class") {
+          classes.push(hunk);
+        }
+        else if (hunk[1].type == "function") {
+          functions.push(hunk);
+        }
+      }
+    }	
+    doRender(where, markdown);
+    if (classes.length > 0) {
+      var heading = $("<h2>Classes</h2>");  
       heading.appendTo(where);
       doRender(where, classes);
-	}
-	if (functions.length > 0) {
-	  var heading = $("<h2>Global Functions</h2>");  
+    }
+    if (functions.length > 0) {
+      var heading = $("<h2>Global Functions</h2>");  
       heading.appendTo(where);
       doRender(where, functions);
-	}
+    }
   }
 
   function hunksContainClasses(hunks) {
-	for (var i = 0; i < hunks.length; i++) {
-		hunk = hunks[i];
-		if (hunk[0] == "api-json") {
-			if (hunk[1].type == "class") {
-				return true;
-			}
-		}			
-	}
-	return false;
+    for (var i = 0; i < hunks.length; i++) {
+      hunk = hunks[i];
+      if (hunk[0] == "api-json") {
+        if (hunk[1].type == "class") {
+          return true;
+        }
+      }
+    }
+  return false;
   }
 
   function getPkgFile(pkg, filename, filter, cb) {
@@ -180,12 +180,12 @@ function startApp(jQuery, window) {
         dataType: "json",
         success: function(json) {
           try {
-	        if (hunksContainClasses(json)) {
-				renderStructuredDocs(where, json);
-			}
-			else {
-	            renderInterleavedAPIDocs(where, json);	
-			}
+            if (hunksContainClasses(json)) {
+              renderStructuredDocs(where, json);
+            }
+            else {
+              renderInterleavedAPIDocs(where, json);
+            }
           } catch (e) {
             $(where).text("Oops, API docs renderer failed: " + e);
           }

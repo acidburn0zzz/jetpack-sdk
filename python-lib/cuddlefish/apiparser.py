@@ -37,7 +37,7 @@ class Accumulator:
 
 
 class APIParser:
-    def parse(self, lines, lineno):    
+    def parse(self, lines, lineno):
         api = {"line_number": lineno + 1}
 # assign the name from the first line, of the form "<api name="API_NAME">"
         title_line = lines[lineno].rstrip("\n")
@@ -101,14 +101,14 @@ class APIParser:
         raise ParseError("closing </api> tag not found", lineno + 1)
 
     def _parse_title_line(self, title_line, lineno):
-        if "name" not in title_line:	    
-    	    raise ParseError("Opening <api> tag must have a name attribute.",
-		                             lineno)
+        if "name" not in title_line:
+            raise ParseError("Opening <api> tag must have a name attribute.",
+                            lineno)
         m = re.search("name=['\"]{0,1}([-\w\.]*?)['\"]", title_line)
         if not m:
             raise ParseError("No value for name attribute found in "
                                      "opening <api> tag.", lineno)
-        return m.group(1)						
+        return m.group(1)
 
     def _is_description(self, line):
         return not ( (line.lstrip().startswith("@")) or
@@ -123,7 +123,7 @@ class APIParser:
         working_set["methods"] = []
         working_set["properties"] = []
         working_set["params"] = [] 
-        return working_set     
+        return working_set
 
     def _update_working_set(self, nested_api, working_set):
         # add this api element to whichever list is appropriate
@@ -134,9 +134,22 @@ class APIParser:
         if nested_api["type"] == "property":
             working_set["properties"].append(nested_api)
 
+    def _assemble_signature(self, api_element, params):
+        signature = api_element["name"] + "("
+        if len(params) > 0:
+            signature += params[0]["name"]
+            for param in params[1:]:
+                signature += ", " + param["name"]
+        signature += ")"
+        api_element["signature"] = signature
+
     def _assemble_api_element(self, api_element, working_set):
         # if any of this working set's lists are non-empty,
         # add it to the current api element
+#        if (api_element["type"] == "constructor") or \
+#           (api_element["type"] == "function") or \
+#           (api_element["type"] == "method"):
+#           self._assemble_signature(api_element, working_set["params"])
         if len(working_set["params"]) > 0:
             api_element["params"] = working_set["params"]
         if len(working_set["properties"]) > 0:
@@ -144,7 +157,7 @@ class APIParser:
         if len(working_set["constructors"]) > 0:
             api_element["constructors"] = working_set["constructors"]
         if len(working_set["methods"]) > 0:
-            api_element["methods"] = working_set["methods"]  
+            api_element["methods"] = working_set["methods"]
 
     def _validate_info(self, tag, info, lineno):
         if tag == 'property':
@@ -158,10 +171,10 @@ class APIParser:
         elif tag == "prop":
             if "type" not in info:
                 raise ParseError("@prop lines must include {type}: '%s'" %
-                                     line, lineno)
+                                  line, lineno)
             if "name" not in info:
                 raise ParseError("@prop lines must provide a name: '%s'" %
-						                                     line, lineno)
+                                  line, lineno)
 
     def _parseTypeLine(self, line, lineno):
         # handle these things:
@@ -233,8 +246,8 @@ def parse_hunks(text):
                 yield ("markdown", markdown_string)
                 markdown_string = ""
             api, line_number = APIParser().parse(lines, line_number)
-            # this business with 'leftover' is a horrible thing to do, 
-            # and exists only to collect the \n after the closing /api tag. 
+            # this business with 'leftover' is a horrible thing to do,
+            # and exists only to collect the \n after the closing /api tag.
             # It's not needed probably, except to help keep compatibility
             # with the previous behaviour
             leftover = lines[line_number].lstrip("</api>")
@@ -244,7 +257,7 @@ def parse_hunks(text):
             yield ("api-json", api)
         else:
             markdown_string += line
-            line_number = line_number + 1 
+            line_number = line_number + 1
     if len(markdown_string) > 0:
         yield ("markdown", markdown_string)
 

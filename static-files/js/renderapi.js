@@ -9,13 +9,13 @@ function _indefiniteArticle(str) {
 
 function _createTitle(doc){
   if (doc.type == "property") {
-	return _createPropertyTitle(doc);
+    return _createPropertyTitle(doc);
   }
   else if (doc.type == "class") {
-	return _createClassTitle(doc);
+    return _createClassTitle(doc);
   }
   else {
-	return _createMethodTitle(doc);
+    return _createMethodTitle(doc);
   }
 }
 
@@ -123,39 +123,39 @@ function _createParams(doc){
 }
 
 function _createComponent($context, components, componentName){
-	var $componentHeader = $("<div class='api-subheader'/>").html(componentName);
-	$componentHeader.appendTo($context);
+  var $componentHeader = $("<div class='api-subheader'/>").html(componentName);
+  $componentHeader.appendTo($context);
 
-	for(var i = 0; i < components.length; i++) {
-	  component = components[i];
-      _createTitle(component).appendTo($context);
-     _createDescription(component).appendTo($context);
+  for(var i = 0; i < components.length; i++) {
+    component = components[i];
+    _createTitle(component).appendTo($context);
+    _createDescription(component).appendTo($context);
 
-     if(component.params) {
-	  _createParams(component).appendTo($context);
-      }	
+    if(component.params) {
+      _createParams(component).appendTo($context);
+    }	
 
-     if(component.returns) {
-	  _createReturns(component).appendTo($context);
-      }
-
+    if(component.returns) {
+      _createReturns(component).appendTo($context);
     }
-  return $context;
+
   }
+  return $context;
+}
 
 function _createClassComponents(doc){
-  var $classComponents = $("<div class='class-components'/>");  
+  var $classComponents = $("<div class='class-components'/>");
 
   if(doc.constructors) {
-	_createComponent($classComponents, doc.constructors, "Constructors");
+    _createComponent($classComponents, doc.constructors, "Constructors");
   }
 
   if(doc.methods) {
-	_createComponent($classComponents, doc.methods, "Methods");
+    _createComponent($classComponents, doc.methods, "Methods");
   }
 
   if(doc.properties) {
-	_createComponent($classComponents, doc.properties, "Properties");
+    _createComponent($classComponents, doc.properties, "Properties");
   }
 
   return $classComponents;
