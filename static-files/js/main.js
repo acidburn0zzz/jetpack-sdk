@@ -105,7 +105,7 @@ function startApp(jQuery, window) {
     for (var i = 0; i < hunks.length; i++) {
       hunk = hunks[i];
       if (hunk[0] == "markdown"){
-        markdown.push(hunk); 
+        markdown.push(hunk);
       }
       else if (hunk[0] == "api-json") {
         if (hunk[1].type == "class") {
@@ -115,15 +115,15 @@ function startApp(jQuery, window) {
           functions.push(hunk);
         }
       }
-    }	
+    }
     doRender(where, markdown);
     if (classes.length > 0) {
-      var heading = $("<h2>Classes</h2>");  
+      var heading = $("<h2>Classes</h2>");
       heading.appendTo(where);
       doRender(where, classes);
     }
     if (functions.length > 0) {
-      var heading = $("<h2>Global Functions</h2>");  
+      var heading = $("<h2>Global Functions</h2>");
       heading.appendTo(where);
       doRender(where, functions);
     }
@@ -406,7 +406,7 @@ function startApp(jQuery, window) {
     } else {
       window.setInterval(checkHash, CHECK_HASH_DELAY);
     }
-    
+
     $('#hide-dev-guide-toc').click(function() {
       if ($(this).text() == 'hide') {
         $(this).text('show');

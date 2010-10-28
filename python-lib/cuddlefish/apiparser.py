@@ -59,7 +59,7 @@ class APIParser:
         while True:
             lineno += 1
             line = lines[lineno].rstrip("\n")
-            # accumulate any multiline descriptive text belonging to 
+            # accumulate any multiline descriptive text belonging to
             # the preceding "@" section
             if self._is_description(line):
                 currentAccumulator.addline(line)
@@ -67,7 +67,7 @@ class APIParser:
             currentAccumulator.finish()
             if line.startswith("<api"):
            # then we should recursively handle a nested element
-                nested_api, lineno = self.parse(lines, lineno)	
+                nested_api, lineno = self.parse(lines, lineno)
                 self._update_working_set(nested_api, working_set)
                 continue
             if line.startswith("</api"):
@@ -122,7 +122,7 @@ class APIParser:
         working_set["constructors"] = []
         working_set["methods"] = []
         working_set["properties"] = []
-        working_set["params"] = [] 
+        working_set["params"] = []
         return working_set
 
     def _update_working_set(self, nested_api, working_set):
@@ -185,10 +185,10 @@ class APIParser:
         #    @param NAME
         #    @prop NAME {type} description
         #    @prop NAME
-        # returns:	
+        # returns:
         #    tag: type of api element
         #    info: linenumber, required, default, name, datatype
-        #    description 
+        #    description
 
         info = {"line_number": lineno}
         line = line.rstrip("\n")

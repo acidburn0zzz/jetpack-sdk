@@ -62,7 +62,7 @@ function _createMethodTitle(doc){
     $ret.appendTo($title);
   }
 
-  return $title; 
+  return $title;
 }
 
 function _createDescription(doc){
@@ -133,7 +133,7 @@ function _createComponent($context, components, componentName){
 
     if(component.params) {
       _createParams(component).appendTo($context);
-    }	
+    }
 
     if(component.returns) {
       _createReturns(component).appendTo($context);
@@ -159,8 +159,8 @@ function _createClassComponents(doc){
   }
 
   return $classComponents;
-} 
- 
+}
+
 function render(doc, $where){
   var $home = $where;
   $home.html("");
@@ -181,5 +181,5 @@ function render(doc, $where){
 }
 
 global.renderDocumentationJSON = render;
-    
+
 })(this);

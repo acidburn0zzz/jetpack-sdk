@@ -1,6 +1,6 @@
 .api{ margin-bottom: 10px; }
 .api .optional{ font-style: italic;}
-      
+
 .api>.name{ font-size: 110%; font-weight: bold;}
 .api>.name>.params{ font-weight: normal;}
 .api>.name>.params .default{ color: #777;}
@@ -13,17 +13,17 @@
 .api>.params, .api>.returns{ background-color: #EEE; margin:3px; }
 .api>.params>.param, .api .prop{ padding: 3px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,.3);}
 .api>.params>.param>span:not(.description), .api .prop>span:not(.description){ display:inline-block; width:120px; vertical-align:top; overflow: hidden;}
-      
+
 .api>.params>.param>.prop{ padding-left: 10px;}
 .api .param>.description, .api .prop>.description{ width: 300px; display:inline-block;vertical-align:top;}
-      
+
 .api .description p{ margin: 0;}
 
 
 .class-components>.params, .class-components>.returns{ background-color: #EEE; margin:3px; }
 .class-components>.params>.param, .class-components .prop{ padding: 3px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,.3);}
 .class-components>.params>.param>span:not(.description), .class-components .prop>span:not(.description){ display:inline-block; width:120px; vertical-align:top; overflow: hidden;}
-      
+
 .class-components>.params>.param>.prop{ padding-left: 10px;}
 .class-components .param>.description, .class-components .prop>.description{ width: 300px; display:inline-block;vertical-align:top;}
 
