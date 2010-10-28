@@ -146,10 +146,10 @@ class APIParser:
     def _assemble_api_element(self, api_element, working_set):
         # if any of this working set's lists are non-empty,
         # add it to the current api element
-#        if (api_element["type"] == "constructor") or \
-#           (api_element["type"] == "function") or \
-#           (api_element["type"] == "method"):
-#           self._assemble_signature(api_element, working_set["params"])
+        if (api_element["type"] == "constructor") or \
+           (api_element["type"] == "function") or \
+           (api_element["type"] == "method"):
+           self._assemble_signature(api_element, working_set["params"])
         if len(working_set["params"]) > 0:
             api_element["params"] = working_set["params"]
         if len(working_set["properties"]) > 0:
