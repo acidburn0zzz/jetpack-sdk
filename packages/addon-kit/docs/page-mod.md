@@ -13,10 +13,11 @@ The module exports three functions:
 
 * **`remove()`**, a function which deactivates the pageMod
 
-Like all modules that interact with web content the page-mod uses content
-scripts to execute in the content process and defines a messaging API to
+Like all modules that interact with web content, page-mod uses content
+scripts that execute in the content process and defines a messaging API to
 communicate between the content scripts and the main add-on script. For more
-details see the tutorial on [interacting with web content](#guide/web-content).
+details on content scripting see the tutorial on [interacting with web 
+content](#guide/web-content).
 
 To create a pageMod the add-on developer supplies:
 
@@ -51,18 +52,18 @@ script can interact with the DOM itself:
 
     var pageMod = require("page-mod");
     pageMod.add(new pageMod.PageMod({
-        include: "*.org",
-        contentScriptWhen: 'ready',
-        contentScript: 'document.body.innerHTML = ' +
-          ' "<h1>Page matches ruleset</h1>";'
+      include: "*.org",
+      contentScriptWhen: 'ready',
+      contentScript: 'document.body.innerHTML = ' +
+                     ' "<h1>Page matches ruleset</h1>";'
     }));
 
 ###<a name="pagemod-content-scripts">Communicating with the content scripts</a>
 When a matching page is loaded the `pageMod` will call the function that the
 add-on code supplied to `onAttach`. The `pageMod` supplies two arguments to
-this function: the `pageMod` itself and a worker object.
+this function: the `pageMod` itself and a `worker` object.
 
-The worker object can be thought of as the add-on's end of
+The `worker` can be thought of as the add-on's end of
 a communication channel between the add-on code and the content scripts that
 have been attached to this page.
 
@@ -71,9 +72,9 @@ worker's `postMessage` function, and can receive messages from the content
 scripts by registering a function as a listener to the worker's `on` function.
 
 Note that if multiple matching pages are loaded simultaneously then each page
-runs in its own execution context with its own copy of the content scripts:
-then `onAttach` is called once for each loaded page, and the add-on code will
-have a separate worker for each page:
+is loaded into its own execution context with its own copy of the content
+scripts. In this case `onAttach` is called once for each loaded page, and the
+add-on code will have a separate worker for each page:
 
 ![Multiple workers](media/multiple-workers.jpg)
 
@@ -105,14 +106,14 @@ This is demonstrated in the following example:
 Here we specify a ruleset to match any URLs starting with
 "http://www.mozilla". When a page matches we add the supplied worker to
 an array, and when we have three workers in the array we send a message to
-each worker in turn, telling them the order we added them. The worker just
-displays the message in an alert box.
+each worker in turn, telling it the order in which it was attached. The
+worker just displays the message in an alert box.
 
-This shows that separate pages execute in separate contexts, which each has
-its own communication channel with the add-on script.
+This shows that separate pages execute in separate contexts and that each
+context has its own communication channel with the add-on script.
 
 Note though that while there is a separate worker for each execution context,
-the worker is shared across all the content scripts associated with the
+the worker is shared across all the content scripts associated with a single
 execution context. In the following example we pass two content scripts into
 the `pageMod`: these content scripts will share a worker instance.
 
