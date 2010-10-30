@@ -16,7 +16,7 @@ The module exports three functions:
 Like all modules that interact with web content, page-mod uses content
 scripts that execute in the content process and defines a messaging API to
 communicate between the content scripts and the main add-on script. For more
-details on content scripting see the tutorial on [interacting with web 
+details on content scripting see the tutorial on [interacting with web
 content](#guide/web-content).
 
 To create a pageMod the add-on developer supplies:
