@@ -6,7 +6,10 @@ English translation.
 First, create a directory under your Jetpack SDK called "translator". This is
 where we will keep all the files for this add-on.
 
-### Packages, modules, and add-ons ###
+## Packages, modules, and add-ons ##
+Before we start it's worth taking s short detour into CommonJS, as this is the
+underlying infrastructure for both Jetpack modules and Jetpack add-ons.
+
 The [CommonJS group](http://wiki.commonjs.org/wiki/CommonJS) defines
 specifications for ***modules*** and ***packages***. 
 
@@ -19,15 +22,15 @@ must include a package specification file named "package.json". Among other
 things this file describes the other CommonJS packages that this package
 depends on. Packages must also follow a particular directory structure.
 
-The JavaScript modules which Jetpack provides are CommonJS modules, and they
+* The JavaScript modules which Jetpack provides are CommonJS modules, and they
 are collected into CommonJS packages.
 
-Similarly, the JavaScript components of a Jetpack add-on constitute one or more
+* The JavaScript components of a Jetpack add-on constitute one or more
 CommonJS modules, and a complete Jetpack add-on is a CommonJS package.
 
 ![CommonJS translator](media/commonjs-translator.jpg)
 
-### Package specification ###
+## Package specification ##
 Since an add-on is a CommonJS package, the first file we will create is the
 package specification file.
 
@@ -43,7 +46,7 @@ the following contents:
 The "dependencies" line asserts that this add-on will be using modules from
 Jetpack's addon-kit package. 
 
-### Adding Your Code ###
+## Adding Your Code ##
 According to the CommonJS package definition, all JavaScript modules are kept
 in a directory named "lib" under the top level directory.
 
@@ -121,7 +124,7 @@ and sets the selection to the translated text.
 
 Finally the code adds the new menu item to the context menu.
 
-### Running It ###
+## Running It ##
 To run your program, navigate to the root of your package directory
 in your shell and run:
 
@@ -135,7 +138,7 @@ The first time you do this, you'll see a message like this:
 Run it again, and it will run an instance of Firefox (or your default
 application) with your add-on installed.
 
-#### The Program ID ####
+### The Program ID ###
 The id that `cfx` generated the first time you executed `cfx run` is called the
 **Program ID** and it is important. It is a unique identifier for your add-on
 and is used for a variety of purposes. For example: mozilla.addons.org uses it
@@ -173,7 +176,7 @@ your own XPIs. Again, cfx xpi will remind you of this, and your options, when
 you attempt to build an XPI from a package.json that references a private key
 that you don't have in ~/.jetpack/keys/.
 
-### Packaging It ###
+## Packaging It ##
 To install an add-on it must be packaged as an XPI file. The Jetpack SDK
 simplifies the packaging process by generating this file for you.
 
@@ -185,7 +188,7 @@ directory in your shell and run `cfx xpi`. You should see a message like this:
 The `translator.xpi` file can be found in the directory in which you ran the
 command.
 
-### Checking the Package ###
+## Checking the Package ##
 If you'd like to test the packaged program before distributing it,
 you can run it from the shell with:
 
@@ -194,14 +197,15 @@ you can run it from the shell with:
 Or you can install it from the Firefox Add-ons Manager itself, as
 you would when testing a traditional add-on.
 
-### Distributing It ###
+## Distributing It ##
 To distribute your program, you can upload it to
 [Addons.mozilla.org](http://addons.mozilla.org).
 Eventually, this step may be automated via the SDK, streamlining the
 distribution process further.
 
-### Next: Jetpack modules ###
-The next section provides an overview of the Jetpack modules.
+## Next: Jetpack modules ##
+The next section provides an [overview of the Jetpack 
+modules](#guide/module-overview).
 
   [Packaging]: #guide/packaging
   [troubleshooting]: #guide/troubleshooting

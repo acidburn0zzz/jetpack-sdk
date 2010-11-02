@@ -1,30 +1,7 @@
 This section of the tutorial provides an overview of the modules supplied by
 Jetpack to support add-on development.
 
-## Globals ##
-For full information on the globals available to Jetpack code, see
-the [Jetpack Globals] appendix.
-
-### JavaScript Globals ###
-All Jetpack code has access to the globals defined in [JavaScript 
-1.8.1](https://developer.mozilla.org/En/New_in_JavaScript_1.8.1) such as
-`Math`, `Array` and `JSON`.
-
-### CommonJS Globals ###
-Jetpack code also has access to `require` and `exports` as specified by
-version 1.0 of the [CommonJS Module 
-Specification](http://wiki.commonjs.org/wiki/Modules/1.0).
-
-### Jetpack Globals ###
-Jetpack defines a number of globals, the most widely -used of which is
-probably the `console` global. This object allows you to log messages to the
-console.
-
-    console.log("A message");
-
-The default implementation of the console writes messages to standard output.
-
-## Common idioms ##
+## Jetpack idioms ##
 
 ### Naming conventions ###
 Jetpack module names are all lower case. Where a module name contains more than
@@ -40,8 +17,13 @@ upper case initial letter:
     JetpackObject
 
 ### Object construction ###
+
 Many Jetpack modules expose their functionality through objects. A common
 pattern for such a module is to export just three functions:
+
+<span class="aside">
+This will need updating.
+</span>
 
 * a constructor for an object
 * an `add` function which activates the object
@@ -68,7 +50,6 @@ For example, if the object generates an error event we might construct it like
 this:
 
     var myJetpackObject = new jetPackModule.JetpackObject({
-      property1: value1,
       onError: function logError(message) {
         console.log(message);
       }
@@ -77,5 +58,48 @@ this:
 For a more comprehensive account of events see the Developer Guide's
 [Events](#guide/events) section.
 
+### Content scripting ###
+Modules that access with web content follow a common pattern in which the code
+that actually interacts with the content is executed as a separate script
+called a content script. The content script and the main add-on script
+communicate using an asynchronous message-passing mechanism.
 
+Classes that implement this scheme include properties that specify which
+content scripts should be run and when:
 
+    var myJetpackObject = new jetPackModule.JetpackObject({
+      contentScriptWhen: "ready",
+      contentScript: "window.alert('Page loaded')",
+      contentScriptURL: "[data.url("content-script.js")]"
+      }
+    })
+
+For a more comprehensive account of content scripts see the Developer Guide's
+[Interacting with Web Content](#guide/web-content) section.
+
+## Jetpack module functionality ##
+
+### Globals ###
+For full information on the globals available to Jetpack code, see
+the [Jetpack Globals](#guide/globals) appendix.
+
+* ***JavaScript globals***: all Jetpack code has access to the globals defined
+in [JavaScript
+1.8.1](https://developer.mozilla.org/En/New_in_JavaScript_1.8.1) such as
+`Math`, `Array` and `JSON`.
+
+* ***CommonJS globals***: Jetpack code also has access to `require` and `exports`
+as specified by version 1.0 of the [CommonJS Module 
+Specification](http://wiki.commonjs.org/wiki/Modules/1.0).
+
+* ***Jetpack globals***: Jetpack defines a number of globals, the most widely
+used of which is probably the `console` global. This object allows you to log
+messages to the console (standard output in the default implementation):
+
+    console.log("A message");
+
+### Building a UI ###
+Jetpack provides four modules to help the add-on developer create a UI:
+
+* ***[widget](#module/addon-kit/widget)***: a widget is permanently displayed
+in a dedicated bar in the browser chrome. 
