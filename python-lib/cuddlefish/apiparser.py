@@ -290,17 +290,20 @@ class TestRenderer:
         for prop in p.get("props", []):
             yield " " + self.render_prop(prop)
 
-    def format_api(self, api):
-        yield "name= %s" % self.getm(api, "name")
-        yield "type= %s" % self.getm(api, "type")
-        yield "description= %s" % self.getm(api, "description")
-        params = api.get("params", [])
+    def render_method(self, method):
+        yield "name= %s" % self.getm(method, "name")
+        yield "type= %s" % self.getm(method, "type")
+        yield "description= %s" % self.getm(method, "description")
+        signature = method.get("signature")
+        if signature:
+            yield "signature= %s" % self.getm(method, "signature")
+        params = method.get("params", [])
         if params:
             yield "parameters:"
             for p in params:
                 for pline in self.render_param(p):
                     yield " " + pline
-        r = api.get("returns", None)
+        r = method.get("returns", None)
         if r:
             yield "returns:"
             if "type" in r:
@@ -311,14 +314,33 @@ class TestRenderer:
             for p in props:
                 yield "  " + self.render_prop(p)
 
+    def format_api(self, api):
+        for mline in self.render_method(api):
+            yield mline
+        constructors = api.get("constructors", [])
+        if constructors:
+            yield "constructors:"
+            for m in constructors:
+                for mline in self.render_method(m):
+                    yield " " + mline
+        methods = api.get("methods", [])
+        if methods:
+            yield "methods:"
+            for m in methods:
+                for mline in self.render_method(m):
+                    yield " " + mline
+        properties = api.get("properties", [])
+        if properties:
+            yield "properties:"
+            for p in properties:
+                yield "  " + self.render_prop(p)
+
     def render_docs(self, docs_json, outf=sys.stdout):
 
         for (t,data) in docs_json:
             if t == "api-json":
-                #import pprint
-                #for line in str(pprint.pformat(data)).split("\n"):
-                #    outf.write("JSN: " + line + "\n")
                 for line in self.format_api(data):
+                    line = line.rstrip("\n")
                     outf.write("API: " + line + "\n")
             else:
                 for line in str(data).split("\n"):
