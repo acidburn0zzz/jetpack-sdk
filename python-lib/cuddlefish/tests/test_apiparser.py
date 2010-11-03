@@ -283,7 +283,7 @@ at the end of the file.\n\n")
         self.assertEqual(prop["name"], "a-property")
         self.assertEqual(prop["description"], "Represents stuff.")
         self.assertEqual(prop["property_type"], "bool")
-        
+
     def test_missing_return_propname(self):
         md = '''\
 <api name="test">
