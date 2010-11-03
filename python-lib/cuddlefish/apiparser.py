@@ -56,48 +56,51 @@ class APIParser:
             api['property_type'] = info['type']
         # info is ignored
         currentAccumulator = Accumulator(api, firstline)
-        while True:
-            lineno += 1
+        lineno += 1
+        while (lineno) < len(lines):
             line = lines[lineno].rstrip("\n")
             # accumulate any multiline descriptive text belonging to
             # the preceding "@" section
-            if self._is_description(line):
+            if self._is_description_line(line):
                 currentAccumulator.addline(line)
-                continue
-            currentAccumulator.finish()
-            if line.startswith("<api"):
-           # then we should recursively handle a nested element
-                nested_api, lineno = self.parse(lines, lineno)
-                self._update_working_set(nested_api, working_set)
-                continue
-            if line.startswith("</api"):
-            # then we have finished parsing this api element
+            else:
                 currentAccumulator.finish()
-                if props and currentPropHolder:
-                    currentPropHolder["props"] = props
-                self._assemble_api_element(api, working_set)
-                return api, lineno
-            tag, info, firstline = self._parseTypeLine(line, lineno + 1)
-            if tag == "prop":
-                props.append(info) # build up props[]
-                currentAccumulator = Accumulator(info, firstline)
-                continue
-            # close off the @prop list
-            if props and currentPropHolder:
-                currentPropHolder["props"] = props
-                props = []
-            if tag == "returns":
-                api["returns"] = info
-                currentAccumulator = Accumulator(info, firstline)
-                currentPropHolder = info
-                continue
-            if tag == "param":
-                working_set["params"].append(info)
-                currentAccumulator = Accumulator(info, firstline)
-                currentPropHolder = info
-                continue
-            raise ParseError("unknown '@' section header %s in '%s'" %
-                             (tag, line), lineno + 1)
+                if line.startswith("<api"):
+                # then we should recursively handle a nested element
+                    nested_api, lineno = self.parse(lines, lineno)
+                    self._update_working_set(nested_api, working_set)
+                elif line.startswith("</api"):
+                # then we have finished parsing this api element
+                    currentAccumulator.finish()
+                    if props and currentPropHolder:
+                        currentPropHolder["props"] = props
+                    self._assemble_api_element(api, working_set)
+                    return api, lineno
+                else:
+                # then we are looking at a subcomponent of an <api> element
+                    tag, info, desc = self._parseTypeLine(line, lineno + 1)
+                    currentAccumulator = Accumulator(info, desc)
+                    if tag == "prop":
+                        # build up props[]
+                        props.append(info)
+                    elif tag == "returns":
+                        # close off the @prop list
+                        if props and currentPropHolder:
+                            currentPropHolder["props"] = props
+                            props = []
+                        api["returns"] = info
+                        currentPropHolder = info
+                    elif tag == "param":
+                        # close off the @prop list
+                        if props and currentPropHolder:
+                            currentPropHolder["props"] = props
+                            props = []
+                        working_set["params"].append(info)
+                        currentPropHolder = info
+                    else:
+                        raise ParseError("unknown '@' section header %s in \
+                                           '%s'" % (tag, line), lineno + 1)
+            lineno += 1
         raise ParseError("closing </api> tag not found", lineno + 1)
 
     def _parse_title_line(self, title_line, lineno):
@@ -110,7 +113,7 @@ class APIParser:
                                      "opening <api> tag.", lineno)
         return m.group(1)
 
-    def _is_description(self, line):
+    def _is_description_line(self, line):
         return not ( (line.lstrip().startswith("@")) or
                (line.lstrip().startswith("<api")) or
                (line.lstrip().startswith("</api")) )
@@ -159,7 +162,7 @@ class APIParser:
         if len(working_set["methods"]) > 0:
             api_element["methods"] = working_set["methods"]
 
-    def _validate_info(self, tag, info, lineno):
+    def _validate_info(self, tag, info, line, lineno):
         if tag == 'property':
             if not 'type' in info:
                 raise ParseError("No type found for @property.", lineno)
@@ -229,7 +232,7 @@ class APIParser:
                 description = pieces[skip]
             else:
                 description = ""
-        self._validate_info(tag, info, lineno)
+        self._validate_info(tag, info, line, lineno)
         return tag, info, description
 
 def parse_hunks(text):
