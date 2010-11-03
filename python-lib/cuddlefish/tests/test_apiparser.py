@@ -365,7 +365,7 @@ This is a function which does nothing in particular.
   which is consistently indented by two spaces
     except for this line
   and preserves the following empty line
-
+  
   from which a two-space indentation will be removed.
   @prop firststring {string} First string.
   @prop [firsturl] {url} First URL, not always provided.
