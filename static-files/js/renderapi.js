@@ -29,7 +29,7 @@ function _createPropertyTitle(doc) {
 }
 
 function _createClassTitle(doc) {
-  var $title = $("<span class='name'/>").html(doc.name);
+  var $title = $("<p class='api-element'/>").html(doc.name + " class");
   return $title;
 }
 

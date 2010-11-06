@@ -102,6 +102,7 @@ function startApp(jQuery, window) {
     var markdown = new Array();
     var classes = new Array();
     var functions = new Array();
+    var properties = new Array();
     for (var i = 0; i < hunks.length; i++) {
       hunk = hunks[i];
       if (hunk[0] == "markdown"){
@@ -114,26 +115,34 @@ function startApp(jQuery, window) {
         else if (hunk[1].type == "function") {
           functions.push(hunk);
         }
+        else if (hunk[1].type == "property") {
+          properties.push(hunk);
+        }
       }
     }
     doRender(where, markdown);
+    var heading = $("<h1 class='api-heading'>API Reference</h1>");
+    heading.appendTo(where);
     if (classes.length > 0) {
-      var heading = $("<h2>Classes</h2>");
-      heading.appendTo(where);
       doRender(where, classes);
     }
     if (functions.length > 0) {
-      var heading = $("<h2>Global Functions</h2>");
+      var heading = $("<p class='api-element'> Global Functions</p>");
       heading.appendTo(where);
       doRender(where, functions);
     }
+    if (properties.length > 0) {
+      var heading = $("<p class='api-element'> Global Properties</p>");
+      heading.appendTo(where);
+      doRender(where, properties);
+    }
   }
 
-  function hunksContainClasses(hunks) {
+  function isOldStyle(hunks) {
     for (var i = 0; i < hunks.length; i++) {
       hunk = hunks[i];
       if (hunk[0] == "api-json") {
-        if (hunk[1].type == "class") {
+        if (hunk[1].type == "method" || hunk[1].type == "constructor") {
           return true;
         }
       }
@@ -180,7 +189,7 @@ function startApp(jQuery, window) {
         dataType: "json",
         success: function(json) {
           try {
-            if (hunksContainClasses(json)) {
+            if (!isOldStyle(json)) {
               renderStructuredDocs(where, json);
             }
             else {

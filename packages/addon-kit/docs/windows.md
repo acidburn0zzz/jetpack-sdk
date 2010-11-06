@@ -8,31 +8,40 @@ This module currently only supports browser windows and does not provide
 access to non-browser windows such as the Bookmarks Library, preferences
 or other non-browser windows created via add-ons.
 
-Introduction
-------------
-
-Properties
-----------
-
 <api name="browserWindows">
-@property {object}
-
+@class
 An object that contains various properties and methods to access
 functionality from browser windows, such as opening new windows, accessing
-their tabs or switching the current active window. These properties and
-methods are described below.
-</api>
+their tabs or switching the current active window.
 
+`browserWindows` provides access to all the currently open browser windows:
 
-Properties of browserWindows
-----------------------------
+    var windows = require("windows");
+    for each (var window in windows.browserWindows) {
+      console.log(window.title);
+    }
+
+    console.log(windows.browserWindows.length);
+
+The `browserWindows` object also generates events which represent common
+actions and state changes for windows.
+
+Events are represented as properties named `on` followed by the
+name of the event: thus `onOpen`, `onReady` and so on. These properties are
+both `collections` and setters. 
+
+Listeners can be registered by either assigning a callback function to any
+of these properties, or by passing the callback to the properties' `add`
+method.  Listeners can be removed by passing the callback function to the
+properties' `remove` method.
+
+Listeners are passed the `window` object that triggered the event.
 
 <api name="activeWindow">
 @property {object}
 
 The currently active window.  This property can be set to a `window` object,
 which will focus that window and bring it to the foreground.
-</api>
 
 **Example**
 
@@ -44,27 +53,27 @@ which will focus that window and bring it to the foreground.
     // set
     windows.activeWindow = anotherWindow;
 
-<api name="browserWindows">
-@property {array}
-
-The set of open browser windows
 </api>
 
-**Example**
-
-    var windows = require("windows");
-    for each (var window in windows.browserWindows) {
-      console.log(window.title);
-    }
-
-    console.log(windows.browserWindows.length);
-
-Functions of browserWindows
----------------------------
+</api>
 
 <api name="openWindow">
-@method
+@function
 Open a new window.
+
+    var windows = require("windows").browserWindows;
+
+    // open a new window
+    windows.openWindow("http://www.mysite.com");
+
+    // an onOpen listener
+    windows.openWindow({
+      url: "http://www.mysite.com",
+      onOpen: function(window) {
+        // do stuff like listen for content
+        // loading.
+      }
+    });
 
 @param options {object}
 An object containing configurable options for how this window will be opened,
@@ -89,34 +98,8 @@ This is an optional property.
 @prop [onReady] {function}
 A callback function that is called when the URL content has loaded. This is an
 optional property.
+
 </api>
-
-**Example**
-
-    var windows = require("windows").browserWindows;
-
-    // open a new window
-    windows.openWindow("http://www.mysite.com");
-
-    // an onOpen listener
-    windows.openWindow({
-      url: "http://www.mysite.com",
-      onOpen: function(window) {
-        // do stuff like listen for content
-        // loading.
-      }
-    });
-
-Events of browserWindows
-------------------------
-
-Events representing common actions and state changes for windows.
-
-These properties are `collections`. Listeners can be registered by
-passing the callback to the properties' `add` method, and can be removed
-by passing the callback function to the properties' `remove` method.
-
-Listeners are passed the `window` object that triggered the event.
 
 <api name="onOpen">
 @property {collection}
@@ -126,7 +109,6 @@ Called when a new window is opened.
 <api name="onClose">
 @property {collection}
 Called when a window is closed.
-</api>
 
 **Examples**
 
@@ -143,11 +125,32 @@ Called when a window is closed.
       console.log("A window was closed.");
     });
 
-Window
-------
+</api>
 
-A `window` object represents a single open window. It contains the following
-window properties and methods:
+<api name="Window">
+@class
+A `window` object represents a single open window. Window instances can be
+retrieved from the `browserWindows` object.
+
+    var windows = require("windows").browserWindows;
+
+    //Print how many tabs the current window has
+    console.log("The active window has " +
+                windows.activeWindow.tabs.length +
+                " tabs.");
+
+    // Print the title of all browser windows
+    for (var window in windows) {
+      console.log(window.title);
+    }
+
+    // close the active window
+    windows.activeWindow.close();
+
+    // close the active window
+    windows.activeWindow.close(function() {
+      console.log("The active window was closed");
+    });
 
 <api name="title">
 @property {string}
@@ -176,25 +179,5 @@ Close the window.
 A function to be called when the window finishes its closing process.
 </api>
 
+</api>
 
-**Examples**
-
-    var windows = require("windows").browserWindows;
-
-    //Print how many tabs the current window has
-    console.log("The active window has " +
-                windows.activeWindow.tabs.length +
-                " tabs.");
-
-    // Print the title of all browser windows
-    for (var window in windows) {
-      console.log(window.title);
-    }
-
-    // close the active window
-    windows.activeWindow.close();
-
-    // close the active window
-    windows.activeWindow.close(function() {
-      console.log("The active window was closed");
-    });

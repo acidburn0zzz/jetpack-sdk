@@ -119,9 +119,6 @@ follow its guidance on best practices and policies.
 [MDN]: https://developer.mozilla.org/En/Supporting_private_browsing_mode
 
 
-Reference
----------
-
 <api name="storage">
 @property {object}
   A persistent object private to the extension.  Properties with array, boolean,
@@ -137,3 +134,4 @@ Reference
   is within quota.  A value greater than 1 indicates that the storage exceeds
   quota.
 </api>
+
