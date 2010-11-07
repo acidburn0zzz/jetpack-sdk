@@ -48,18 +48,23 @@ glob-style wildcard.  Note that these are not regular expressions.
    *Example matching URLs:*  
    &nbsp;&nbsp;&nbsp;&nbsp;`http://example.com/`
 
+Examples
+--------
 
-Reference
----------
+    var { MatchPattern } = require("match-pattern");
+    var pattern = new MatchPattern("http://example.com/*");
+    console.log(pattern.test("http://example.com/"));       // true
+    console.log(pattern.test("http://example.com/foo"));    // true
+    console.log(pattern.test("http://foo.com/"));           // false!
 
+<api name="MatchPattern">
+@class
 <api name="MatchPattern">
 @constructor
   This constructor creates match pattern objects that can be used to test URLs.
 @param pattern {string}
   The pattern to use.  See Patterns above.
 </api>
-
-### Match Pattern Methods
 
 <api name="test">
 @method
@@ -69,13 +74,4 @@ Reference
 @returns {boolean}
   True if the URL matches the pattern and false otherwise.
 </api>
-
-
-Examples
---------
-
-    var { MatchPattern } = require("match-pattern");
-    var pattern = new MatchPattern("http://example.com/*");
-    console.log(pattern.test("http://example.com/"));       // true
-    console.log(pattern.test("http://example.com/foo"));    // true
-    console.log(pattern.test("http://foo.com/"));           // false!
+</api>

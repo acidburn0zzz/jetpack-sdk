@@ -9,7 +9,7 @@ access to non-browser windows such as the Bookmarks Library, preferences
 or other non-browser windows created via add-ons.
 
 <api name="browserWindows">
-@class
+@property {object}
 An object that contains various properties and methods to access
 functionality from browser windows, such as opening new windows, accessing
 their tabs or switching the current active window.

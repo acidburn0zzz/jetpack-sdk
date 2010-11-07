@@ -98,17 +98,20 @@ function startApp(jQuery, window) {
   }
 
   function renderStructuredDocs(where, hunks) {
+    if (hunks.length == 0) return;
     $(where).empty();
     var markdown = new Array();
     var classes = new Array();
     var functions = new Array();
     var properties = new Array();
+    var apiHunksExist = false;
     for (var i = 0; i < hunks.length; i++) {
       hunk = hunks[i];
       if (hunk[0] == "markdown"){
         markdown.push(hunk);
       }
       else if (hunk[0] == "api-json") {
+        apiHunksExist = true;
         if (hunk[1].type == "class") {
           classes.push(hunk);
         }
@@ -121,19 +124,18 @@ function startApp(jQuery, window) {
       }
     }
     doRender(where, markdown);
-    var heading = $("<h1 class='api-heading'>API Reference</h1>");
+    if (!apiHunksExist) {
+      return;
+    }
+    var heading = $("<div class='api-heading'>API Reference</div>");
     heading.appendTo(where);
     if (classes.length > 0) {
       doRender(where, classes);
     }
     if (functions.length > 0) {
-      var heading = $("<p class='api-element'> Global Functions</p>");
-      heading.appendTo(where);
       doRender(where, functions);
     }
     if (properties.length > 0) {
-      var heading = $("<p class='api-element'> Global Properties</p>");
-      heading.appendTo(where);
       doRender(where, properties);
     }
   }
