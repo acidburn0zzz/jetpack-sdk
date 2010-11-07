@@ -60,7 +60,7 @@ contained in the collection are ignored.
 @function
 Adds a collection property to the given object.  Setting the property to a
 scalar value empties the collection and adds the value.  Setting it to an array
-empties the collection and adds all the items in the array.  
+empties the collection and adds all the items in the array.
 @param object {object}
 The property will be defined on this object.
 @param propName {string}

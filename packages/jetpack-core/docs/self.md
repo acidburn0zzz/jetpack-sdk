@@ -31,7 +31,7 @@ The `data.load(NAME)` method returns the contents of an embedded data file,
 as a string. It is most useful for data that will be modified or parsed in
 some way, such as JSON, XML, plain text, or perhaps an HTML template. For
 data that can be displayed directly in a content frame, use `data.url(NAME)`.
-@param name {string} The filename to be read, relative to the 
+@param name {string} The filename to be read, relative to the
   package's `data` directory. Each package that uses the `self` module
   will see its own `data` directory.
 @returns {string}
@@ -52,7 +52,7 @@ such as the Panel:
     panels.add(myPanel);
     myPanel.show();
 
-@param name {string} The filename to be read, relative to the 
+@param name {string} The filename to be read, relative to the
   package's `data` directory. Each package that uses the `self` module
   will see its own `data` directory.
 @returns {URL}

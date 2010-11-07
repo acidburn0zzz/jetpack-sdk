@@ -11,7 +11,7 @@ Events represent common actions and state changes for tabs and their content.
 
 Events are represented as module-level properties named `on` followed by the
 name of the event: thus `onOpen`, `onReady` and so on. These properties are
-both `collections` and setters. 
+both `collections` and setters.
 
 Listeners can be registered by either assigning a callback function to any
 of these properties, or by passing the callback to the properties' `add`
@@ -253,12 +253,12 @@ This property is read-only.
 </api>
 
 <api name="close">
-@method 
+@method
 Close the tab.
 </api>
 
 <api name="move">
-@method 
+@method
 Move the tab to the specified index in its containing window.
 
 @param index {number}

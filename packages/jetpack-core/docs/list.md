@@ -31,7 +31,7 @@ _Note: That this property can be a getter if you need dynamic behavior._
 An ordered collection (also known as a sequence) disallowing duplicate
 elements. List is composed out of `Iterable`, therefore it provides custom
 enumeration behavior that is similar to array (enumerates only on the
-elements of the list). 
+elements of the list).
 
 List is a base trait and is meant to be a part of
 composition, since all of its API is private except for the `length` property.

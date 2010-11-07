@@ -67,7 +67,7 @@ arguments is not significant.
 **Examples:**
 
 Let's say we want to define a reusable piece of code for a lists of elements.
-    
+
     const { Trait } = require('traits');
     const List = Trait.compose({
       // private API:
@@ -170,8 +170,8 @@ And if its value is `null`, the property will become required.
           this._add(item)
       }
     });
-    
-    
+
+
     let r = Range(0, 10);
     r.min;                      // 0
     r.max;                      // 10

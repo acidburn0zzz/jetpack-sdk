@@ -4,7 +4,6 @@
 
 The `unit-test` module makes it easy to find and run unit tests.
 
-## Test Runner Objects ##
 <api name="test">
 @class
 Each function which represents a test case is passed a single argument

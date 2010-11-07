@@ -25,7 +25,7 @@ Content workers may emit the following types of events:
 ####"message"####
 Event allows the page worker to receive messages from the content scripts.
 Calling `postMessage` function from the one of the content scripts will
-asynchronously emit 'message' event on the worker. 
+asynchronously emit 'message' event on the worker.
 
 ####"error"####
 Event allows the page worker to react on an uncaught runtime script error
@@ -45,7 +45,7 @@ Examples
 First, don't forget to import the module:
 
     var pageWorkers = require("page-worker");
-    
+
 Then make a script that will send the titles from the content script
 to the program:
 

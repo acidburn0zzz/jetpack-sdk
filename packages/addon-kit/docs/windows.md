@@ -28,7 +28,7 @@ actions and state changes for windows.
 
 Events are represented as properties named `on` followed by the
 name of the event: thus `onOpen`, `onReady` and so on. These properties are
-both `collections` and setters. 
+both `collections` and setters.
 
 Listeners can be registered by either assigning a callback function to any
 of these properties, or by passing the callback to the properties' `add`
@@ -47,7 +47,7 @@ which will focus that window and bring it to the foreground.
 
     // get
     var windows = require("windows");
-    console.log("title of active window is " + 
+    console.log("title of active window is " +
                 windows.browserWindows.activeWindow.title);
 
     // set
@@ -172,7 +172,7 @@ Makes window active
 </api>
 
 <api name="close">
-@method 
+@method
 Close the window.
 
 @param callback {function}

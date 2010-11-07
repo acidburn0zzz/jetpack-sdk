@@ -92,11 +92,6 @@ function startApp(jQuery, window) {
     hunks.forEach(render_hunk);
   }
 
-  function renderInterleavedAPIDocs(where, hunks) {
-    $(where).empty();
-    doRender(where, hunks);
-  }
-
   function renderStructuredDocs(where, hunks) {
     if (hunks.length == 0) return;
     $(where).empty();
@@ -140,18 +135,6 @@ function startApp(jQuery, window) {
     }
   }
 
-  function isOldStyle(hunks) {
-    for (var i = 0; i < hunks.length; i++) {
-      hunk = hunks[i];
-      if (hunk[0] == "api-json") {
-        if (hunk[1].type == "method" || hunk[1].type == "constructor") {
-          return true;
-        }
-      }
-    }
-  return false;
-  }
-
   function getPkgFile(pkg, filename, filter, cb) {
     if (pkgHasFile(pkg, filename)) {
       var options = {
@@ -191,12 +174,7 @@ function startApp(jQuery, window) {
         dataType: "json",
         success: function(json) {
           try {
-            if (!isOldStyle(json)) {
-              renderStructuredDocs(where, json);
-            }
-            else {
-              renderInterleavedAPIDocs(where, json);
-            }
+            renderStructuredDocs(where, json);
           } catch (e) {
             $(where).text("Oops, API docs renderer failed: " + e);
           }

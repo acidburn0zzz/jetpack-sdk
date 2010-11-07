@@ -58,7 +58,7 @@ A function that makes new instances of `privateConstructor`.
 <api name="validateOptions">
 @function
 A function to validate an options dictionary according to the specified
-constraints. 
+constraints.
 
 `map`, `is`, and `ok` are used in that order.
 

@@ -45,7 +45,7 @@ Create and show a simple panel with content from the `data/` directory:
     let panel = panels.add(panels.Panel({
       contentURL: data.url("foo.html")
     }));
-    
+
     panel.show();
 
 The tutorial section on [web content](#guide/web-content) has a more complex

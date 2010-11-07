@@ -19,20 +19,20 @@ are emitted:
 
 ### start ###
 Emitted when the browser starts private browsing mode.
-    
+
     pb.on("start", function() {
       // Do something when the browser starts private browsing mode.
     });
-    
- 
+
+
 ### stop ###
 Emitted when the browser stops private browsing mode.
 
-    
+
     pb.on("stop", function() {
       // Do something when the browser stops private browsing mode.
     });
-    
+
 
 
 ## Supported Applications ##
@@ -50,10 +50,10 @@ browsing.
     // If private browsing is active, do something
     if (pb.active)
       doSomething();
-    
+
     // Enter private browsing mode
     pb.active = true;
-    
+
     // Exit private browsing mode
     pb.active = false;
 

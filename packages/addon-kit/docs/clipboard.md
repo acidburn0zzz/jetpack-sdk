@@ -52,7 +52,7 @@ If the clipboard contains HTML content, open it in a new tab.
 <api name="currentFlavors">
 @property {array}
   Data on the clipboard is sometimes available in multiple types. For example,
-  HTML data might be available as both a string of HTML (the `html` type) 
+  HTML data might be available as both a string of HTML (the `html` type)
   and a string of plain text (the `text` type). This function returns an array
   of all types in which the data currently on the clipboard is available.
 </api>

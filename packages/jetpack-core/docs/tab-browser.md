@@ -102,7 +102,7 @@ The tabbrowser element is passed as a parameter to this method.
 
 <api name="TabTracker">
 @function
-Register a delegate object to be notified when tabs are opened and closed. 
+Register a delegate object to be notified when tabs are opened and closed.
 
 
 The onTrack method will be called once per pre-existing tab, upon

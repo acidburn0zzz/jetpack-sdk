@@ -18,7 +18,7 @@ event. Each listener will be called after a selection is made.
     }
     var selection = require("selection");
     selection.on('select', myCallback);
-    
+
     // removing listeners
     selection.removeListener('select', myCallback);
 

@@ -14,7 +14,7 @@ When the server completes the request, the `Request` returns a
 `Response` object to the caller containing the response and calls the callback.
 
 Each `Request` object is designed to be used once. Once `GET` or `POST` are
-called, attempting to call either will throw an error. 
+called, attempting to call either will throw an error.
 
 Since the request is not being made by any particular website, requests made
 here are not subject to the same-domain restriction that requests made in web
@@ -118,7 +118,7 @@ Make a `POST` request.
 <api name="Response">
 @class
 The Response object contains the response to a network request issued using a
-`Request` object. It is returned by the `get()` or `post()` method of a 
+`Request` object. It is returned by the `get()` or `post()` method of a
 `Request` object.
 
 All members of a `Response` object are read-only.

@@ -24,7 +24,7 @@ Content workers may emit two types of events:
 ####"message"#####
 Event allows the content worker to receive messages from the enclosed content
 content scripts. Calling `postMessage` function from the one of the content
-scripts will asynchronously emit 'message' event on the worker. 
+scripts will asynchronously emit 'message' event on the worker.
 
 ####"error"####
 Event allows the content worker to react on an uncaught runtime script error

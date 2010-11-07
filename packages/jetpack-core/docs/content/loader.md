@@ -14,7 +14,7 @@ exposed by EventEmitter along with additional public properties:
 Value changes on all of the above mentioned properties emit `propertyChange`
 events on an instances.
 
-**Example:**  
+**Example:**
 
 The following code creates a wrapper on hidden frame that reloads a web page
 in frame every time `contentURL` property is changed:
@@ -42,7 +42,7 @@ in frame every time `contentURL` property is changed:
     });
 
 <api name="Loader">
-@class 
+@class
 <api name="contentScriptURL">
 @property {array}
 The URLs of content scripts to load.  Content scripts specified by this property

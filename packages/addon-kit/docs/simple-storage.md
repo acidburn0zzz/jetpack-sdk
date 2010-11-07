@@ -55,8 +55,8 @@ storage.  If the user quits the application while you are over quota, all data
 stored since the last time you were under quota will not be persisted.  You
 should not let that happen.
 
-To listen for quota notifications, register a listener for `"OverQuota"` events.
-It will be called when your storage goes over quota.
+To listen for quota notifications, register a listener for `"OverQuota"`
+events. It will be called when your storage goes over quota.
 
     function myOnOverQuotaListener(simpleStorage) {
       console.log("Uh oh.");
