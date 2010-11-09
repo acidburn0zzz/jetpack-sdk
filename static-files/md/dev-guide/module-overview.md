@@ -16,10 +16,11 @@ upper case initial letter:
     jetpackFunction
     JetpackObject
 
-### Object construction ###
+### Constructors ###
+Many Jetpack modules export constructors that create object instances for use
+by add-on code.
 
-Many Jetpack modules expose their functionality through objects. A common
-pattern for such a module is to export just three functions:
+A common pattern for such a module is to export just three functions:
 
 <span class="aside">
 This will need updating.
@@ -39,7 +40,7 @@ constructed using the following pattern:
     var myJetpackObject = new jetPackModule.JetpackObject({
       property1: value1,
       property2: value2
-    }) 
+    });
 
 ### Events ###
 If the object generates events then it will have a property that can be
@@ -53,7 +54,7 @@ this:
       onError: function logError(message) {
         console.log(message);
       }
-    })
+    });
 
 For a more comprehensive account of events see the Developer Guide's
 [Events](#guide/events) section.
@@ -72,7 +73,7 @@ content scripts should be run and when:
       contentScript: "window.alert('Page loaded')",
       contentScriptURL: "[data.url("content-script.js")]"
       }
-    })
+    });
 
 For a more comprehensive account of content scripts see the Developer Guide's
 [Interacting with Web Content](#guide/web-content) section.
@@ -102,4 +103,4 @@ messages to the console (standard output in the default implementation):
 Jetpack provides four modules to help the add-on developer create a UI:
 
 * ***[widget](#module/addon-kit/widget)***: a widget is permanently displayed
-in a dedicated bar in the browser chrome. 
+in a dedicated bar in the browser chrome.

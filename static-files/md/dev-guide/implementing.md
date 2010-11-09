@@ -13,20 +13,30 @@ underlying infrastructure for both Jetpack modules and Jetpack add-ons.
 The [CommonJS group](http://wiki.commonjs.org/wiki/CommonJS) defines
 specifications for ***modules*** and ***packages***. 
 
-A CommonJS module is a piece of reusable JavaScript: it exports certain functions,
-which are thus made available to dependent code. 
+A CommonJS **module** is a piece of reusable JavaScript: it exports certain objects
+which are thus made available to dependent code. To facilitate this CommonJS
+defines:
 
-A CommonJS package is a structure which can wrap a collection of related modules: this
-makes it easier to distribute, install and manage modules. Minimally, a package
-must include a package specification file named "package.json". Among other
-things this file describes the other CommonJS packages that this package
-depends on. Packages must also follow a particular directory structure.
+* an object called `exports` which contains all the objects which a CommonJS
+module wants to make available to other modules
+* a function called `require` which a module can use to import the exports object
+of another module
+
+A CommonJS **package** is a structure which can wrap a collection of related
+modules: this makes it easier to distribute, install and manage modules.
+Minimally, a package must include a package specification file named
+"package.json". Among other things this file describes the other CommonJS
+packages that this package depends on. Packages must also follow a particular
+directory structure.
 
 * The JavaScript modules which Jetpack provides are CommonJS modules, and they
 are collected into CommonJS packages.
 
 * The JavaScript components of a Jetpack add-on constitute one or more
 CommonJS modules, and a complete Jetpack add-on is a CommonJS package.
+
+So in terms of CommonJS objects we could depict the translator add-on as
+follows:
 
 ![CommonJS translator](media/commonjs-translator.jpg)
 
@@ -112,7 +122,7 @@ window
 
 Next, this code constructs a context menu item. It supplies:
 
-* the name if the item to display
+* the name of the item to display
 * a context in which the item should be displayed (in this case, whenever some
 text on the page is selected)
 * a script to execute when the item is clicked: this script sends the selected
@@ -138,19 +148,35 @@ The first time you do this, you'll see a message like this:
 Run it again, and it will run an instance of Firefox (or your default
 application) with your add-on installed.
 
+## Packaging It ##
+To install an add-on it must be packaged as an
+[XPI file](https://developer.mozilla.org/en/XPI). The Jetpack SDK
+simplifies the packaging process by generating this file for you.
+
+To package your program as a XPI, navigate to the root of your package
+directory in your shell and run `cfx xpi`. You should see a message like this:
+
+    Exporting extension to translator.xpi.
+
+The `translator.xpi` file can be found in the directory in which you ran the
+command.
+
 ### The Program ID ###
-The id that `cfx` generated the first time you executed `cfx run` is called the
+The ID that `cfx` generated the first time you executed `cfx run` is called the
 **Program ID** and it is important. It is a unique identifier for your add-on
 and is used for a variety of purposes. For example: mozilla.addons.org uses it
 to distinguish between new add-ons and updates to existing add-ons, and the
-[simple-storage] module uses it to figure out which stored data belongs to
-which add-on.
+[simple-storage](#module/addon-kit/simple-storage) module uses it to figure out
+which stored data belongs to which add-on.
+
+<span class="aside">
+where is it on Windows?
+</span>
 
 The program ID is actually the public part of a cryptographic key pair. When
 cfx generates a program ID it actually generates a pair of related keys: one
 half (the public key) is embedded in package.json as the program ID while the
-other half (the private key) gets stored in a file in ~/.jetpack/keys 
-***windows?***. 
+other half (the private key) gets stored in a file in ~/.jetpack/keys.
 
 When the XPI file is generated it is signed with the private key. Then the
 browser, or some other tool, can use the public key to verify that the XPI file
@@ -175,18 +201,6 @@ need to remove their Program ID from the package.json file before you can build
 your own XPIs. Again, cfx xpi will remind you of this, and your options, when
 you attempt to build an XPI from a package.json that references a private key
 that you don't have in ~/.jetpack/keys/.
-
-## Packaging It ##
-To install an add-on it must be packaged as an XPI file. The Jetpack SDK
-simplifies the packaging process by generating this file for you.
-
-To package your program as a XPI, navigate to the root of your package
-directory in your shell and run `cfx xpi`. You should see a message like this:
-
-    Exporting extension to translator.xpi.
-
-The `translator.xpi` file can be found in the directory in which you ran the
-command.
 
 ## Checking the Package ##
 If you'd like to test the packaged program before distributing it,
