@@ -26,8 +26,8 @@ whenever the event occurs. The arguments that will be passed to the listener
 are specific to an event type and are documented with the event emitter.
 
 For example, the following add-on registers two listeners with the
-"private-browsing" module to listen for the "start" and stop events, and log a
-string to the console reporting the change:
+"private-browsing" module to listen for the "start" and "stop" events, and log
+a string to the console reporting the change:
 
     var pb = require("private-browsing");
 
