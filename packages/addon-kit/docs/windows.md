@@ -23,19 +23,28 @@ their tabs or switching the current active window.
 
     console.log(windows.browserWindows.length);
 
-The `browserWindows` object also generates events which represent common
-actions and state changes for windows.
+###Events###
+The `browserWindows` generates two event types:
 
-Events are represented as properties named `on` followed by the
-name of the event: thus `onOpen`, `onReady` and so on. These properties are
-both `collections` and setters.
+***open***: called when a new window is opened.
 
-Listeners can be registered by either assigning a callback function to any
-of these properties, or by passing the callback to the properties' `add`
-method.  Listeners can be removed by passing the callback function to the
-properties' `remove` method.
+***closed***: called when a window is closed.
 
 Listeners are passed the `window` object that triggered the event.
+
+####Examples####
+
+    var windows = require("windows").browserWindows;
+
+    // add a listener to the 'open' event
+    windows.on('open', function(window) {
+      myOpenWindows.push(window);
+    });
+
+    // add a listener to the 'close' event
+    windows.on('close', function(window) {
+      console.log("A window was closed.");
+    });
 
 <api name="activeWindow">
 @property {object}
@@ -101,30 +110,6 @@ optional property.
 
 </api>
 
-<api name="onOpen">
-@property {collection}
-Called when a new window is opened.
-</api>
-
-<api name="onClose">
-@property {collection}
-Called when a window is closed.
-
-**Examples**
-
-    var windows = require("windows").browserWindows;
-
-    // listen for window openings via property assignment
-    windows.onOpen.add(function(window) {
-      myOpenWindows.push(window);
-    });
-
-    // modify the DOM of the page when ready,
-    // by adding listener to the event collection.
-    windows.onClose.add(function(window) {
-      console.log("A window was closed.");
-    });
-
 </api>
 
 <api name="Window">
@@ -140,7 +125,7 @@ retrieved from the `browserWindows` object.
                 " tabs.");
 
     // Print the title of all browser windows
-    for (var window in windows) {
+    for each (var window in windows) {
       console.log(window.title);
     }
 
