@@ -1,26 +1,26 @@
 This section of the tutorial takes you through the process of implementing,
-running and packaging a simple add-on using Jetpack. The add-on will add a
+running and packaging a simple add-on using the SDK. The add-on will add a
 menu item to Firefox's context menu that replaces selected text with its
 English translation.
 
-First, create a directory under your Jetpack SDK called "translator". This is
+First, create a directory under the SDK root called "translator". This is
 where we will keep all the files for this add-on.
 
 ## Packages, modules, and add-ons ##
 Before we start it's worth taking s short detour into CommonJS, as this is the
-underlying infrastructure for both Jetpack modules and Jetpack add-ons.
+underlying infrastructure for both modules and add-ons.
 
 The [CommonJS group](http://wiki.commonjs.org/wiki/CommonJS) defines
 specifications for ***modules*** and ***packages***. 
 
-A CommonJS **module** is a piece of reusable JavaScript: it exports certain objects
-which are thus made available to dependent code. To facilitate this CommonJS
-defines:
+A CommonJS **module** is a piece of reusable JavaScript: it exports certain
+objects which are thus made available to dependent code. To facilitate this
+CommonJS defines:
 
 * an object called `exports` which contains all the objects which a CommonJS
 module wants to make available to other modules
-* a function called `require` which a module can use to import the exports object
-of another module
+* a function called `require` which a module can use to import the exports 
+object of another module
 
 A CommonJS **package** is a structure which can wrap a collection of related
 modules: this makes it easier to distribute, install and manage modules.
@@ -29,11 +29,11 @@ Minimally, a package must include a package specification file named
 packages that this package depends on. Packages must also follow a particular
 directory structure.
 
-* The JavaScript modules which Jetpack provides are CommonJS modules, and they
+* The JavaScript modules which the SDK provides are CommonJS modules, and they
 are collected into CommonJS packages.
 
-* The JavaScript components of a Jetpack add-on constitute one or more
-CommonJS modules, and a complete Jetpack add-on is a CommonJS package.
+* The JavaScript components of an add-on constitute one or more
+CommonJS modules, and a complete add-on is a CommonJS package.
 
 So in terms of CommonJS objects we could depict the translator add-on as
 follows:
@@ -54,7 +54,7 @@ the following contents:
     }
 
 The "dependencies" line asserts that this add-on will be using modules from
-Jetpack's addon-kit package. 
+the addon-kit package. 
 
 ## Adding Your Code ##
 According to the CommonJS package definition, all JavaScript modules are kept
@@ -112,7 +112,7 @@ and in that directory add a file called "main.js" with the following content:
     // Add the new menu item to the application's context menu.
     contextMenu.add(menuItem);
 
-The first three lines are used to import three Jetpack modules from the
+The first three lines are used to import three SDK modules from the
 addon-kit package:
 
 * **`context-menu`** enables add-ons to add new items to the context menu
@@ -150,7 +150,7 @@ application) with your add-on installed.
 
 ## Packaging It ##
 To install an add-on it must be packaged as an
-[XPI file](https://developer.mozilla.org/en/XPI). The Jetpack SDK
+[XPI file](https://developer.mozilla.org/en/XPI). The SDK
 simplifies the packaging process by generating this file for you.
 
 To package your program as a XPI, navigate to the root of your package
@@ -161,7 +161,7 @@ directory in your shell and run `cfx xpi`. You should see a message like this:
 The `translator.xpi` file can be found in the directory in which you ran the
 command.
 
-### The Program ID ###
+###The Program ID###
 The ID that `cfx` generated the first time you executed `cfx run` is called the
 **Program ID** and it is important. It is a unique identifier for your add-on
 and is used for a variety of purposes. For example: mozilla.addons.org uses it
@@ -218,7 +218,7 @@ Eventually, this step may be automated via the SDK, streamlining the
 distribution process further.
 
 ## Next: Jetpack modules ##
-The next section provides an [overview of the Jetpack 
+The next section provides an [overview of the SDK 
 modules](#guide/module-overview).
 
   [Packaging]: #guide/packaging
