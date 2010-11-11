@@ -3,8 +3,11 @@ running and packaging a simple add-on using the SDK. The add-on will add a
 menu item to Firefox's context menu that replaces selected text with its
 English translation.
 
-First, create a directory under the SDK root called "translator". This is
-where we will keep all the files for this add-on.
+First, create a directory called "translator". This is where we will keep all
+the files for this add-on. You do not have to keep your add-ons under the SDK
+root: once you have called `source bin/activate` from the SDK root, `cfx` will
+remember where the SDK is, and you will be able to reference SDK packages from
+any directory.
 
 ## Packages, modules, and add-ons ##
 Before we start it's worth taking s short detour into CommonJS, as this is the
