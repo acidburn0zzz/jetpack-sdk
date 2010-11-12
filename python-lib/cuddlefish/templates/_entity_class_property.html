@@ -1,0 +1,8 @@
+<p class="api-element-name" id="{{ entity.name }}_{{property.name }}">
+	<a title={{ property.name }} href="#{{ entity.name }}_{{property.name }}" class="api-name">{{ entity.name }}.{{ property.name }} : {{ property.property_type }}</a>
+</p>
+
+{% if property.description %}
+	<p>{{ property.description|markdown}}</p>
+{% endif %}
+

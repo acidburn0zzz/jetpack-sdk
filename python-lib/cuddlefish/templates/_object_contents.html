@@ -1,0 +1,29 @@
+<div class="object-contents">
+{% if entity.constructors %}
+	{% for method in entity.constructors %}
+		{% if loop.first %}
+			<p class="api-header">
+				Constructors</p>
+		{% endif %}
+		{% include "_entity_method.html" %}
+	{% endfor %}
+{% endif %}
+
+{% if entity.methods %}
+	{% for method in entity.methods %}
+		{% if loop.first %}
+			<p class="api-header">Methods</p>
+		{% endif %}
+		{% include "_entity_method.html" %}
+	{% endfor %}
+{% endif %}
+
+{% if entity.properties %}
+	{% for property in entity.properties %}
+		{% if loop.first %}
+			<p class="api-header">Properties</p>
+		{% endif %}
+		{% include "_entity_class_property.html" %}
+	{% endfor %}
+{% endif %}
+</div>

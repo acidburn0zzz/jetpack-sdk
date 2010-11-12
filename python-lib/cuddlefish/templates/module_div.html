@@ -1,0 +1,37 @@
+
+<div id="api-body">
+
+{% for entity in module.entities %}
+
+	{% if entity.json_type == "api" %}
+		{% if entity.type == "class" %}
+			{% include "entity_class_doc.html" %}
+		{% endif %}
+
+		{% if entity.type == "constructor" %}
+			{% include "entity_function_doc.html" %}
+		{% endif %}
+
+		{% if entity.type == "function" %}
+			{% include "entity_function_doc.html" %}
+		{% endif %}
+
+		{% if entity.type == "method" %}
+			{% include "entity_function_doc.html" %}
+		{% endif %}
+
+		{% if entity.type == "property" %}
+			{% include "entity_property_doc.html" %}
+		{% endif %}
+
+	{% else %}
+
+	<div class="UI_ModuleInfo markdown">
+		{{ entity|markdown }}
+	</div>
+
+	{% endif %}
+
+{% endfor %}
+
+</div>

@@ -1,0 +1,19 @@
+{% extends "api.html" %}
+
+{% block title %}Package "{{ package.name }}" - Documentation - {% endblock %}
+
+{% block app_content %}
+  <h2 class="UI_Heading">Modules</h2>
+
+  <div id="api-body">
+    {% for module in package.modules %}
+      <dl id="{{ module.name }}">
+        <dt class="ModuleInfo_"><a title="{{ module.name }}" href="#{{ module.name }}">{{ module.name }}</a></dt>
+        <dd>
+          {{ module.info|markdown }}
+          <a title="Go to {{ module.name }}" href="{% url api_module package_name module.name %}">Go to {{ module.name }}</a>
+        </dd>
+      </dl>
+    {% endfor %}
+  </div>
+{% endblock %}

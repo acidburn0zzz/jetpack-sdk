@@ -1,0 +1,36 @@
+
+{% if entity.signature %}
+
+<h3 class="UI_Heading" id="{{entity.name}}">
+<a title={{ entity.name }} href="#{{ entity.name }}" class="api-name">{{ entity.signature }}</a>
+</h3>
+
+{% else %}
+
+<h3 class="UI_Heading" id="{{entity.name}}">
+<a title={{ entity.name }} href="#{{ entity.name }}" class="api-name">{{ entity.name }}</a>
+</h3>
+
+{% endif %}
+
+{% if entity.description %}
+	<p>{{ entity.description|markdown}}</p>
+{% endif %}
+
+{% if entity.returns %}
+	{% if entity.returns.description %}
+		returns {{ entity.returns.type }}
+		<p>{{ entity.returns.description|markdown }}</p>
+		{% endif %}
+{% endif %}
+
+<div class="function-parameter-list">
+{% for param in entity.params %}
+	{% if loop.first %}
+		<p class="api-element-header">Parameters</p>
+	{% endif %}
+	<dl>
+		{% include "_entity_parameter.html" %}
+	</dl>
+{% endfor %}
+</div>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+{# Base HTML, every page will use #}
+
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="author" content="Mozilla Corporation" />
+		<link rel="stylesheet" href="/media/jetpack/css/UI.Base.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="/media/jetpack/css/UI.Editor_Menu.css" type="text/css" media="screen">
+		{% block head_prejs %}{% endblock %}
+		<script src="/media/js/lib/mootools-1.2.5-core-nc.js"></script>
+		<script src="/media/js/lib/mootools-1.2.4.4-more.js"></script>
+		<script src="/media/js/lib/clientcide.2.2.0.js"></script>
+		<script src="/media/roar/Roar.js"></script>
+		<script src="/media/jetpack/js/Sidebar.js"></script>
+		<script src="/media/js/FlightDeck.js"></script>
+		<script src="/media/js/FlightDeck.Roar.js"></script>
+		<script src="/media/js/Clientcide.ModalWindow.js"></script>
+		<script src="/media/js/FlightDeck.Modal.js"></script>
+		<script src="/media/js/FlightDeck.Utils.js"></script>
+		<script src="/media/js/FlightDeck.Dropdown.js"></script>
+		<script src="/media/js/FlightDeck.PickVersion.js"></script>
+		<script src="/media/jetpack/js/Create.js"></script>
+		{% block head %}{% endblock %}
+		{% block roar_css %}
+			<link href="/media/roar/Roar.css" rel="stylesheet" type="text/css" />
+			<link rel="stylesheet" href="/media/jetpack/css/FlightDeck.Roar.css" type="text/css" media="screen" />
+		{% endblock %}
+	</head>
+	<body>
+		<div id="wrapper">
+		
+			<header id="app-header">
+				{% block header %}{% endblock %}
+			</header> <!-- /app-header -->
+
+			{% block app_menu %}{% endblock %}
+
+			<div id="app-body">
+				{% block app_body %}
+				{% endblock %}
+				
+				{% block base_fluid_width %}
+					<div class="UI_middleWrapper page">
+						<aside id="app-sidebar" class="UI_Sidebar">
+							{% block app_sidebar %}{%endblock %}
+						</aside> <!-- /app-sidebar -->
+						<section id="app-content">
+							{% block app_content %}{% endblock %}
+						</section> <!-- /app-content -->
+					</div> <!-- /UI_middleWrapper -->
+				{% endblock %}
+				
+			</div> <!-- /app-body -->
+			{% block footer %}
+			{% endblock %}
+			
+		
+		</div> <!-- /wrapper -->
+
+	</body><!-- /{{ body_id }} -->
+</html>

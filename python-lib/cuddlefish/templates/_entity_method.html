@@ -1,0 +1,21 @@
+<p class="api-element-name" id="{{ entity.name }}_{{method.name }}">
+<a title={{ method.name }} href="#{{ entity.name }}_{{method.name }}" class="api-name">{{ entity.name }}.{{ method.signature }}</a>
+</p>
+
+{% if method.description %}
+	<p>{{ method.description|markdown }}</p>
+{% endif %}
+
+{% if method.returns.description %}
+	returns {{ method.returns.type }}
+	<p>{{ method.returns.description|markdown }}</p>
+{% endif %}
+
+<div class="class-parameter-list">
+{% for param in method.params %}
+	{% if loop.first %}
+		<p class="api-element-header">Parameters</p>
+	{% endif %}
+		{% include "_entity_parameter.html" %}
+{% endfor %}
+</div>

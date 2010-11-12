@@ -1,0 +1,9 @@
+<h3 class="UI_Heading" id="{{entity.name}}">
+<a title={{ entity.name }} href="#{{ entity.name }}" class="api-name">{{ entity.name }} object</a>
+</h3>
+
+{% if entity.description %}
+	<p>{{ entity.description|markdown}}</p>
+{% endif %}
+
+{% include "_object_contents.html" %}

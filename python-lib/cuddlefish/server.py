@@ -16,6 +16,8 @@ import traceback
 from cuddlefish import packaging
 from cuddlefish import Bunch
 from cuddlefish import apiparser
+from cuddlefish import jsontohtml
+
 import simplejson as json
 
 try:
@@ -423,15 +425,18 @@ def generate_static_docs(env_root, tgz_filename):
                 if filename.endswith("~"):
                     continue
                 src_path = os.path.join(dirpath, filename)
-                dest_path = os.path.join(docs_dest_dir, relpath, filename)
-                shutil.copyfile(src_path, dest_path)
+                dest_path = os.path.join(docs_dest_dir, relpath, )
+                shutil.copy(src_path, dest_path)
                 if filename.endswith(".md"):
                     # parse and JSONify the API docs
                     docs_md = open(src_path, 'r').read()
                     docs_parsed = list(apiparser.parse_hunks(docs_md))
                     docs_json = json.dumps(docs_parsed)
-                    open(dest_path + ".json", "w").write(docs_json)
-
+                    open(dest_path + filename + ".json", "w").write(docs_json)
+                    docs_div = jsontohtml.div(docs_parsed)
+                    open(dest_path + "_" + filename + ".html", "w").write(docs_div)
+                    docs_html = jsontohtml.html(filename, docs_div)
+                    open(dest_path + filename + ".html", "w").write(docs_html)
     # finally, build a tarfile out of everything
     tgz = tarfile.open(tgz_filename, 'w:gz')
     tgz.add('addon-sdk-docs', 'addon-sdk-docs')

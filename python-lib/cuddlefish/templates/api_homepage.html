@@ -1,0 +1,37 @@
+{% extends "api.html" %}
+
+{% block app_content %}
+    <h2 class="UI_Heading">Documentation</h2>
+    
+    <div id="api-body">
+        <p>Add-ons Builder is a website for quickly and easily building Firefox add-ons
+        using common web technologies. If you aren't familiar with the site, <a
+        href="/tutorial/">start by reading the tutorial</a>, which gives you
+        step-by-step guide to building an add-on.</p>
+
+        <p>The add-ons you build can make changes to the browser via libraries of modules
+        that provide APIs for accessing Firefox functionality. The core library is
+        available by default to all add-ons and provides the most commonly-requested
+        APIs, including APIs for accessing tabs, storing data, displaying a widget, and
+        making network requests. Add-ons can also use libraries contributed by other
+        users of the site.</p>
+
+        <p>For documentation of the core library, see the links to the left. Sorry, we
+        don't yet have a way to provide similar documentation for contributed
+        libraries, but you can <a href="{% url jp_browser_libraries %}">browse libraries</a> and view
+        their source to learn about the functionality they provide.</p>
+
+        <p>If you are comfortable with a command line and prefer working locally, the
+        Add-ons Builder SDK gives you a development environment on your own computer. 
+        <a href="https://jetpack.mozillalabs.com/sdk/latest/docs/">Read the SDK
+        documentation</a> for help with it.</p>
+
+        <p>If you have questions about Add-ons Builder that aren't addressed by this
+        documentation, feel free to ask them in the <a
+        href="http://groups.google.com/group/mozilla-labs-jetpack">project discussion
+        group</a>. That's also the appropriate place to provide feedback about how the
+        site works for you and what additional features you'd like it to provide.</p>
+        
+    </div>
+{% endblock %}
+
