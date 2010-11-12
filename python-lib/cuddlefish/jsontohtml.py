@@ -1,18 +1,18 @@
-import markdown
+import markdown2
 from jinja2 import Environment, PackageLoader
 from cuddlefish import apiparser
 from cuddlefish import apiparser
 
 def div(hunks):
     environment = Environment(loader=PackageLoader('cuddlefish', 'templates'))
-    environment.filters['markdown'] = markdown.markdown
-    text = open('markdown/request.md').read()
+    environment.filters['markdown'] = markdown2.markdown
 
-    hunks = list(apiparser.parse_hunks(text))
     entities = []
     for h in hunks:
         if h[0] == 'api-json':
             h[1]['json_type'] = "api"
+        else:
+            print h
         entities.append(h[1])
 
     module = {'name': 'request', 'entities': entities}
