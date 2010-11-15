@@ -150,9 +150,11 @@ The console output of this add-on is:
     info: Content script 1 is attached to http://www.mozilla.com/en-US/
     info: Content script 2 is attached to http://www.mozilla.com/en-US/
 
-Reference
----------
-
+<api name="PageMod">
+@class
+A PageMod object. Once activated a page mod will execute the supplied content
+scripts in the context of any pages matching the pattern specified by the
+'include' property.
 <api name="PageMod">
 @constructor
 Creates a pageMod.
@@ -189,6 +191,18 @@ content scripts](#pagemod-content-scripts)" for more details.
 
 </api>
 
+<api name="include">
+@property {List}
+A [List] of match pattern strings.  These define the pages to which the page mod
+applies.  See the [match-pattern] module for a description of match patterns.
+Rules can be added to the list by calling its `add` method and removed by
+calling its `remove` method.
+
+[List]: https://jetpack.mozillalabs.com/sdk/latest/docs/#module/jetpack-core/list
+[match-pattern]: #module/jetpack-core/match-pattern
+</api>
+</api>
+
 <api name="add">
 @function
 Register a pageMod, activating it for the pages to which it applies.
@@ -202,18 +216,3 @@ Unregister a pageMod, deactivating it.
 @param pageMod {PageMod} the pageMod to remove.
 </api>
 
-PageMod
--------
-
-`PageMod` objects represent page mods.
-
-<api name="include">
-@property {List}
-A [List] of match pattern strings.  These define the pages to which the page
-mod applies.  See the [match-pattern] module for a description of match
-patterns. Rules can be added to the list by calling its `add` method and
-removed by calling its `remove` method.
-
-[List]: #module/jetpack-core/list
-[match-pattern]: #module/jetpack-core/match-pattern
-</api>

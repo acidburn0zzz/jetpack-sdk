@@ -294,7 +294,8 @@ function nextIteration(tests) {
 }
 
 var POINTLESS_ERRORS = [
-  "Invalid chrome URI:"
+  "Invalid chrome URI:",
+  "OpenGL LayerManager Initialized Succesfully."
 ];
 
 var consoleListener = {
@@ -364,6 +365,15 @@ var runTests = exports.runTests = function runTests(options) {
     var console = new TestRunnerConsole(new ptc.PlainTextConsole(print),
                                         options);
     var globals = {packaging: packaging};
+
+    var xulApp = require("xul-app");
+    var xulRuntime = Cc["@mozilla.org/xre/app-info;1"]
+                     .getService(Ci.nsIXULRuntime);
+
+    print("Running tests on " + xulApp.name + " " + xulApp.version +
+          "/Gecko " + xulApp.platformVersion + " (" + 
+          xulApp.ID + ") under " +
+          xulRuntime.OS + "/" + xulRuntime.XPCOMABI + ".\n");
 
     sandbox = new cuddlefish.Loader({console: console,
                                      globals: globals,
