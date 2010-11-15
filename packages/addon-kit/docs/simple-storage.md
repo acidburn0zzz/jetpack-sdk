@@ -55,8 +55,8 @@ storage.  If the user quits the application while you are over quota, all data
 stored since the last time you were under quota will not be persisted.  You
 should not let that happen.
 
-To listen for quota notifications, register a listener for `"OverQuota"` events.
-It will be called when your storage goes over quota.
+To listen for quota notifications, register a listener for `"OverQuota"`
+events. It will be called when your storage goes over quota.
 
     function myOnOverQuotaListener(simpleStorage) {
       console.log("Uh oh.");
@@ -112,15 +112,12 @@ might handle that:
 
 For more information on supporting private browsing, see its [Mozilla Developer
 Network documentation][MDN].  While that page does not apply specifically to
-Jetpack-based extensions (and its code samples don't apply at all), you should
+SDK-based add-ons (and its code samples don't apply at all), you should
 follow its guidance on best practices and policies.
 
 [SUMO]: http://support.mozilla.com/en-US/kb/Private+Browsing
 [MDN]: https://developer.mozilla.org/En/Supporting_private_browsing_mode
 
-
-Reference
----------
 
 <api name="storage">
 @property {object}
@@ -137,3 +134,4 @@ Reference
   is within quota.  A value greater than 1 indicates that the storage exceeds
   quota.
 </api>
+
