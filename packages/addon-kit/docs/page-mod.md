@@ -7,11 +7,11 @@ modify the content of certain pages.
 
 The module exports three functions:
 
-* **`PageMod`**, a constructor for a pageMod object
+* **`PageMod`**, a constructor for a PageMod object
 
-* **`add()`**, a function which activates the pageMod
+* **`add()`**, a function which activates the PageMod
 
-* **`remove()`**, a function which deactivates the pageMod
+* **`remove()`**, a function which deactivates the PageMod
 
 Like all modules that interact with web content, page-mod uses content
 scripts that execute in the content process and defines a messaging API to
@@ -19,7 +19,7 @@ communicate between the content scripts and the main add-on script. For more
 details on content scripting see the tutorial on [interacting with web
 content](#guide/web-content).
 
-To create a pageMod the add-on developer supplies:
+To create a PageMod the add-on developer supplies:
 
 * a set of rules to select the desired subset of web pages based on their URL.
 Each rule is specified using the
@@ -34,15 +34,15 @@ communication channel between the add-on code and the content script.
 All these parameters are optional except for the ruleset, which must include
 at least one rule.
 
-Once a `pageMod` has been created it can be activated using the `add()`
+Once a `PageMod` has been created it can be activated using the `add()`
 function and will remain active until it is deactivated using the `remove()`
 function.
 
 The following add-on displays an alert whenever a page matching the ruleset is
 loaded:
 
-    var pageMod = require("page-mod");
-    pageMod.add(new pageMod.PageMod({
+    var PageMod = require("page-mod");
+    PageMod.add(new PageMod.PageMod({
       include: "*.org",
       contentScript: 'window.alert("Page matches ruleset");'
     }));
@@ -50,8 +50,8 @@ loaded:
 If you specify a value of "ready" for `contentScriptWhen` then the content
 script can interact with the DOM itself:
 
-    var pageMod = require("page-mod");
-    pageMod.add(new pageMod.PageMod({
+    var PageMod = require("page-mod");
+    PageMod.add(new PageMod.PageMod({
       include: "*.org",
       contentScriptWhen: 'ready',
       contentScript: 'document.body.innerHTML = ' +
@@ -59,16 +59,16 @@ script can interact with the DOM itself:
     }));
 
 ###<a name="pagemod-content-scripts">Communicating with the content scripts</a>
-When a matching page is loaded the `pageMod` will call the function that the
-add-on code supplied to `onAttach`. The `pageMod` supplies two arguments to
-this function: the `pageMod` itself and a `worker` object.
+When a matching page is loaded the `PageMod` will call the function that the
+add-on code supplied to `onAttach`. The `PageMod` supplies two arguments to
+this function: the `PageMod` itself and a `worker` object.
 
 The `worker` can be thought of as the add-on's end of
 a communication channel between the add-on code and the content scripts that
 have been attached to this page.
 
 Thus the add-on can pass messages to the content scripts by calling the
-worker's `postMessage` function, and can receive messages from the content
+worker's `postMessage` function and can receive messages from the content
 scripts by registering a function as a listener to the worker's `on` function.
 
 Note that if multiple matching pages are loaded simultaneously then each page
@@ -80,12 +80,12 @@ add-on code will have a separate worker for each page:
 
 This is demonstrated in the following example:
 
-    var pageMod = require("page-mod");
+    var PageMod = require("page-mod");
     var tabs = require("tabs");
 
     var workers = new Array();
 
-    pageMod.add(new pageMod.PageMod({
+    PageMod.add(new PageMod.PageMod({
       include: ["http://www.mozilla*"],
       contentScriptWhen: 'ready',
       contentScript: "onMessage = function onMessage(message) {" +
@@ -115,7 +115,7 @@ context has its own communication channel with the add-on script.
 Note though that while there is a separate worker for each execution context,
 the worker is shared across all the content scripts associated with a single
 execution context. In the following example we pass two content scripts into
-the `pageMod`: these content scripts will share a worker instance.
+the `PageMod`: these content scripts will share a worker instance.
 
 In the example each content script identifies itself to the add-on script
 by sending it a message using the global `postMessage` function. In the
@@ -123,11 +123,11 @@ by sending it a message using the global `postMessage` function. In the
 attached and registers a listener function that simply logs the message:
 
 
-    var pageMod = require("page-mod");
+    var PageMod = require("page-mod");
     const data = require("self").data;
     var tabs = require("tabs");
 
-    pageMod.add(new pageMod.PageMod({
+    PageMod.add(new PageMod.PageMod({
       include: ["http://www.mozilla*"],
       contentScriptWhen: 'ready',
       contentScript: ["postMessage('Content script 1 is attached to '+ " +
@@ -157,12 +157,12 @@ scripts in the context of any pages matching the pattern specified by the
 'include' property.
 <api name="PageMod">
 @constructor
-Creates a pageMod.
+Creates a PageMod.
 @param options {object}
-  Options for the pageMod, with the following keys:
+  Options for the PageMod, with the following keys:
   @prop include {string,array}
     A match pattern string or an array of match pattern strings.  These define
-    the pages to which the pageMod applies.  See the [match-pattern] module for
+    the pages to which the PageMod applies.  See the [match-pattern] module for
     a description of match pattern syntax.
     At least one match pattern must be supplied.
     [match-pattern]: #module/jetpack-core/match-pattern
@@ -180,14 +180,14 @@ Creates a pageMod.
     the window object for the page has been created, and "ready", which loads
     them once the DOM content of the page has been loaded.
   @prop [onAttach] {function}
-A function to call when the pageMod attaches content scripts to
+A function to call when the PageMod attaches content scripts to
 a matching page. The function will be called with two arguments:
 
 * A `worker` object which the add-on script can use to communicate with
 the content scripts attached to the page in question. See "[Communicating with
 content scripts](#pagemod-content-scripts)" for more details.
 
-* The pageMod itself.
+* The PageMod itself.
 
 </api>
 
@@ -205,14 +205,14 @@ calling its `remove` method.
 
 <api name="add">
 @function
-Register a pageMod, activating it for the pages to which it applies.
-@param pageMod {PageMod,Object}
-The pageMod to add, or options for a pageMod to create and then add.
+Register a PageMod, activating it for the pages to which it applies.
+@param PageMod {PageMod,Object}
+The PageMod to add, or options for a PageMod to create and then add.
 </api>
 
 <api name="remove">
 @function
-Unregister a pageMod, deactivating it.
-@param pageMod {PageMod} the pageMod to remove.
+Unregister a PageMod, deactivating it.
+@param PageMod {PageMod} the PageMod to remove.
 </api>
 
