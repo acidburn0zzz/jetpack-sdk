@@ -182,7 +182,7 @@ Eventually, this step may be automated via the SDK, streamlining the
 distribution process further.
 
 The next section provides an overview of the SDK's [event-handling
-framework](#guide/working-with-events).
+framework](#guide/events).
 
   [Packaging]: #guide/packaging
   [troubleshooting]: #guide/troubleshooting
