@@ -209,8 +209,7 @@ post messages back to the content script:
       myWorker.postMessage("do not click this link again");
     }
 
-    var pageMod = require("page-mod");
-    var myPageMod = pageMod.add({
+    require("page-mod").PageMod({
       include: ["*"],
       contentScriptWhen: 'ready',
       contentScriptURL:  data.url("pagemod.js"),
@@ -240,7 +239,7 @@ This is the complete add-on script:
     const panels = require("panel");
     const data = require("self").data;
 
-    widgets.add(widgets.Widget({
+    widgets.Widget({
       label: "Reddit",
       image: "http://www.reddit.com/static/favicon.ico",
       panel: panels.Panel({
@@ -254,7 +253,7 @@ This is the complete add-on script:
           require("tab-browser").addTab(message);
         }
       })
-    }));
+    });
 
 This code supplies two content scripts to the panel's constructor in the
 contentScriptURL option: the jQuery library and the script that intercepts
