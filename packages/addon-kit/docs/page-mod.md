@@ -1,3 +1,6 @@
+-<!-- contributed by Nickolay Ponomarev [asqueella@gmail.com] -->
+-<!-- contributed by Myk Melez [myk@mozilla.org] -->
+-<!-- contributed by Irakli Gozalishvil [gozala@mozilla.com] -->
 
 Overview
 --------
