@@ -1,6 +1,6 @@
--<!-- contributed by Nickolay Ponomarev [asqueella@gmail.com] -->
--<!-- contributed by Myk Melez [myk@mozilla.org] -->
--<!-- contributed by Irakli Gozalishvil [gozala@mozilla.com] -->
+<!-- contributed by Nickolay Ponomarev [asqueella@gmail.com] -->
+<!-- contributed by Myk Melez [myk@mozilla.org] -->
+<!-- contributed by Irakli Gozalishvil [gozala@mozilla.com] -->
 
 Overview
 --------
@@ -60,12 +60,13 @@ script can interact with the DOM itself:
                      ' "<h1>Page matches ruleset</h1>";'
     });
 
-###<a name="pagemod-content-scripts">Communicating with the content scripts</a>
+### <a name="pagemod-content-scripts">Communicating With Content Scripts</a>###
+
 When a matching page is loaded the `PageMod` will call the function that the
 add-on code supplied to `onAttach`. The `PageMod` supplies two arguments to
 this function: the `PageMod` itself and a `worker` object.
 
-The `worker` can be thought of as the add-on's end of
+The worker can be thought of as the add-on's end of
 a communication channel between the add-on code and the content scripts that
 have been attached to this page.
 
