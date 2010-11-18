@@ -396,6 +396,15 @@ function startApp(jQuery, window) {
       window.setInterval(checkHash, CHECK_HASH_DELAY);
     }
 
+    
+    var internalsGuide = $("#internals-guide");
+    internalsGuide.hide();
+
+    $("#more-guides").one('click', function() {
+      $(this).hide();
+      internalsGuide.slideDown();
+    });
+
     $('#hide-dev-guide-toc').click(function() {
       if ($(this).text() == 'hide') {
         $(this).text('show');

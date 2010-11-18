@@ -76,6 +76,12 @@ h1 {
     font-weight: bold;
 }
 
+#more-guides {
+    font-size: 8pt;
+    color: gray;
+    cursor: pointer;
+}
+
 #more-packages {
     font-size: 8pt;
     color: gray;
