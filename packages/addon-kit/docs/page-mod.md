@@ -5,13 +5,16 @@ The page-mod module enables add-on developers to execute scripts in the context
 of specific web pages. Most obviously you could use page-mod to dynamically
 modify the content of certain pages.
 
-The module exports three functions:
+The module exports a constructor function `PageMod` which creates a new page
+modification (or "mod" for short).
 
-* **`PageMod`**, a constructor for a PageMod object
+A page mod does not modify its pages until those pages are loaded or reloaded.
+In other words, if your add-on is loaded while the user's browser is open, the
+user will have to reload any open pages that match the mod for the mod to affect
+them.
 
-* **`add()`**, a function which activates the PageMod
-
-* **`remove()`**, a function which deactivates the PageMod
+To stop a page mod from making any more modifications, call its `destroy`
+method.
 
 Like all modules that interact with web content, page-mod uses content
 scripts that execute in the content process and defines a messaging API to
@@ -27,36 +30,32 @@ Each rule is specified using the
 
 * a set of content scripts to execute in the context of the desired pages.
 
-* a value for the onAttach option: this is the function which will be called
-when a page is loaded that matches the ruleset. This is used to set up a
+* a value for the onAttach option: this value is a function which will be
+called when a page is loaded that matches the ruleset. This is used to set up a
 communication channel between the add-on code and the content script.
 
 All these parameters are optional except for the ruleset, which must include
 at least one rule.
 
-Once a `PageMod` has been created it can be activated using the `add()`
-function and will remain active until it is deactivated using the `remove()`
-function.
-
 The following add-on displays an alert whenever a page matching the ruleset is
 loaded:
 
-    var PageMod = require("page-mod");
-    PageMod.add(new PageMod.PageMod({
+    var pageMod = require("page-mod");
+    pageMod.PageMod({
       include: "*.org",
       contentScript: 'window.alert("Page matches ruleset");'
-    }));
+    });
 
 If you specify a value of "ready" for `contentScriptWhen` then the content
 script can interact with the DOM itself:
 
-    var PageMod = require("page-mod");
-    PageMod.add(new PageMod.PageMod({
+    var pageMod = require("page-mod");
+    pageMod.PageMod({
       include: "*.org",
       contentScriptWhen: 'ready',
       contentScript: 'document.body.innerHTML = ' +
                      ' "<h1>Page matches ruleset</h1>";'
-    }));
+    });
 
 ###<a name="pagemod-content-scripts">Communicating with the content scripts</a>
 When a matching page is loaded the `PageMod` will call the function that the
@@ -80,12 +79,12 @@ add-on code will have a separate worker for each page:
 
 This is demonstrated in the following example:
 
-    var PageMod = require("page-mod");
+    var pageMod = require("page-mod");
     var tabs = require("tabs");
 
     var workers = new Array();
 
-    PageMod.add(new PageMod.PageMod({
+    pageMod.PageMod({
       include: ["http://www.mozilla*"],
       contentScriptWhen: 'ready',
       contentScript: "onMessage = function onMessage(message) {" +
@@ -97,7 +96,7 @@ This is demonstrated in the following example:
           workers[2].postMessage("The third worker!");
         }
       }
-    }));
+    });
 
     tabs.open("http://www.mozilla.com");
     tabs.open("http://www.mozilla.org");
@@ -123,11 +122,11 @@ by sending it a message using the global `postMessage` function. In the
 attached and registers a listener function that simply logs the message:
 
 
-    var PageMod = require("page-mod");
+    var pageMod = require("page-mod");
     const data = require("self").data;
     var tabs = require("tabs");
 
-    PageMod.add(new PageMod.PageMod({
+    pageMod.PageMod({
       include: ["http://www.mozilla*"],
       contentScriptWhen: 'ready',
       contentScript: ["postMessage('Content script 1 is attached to '+ " +
@@ -140,7 +139,7 @@ attached and registers a listener function that simply logs the message:
           console.log(data);
         });
       }
-    }));
+    });
 
     tabs.open("http://www.mozilla.com");
 
@@ -201,18 +200,13 @@ calling its `remove` method.
 [List]: https://jetpack.mozillalabs.com/sdk/latest/docs/#module/jetpack-core/list
 [match-pattern]: #module/jetpack-core/match-pattern
 </api>
+
+<api name="destroy">
+@method
+Stops the page mod from making any more modifications.  Once destroyed the page
+mod can no longer be used.  Note that modifications already made to open pages
+will not be undone.
 </api>
 
-<api name="add">
-@function
-Register a PageMod, activating it for the pages to which it applies.
-@param PageMod {PageMod,Object}
-The PageMod to add, or options for a PageMod to create and then add.
-</api>
-
-<api name="remove">
-@function
-Unregister a PageMod, deactivating it.
-@param PageMod {PageMod} the PageMod to remove.
 </api>
 
