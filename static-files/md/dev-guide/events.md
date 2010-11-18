@@ -68,13 +68,13 @@ constructor. The listener loads the Google home page:
 
     var widgets = require("widget");
 
-    widgets.add(widgets.Widget({
+    widgets.Widget({
       label: "Widget with an image and a click handler",
       image: "http://www.google.com/favicon.ico",
       onClick: function(emitter, event) {
         event.view.content.location = "http://www.google.com";
       }
-    }));
+    });
 
 This is exactly equivalent to constructing the widget and then calling the
 widget's `on()` method:
@@ -90,8 +90,6 @@ widget's `on()` method:
       event.view.content.location = "http://www.google.com";
     });
 
-    widgets.add(widget);
-
 ## Removing Event Listeners ##
 
 Event listeners can be removed by calling `removeListener(type, listener)`,
@@ -100,27 +98,27 @@ supplying the type of event and the listener to remove.
 The listener must have been previously been added using one of the methods
 described above.
 
-<span class="aside">
-Will use a different example, maybe tabs, when they are updated to use on()
-</span>
-In the following add-on, we add a listener to private-browsing's `start`
-event, then enter, exit and re-enter private browsing. In the listener function
-we log the event and then remove the listener, so the second time we enter
-private browsing the event does not get logged.
+In the following add-on, we add two listeners to private-browsing's `start`
+event, enter and exit private browsing, then remove the first listener and
+enter private browsing again.
 
     var pb = require("private-browsing");
 
-    function listener() {
-      console.log("Started private browsing");
-      pb.removeListener("start", listener);
-      console.log("Removed listener");
+    function listener1() {
+      console.log("Listener 1");
+      pb.removeListener("start", listener1);
     }
 
-    pb.on("start", listener);
+    function listener2() {
+      console.log("Listener 2");
+    }
 
-    pb.active=true;
-    pb.active=false;
-    pb.active=true;
+    pb.on("start", listener1);
+    pb.on("start", listener2);
+
+    pb.active = true;
+    pb.active = false;
+    pb.active = true;
 
 Removing listeners is optional since they will be removed in any case
 when the application or add-on is unloaded.
@@ -128,7 +126,7 @@ when the application or add-on is unloaded.
 ## Message Events ##
 
 One particular type of event which is fundamental to the Add-on SDK is the
-message event. In the SDK add-ons which interact with web content are
+`message` event. In the SDK add-ons which interact with web content are
 structured in two parts:
 
 * the main add-on code that runs in the add-on process
@@ -136,7 +134,7 @@ structured in two parts:
 
 These two parts communicate using a message-passing mechanism in which the
 message recipient can emit `message` and `error` events. Thus an add-on can
-receive messages from a content script by adding a `message` listener to the
+receive messages from a content script by supplying a `message` listener to the
 event emitter's `on()` method. Most, but not all, of the messaging APIs use
 the [`worker`](#modules/jetpack-code/content/worker) module to implement
 message events.
@@ -146,8 +144,8 @@ mechanism to execute scripts in the context of selected web pages. These
 scripts are content scripts.
 
 When a content script is attached to a page the page mod emits the
-`attach` event, which will supply a worker object to any event
-listener. If you add a listener to this worker object, then you will receive
+`attach` event, which will supply a worker object to registered
+listeners. If you add a listener to this worker object, then you will receive
 messages from the associated content script.
 
 The following add-on creates a page mod object which will execute the script
@@ -165,7 +163,7 @@ console.
 
     var pageMod = require("page-mod");
 
-    var myPageMod = pageMod.add({
+    pageMod.PageMod({
       include: ["*"],
       contentScriptWhen: "ready",
       contentScript: "postMessage(window.location.toString());",
