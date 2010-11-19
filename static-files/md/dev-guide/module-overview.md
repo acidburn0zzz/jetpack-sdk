@@ -3,10 +3,10 @@ modules and that they are collected into CommonJS packages. There are two main
 packages:
 
 * the ***[addon-kit](#package/addon-kit)*** package provides high-level APIs
-for add-on developers. Most of the needs of most developers should be served
-by the modules found here, and the bulk of this guide is dedicated to modules
-from this package. Modules in this packages also don't require any special
-privileges to run.
+for add-on developers. Most of the needs of most add-on developers should be
+served by the modules found here, and the bulk of this guide is dedicated to
+modules from this package. Modules in this packages also don't require any
+special privileges to run.
 
 * the ***[jetpack-core](#package/jetpack-core)*** package provides low-level
 APIs. Most of the modules it contains are intended for people writing certain
@@ -20,9 +20,10 @@ In this section we will first summarize some of the common idioms used by SDK
 modules, then look at how you can use the modules to build various parts of
 your add-on.
 
-## Add-on SDK idioms ##
+## Add-on SDK Idioms ##
 
-### Naming conventions ###
+### Naming Conventions ###
+
 SDK module names are all lower case. Where a module name contains more than
 one word, the words are separated using dashes:
 
@@ -36,6 +37,7 @@ upper case initial letter:
     AddOnObject
 
 ### Constructors ###
+
 Many SDK modules export constructors that create object instances for use
 by add-on code.
 
@@ -52,7 +54,9 @@ constructed using the following pattern:
     });
 
 ### Events ###
-The SDK supports event-driven programming through its Event Emitter framework.
+
+The SDK supports event-driven programming through its [`Event
+Emitter`](#module/jetpack-core/events) framework.
 Objects which integrate Event Emitter functions can emit events such as pages
 loading, windows opening and user interactions.
 
@@ -71,10 +75,11 @@ function and removed using the `removeListener(type, listener)` function:
 For a more comprehensive account of events see the Developer Guide's
 [Events](#guide/events) section.
 
-### Content scripting ###
+### Content Scripting ###
+
 Several modules need to interact directly with web content, either web content
-they host themselves (such as the [panel](#modules/panel) module) or web
-content hosted by the browser (such as the [page-mode](#modules/page-mod)).
+they host themselves (such as the [`panel`](#modules/panel) module) or web
+content hosted by the browser (such as the [`page-mode`](#modules/page-mod)).
 
 These modules follow a common pattern in which the code
 that actually interacts with the content is executed as a separate script
@@ -94,9 +99,10 @@ content scripts should be run and when:
 For a more comprehensive account of content scripts see the Developer Guide's
 [Content Scripting](#guide/content-scripting) section.
 
-## SDK module functionality ##
+## SDK Module Functionality ##
 
 ### Globals ###
+
 For full information on the globals available to Add-on code, see
 the [Globals](#guide/globals) appendix.
 
@@ -117,12 +123,13 @@ implementation):
         console.log("A message");
 
 ### Building a UI ###
+
 The SDK provides four modules to help the add-on developer create a UI:
 
 * ***[widget](#module/addon-kit/widget)***: a widget is permanently displayed
 in a dedicated bar in the browser chrome. It may contain HTML content or an
 image, and can notify the add-on code when the user interacts with it, for
-example by clicking it. 
+example by clicking it.
 A widget is a good choice for displaying content that
 should always be visible to the user, or to provide a way to access other parts
 of an add-on's user interface: for example a widget might open a settings
@@ -143,7 +150,8 @@ provides a mechanism to add items and submenus to the browser's context menu.
 * ***[notifications](#module/addon-kit/notifications)***: this module enables
 an add-on to display transient messages to the user.
 
-###Interacting with the Web###
+### Interacting With the Web ###
+
 * ***[page-mod](#module/addon-kit/page-mod)***: this module enables you to
 execute content scripts in the context of selected web pages, effectively
 rewriting the pages on the fly.
@@ -155,30 +163,35 @@ the user.
 * ***[request](#module/addon-kit/request)***: the request module enables you
 to make HTTP GET and POST requests from your add-on.
 
-###Interacting with the system###
-* ***[clipboard](#module/addon-kit/clipboard)***: get and set the contents of
-the system clipboard
+### Interacting With the System ###
 
-* ***[private-browsing](#module/addon-kit/private-browsing)***: get notified
-about transitioning into/out of private browsing mode, and also start or stop
-private browsing mode. You should use this module if your add-on records
-anything which should not be recorded in private browsing mode, such as the
-Web sites visited by the user.
+* ***[clipboard](#module/addon-kit/clipboard)***: enables you to get and set
+the contents of the system clipboard
+
+* ***[private-browsing](#module/addon-kit/private-browsing)***: enables you
+to start and stop private browsing mode, and be notified when the browser
+transitions in and out of private browsing mode. You should use this module
+if your add-on records anything which should not be recorded in private
+browsing mode.
 
 * ***[selection](#module/addon-kit/selection)***: get and set any selection
 in the active page, either as text or HTML.
 
-* ***[tabs](#module/addon-kit/tabs)***: get the list of open tabs,
-the current active tab, and get notified of changes to these. Retrieve each tab
-and get certain information about it. Open new tabs. Note that you can't access
-the content hosted by the tab using this API.
+* ***[tabs](#module/addon-kit/tabs)***: this module enables you to interact
+with the currently open tabs and to open new tabs. You can get the list of open
+tabs and the current active tab, and get notified of changes to these. You can
+Retrieve each tab and get certain information about it. Note that you can't
+access the content hosted by the tab using this API.
 
-* ***[windows](#module/addon-kit/windows)***: get the list of open windows,
-the current active window, and get notified of changes to these. Retrieve each
-window and get certain information about it. Open new windows. Again: you
-can't access the content hosted by the window using this API.
+* ***[windows](#module/addon-kit/windows)***: this module enables you to
+interact with currently open windows and to open new windows. As for the `tabs`
+module, you can get the list of open windows, the current active window, and
+get notified of changes to these. You can retrieve each window and get certain
+information about it. Again: you can't access the content hosted by the window
+using this API.
 
-###Utilities
+### Utilities ###
+
 <span class="aside">
 This module needs much better documentation.
 </span>

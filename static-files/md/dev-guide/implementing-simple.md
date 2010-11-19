@@ -9,8 +9,9 @@ root: once you have called `source bin/activate` from the SDK root, `cfx` will
 remember where the SDK is, and you will be able to reference SDK packages from
 any directory.
 
-## Packages, modules, and add-ons ##
-Before we start it's worth taking s short detour into CommonJS, as this is the
+## Packages, Modules, and Add-ons ##
+
+Before we start it's worth taking a short detour into CommonJS, as this is the
 underlying infrastructure for both modules and add-ons.
 
 The [CommonJS group](http://wiki.commonjs.org/wiki/CommonJS) defines
@@ -43,7 +44,8 @@ follows:
 
 ![CommonJS translator](media/commonjs-translator.jpg)
 
-## Package specification ##
+## Package Specification ##
+
 Since an add-on is a CommonJS package, the first file we will create is the
 package specification file.
 
@@ -60,6 +62,7 @@ The "dependencies" line asserts that this add-on will be using modules from
 the addon-kit package. 
 
 ## Adding Your Code ##
+
 According to the CommonJS package definition, all JavaScript modules are kept
 in a directory named "lib" under the top level directory.
 
@@ -118,19 +121,21 @@ and in that directory add a file called "main.js" with the following content:
 The first three lines are used to import three SDK modules from the
 addon-kit package:
 
-* **`context-menu`** enables add-ons to add new items to the context menu
-* **`request`** enables add-ons to make network requests
-* **`selection`** gives add-ons access to selected text in the active browser
-window
+* ***[`context-menu`](#module/addon-kit/context-menu)*** enables add-ons to
+add new items to the context menu
+* ***[`request`](#module/addon-kit/request)*** enables add-ons to make
+network requests
+* ***[`selection`](#module/addon-kit/selection)*** gives add-ons access to
+selected text in the active browser window
 
 Next, this code constructs a context menu item. It supplies:
 
-* the name of the item to display
-* a context in which the item should be displayed (in this case, whenever some
-text on the page is selected)
+* the name of the item to display: "Translate Selection"
+* a context in which the item should be displayed: `SelectionContext()`,
+meaning, whenever some content on the page is selected
 * a script to execute when the item is clicked: this script sends the selected
-text and document URL to the function assigned to the onMessage parameter
-* a value for the onMessage parameter: this function will now be called with
+text and document URL to the function assigned to the `onMessage` property
+* a value for the `onMessage` property: this function will now be called with
 the selected text and document URL, whenever the user clicks the menu. It uses
 Google's AJAX-based translation service to translate the selection to English
 and sets the selection to the translated text.
@@ -138,8 +143,9 @@ and sets the selection to the translated text.
 Finally the code adds the new menu item to the context menu.
 
 ## Running It ##
+
 To run your program, navigate to the root of your package directory
-in your shell and run:
+in your shell and type:
 
     cfx run
 
@@ -152,6 +158,7 @@ Run it again, and it will run an instance of Firefox (or your default
 application) with your add-on installed.
 
 ## Packaging It ##
+
 To install an add-on it must be packaged as an
 [XPI file](https://developer.mozilla.org/en/XPI). The SDK
 simplifies the packaging process by generating this file for you.
@@ -165,19 +172,20 @@ The `translator.xpi` file can be found in the directory in which you ran the
 command.
 
 ###The Program ID###
+
 The ID that `cfx` generated the first time you executed `cfx run` is called the
 **Program ID** and it is important. It is a unique identifier for your add-on
 and is used for a variety of purposes. For example: mozilla.addons.org uses it
 to distinguish between new add-ons and updates to existing add-ons, and the
-[simple-storage](#module/addon-kit/simple-storage) module uses it to figure out
-which stored data belongs to which add-on.
+[`simple-storage`](#module/addon-kit/simple-storage) module uses it to figure
+out which stored data belongs to which add-on.
 
 <span class="aside">
 where is it on Windows?
 </span>
 
 The program ID is actually the public part of a cryptographic key pair. When
-cfx generates a program ID it actually generates a pair of related keys: one
+`cfx` generates a program ID it actually generates a pair of related keys: one
 half (the public key) is embedded in package.json as the program ID while the
 other half (the private key) gets stored in a file in ~/.jetpack/keys.
 
@@ -201,11 +209,12 @@ without also giving them the ability to create forged upgrades for your add-on.
 
 If you start your add-on work by copying somebody else's source code, you'll
 need to remove their Program ID from the package.json file before you can build
-your own XPIs. Again, cfx xpi will remind you of this, and your options, when
+your own XPIs. Again, `cfx xpi` will remind you of this, and your options, when
 you attempt to build an XPI from a package.json that references a private key
 that you don't have in ~/.jetpack/keys/.
 
 ## Checking the Package ##
+
 If you'd like to test the packaged program before distributing it,
 you can run it from the shell with:
 
@@ -215,12 +224,13 @@ Or you can install it from the Firefox Add-ons Manager itself, as
 you would when testing a traditional add-on.
 
 ## Distributing It ##
+
 To distribute your program, you can upload it to
 [Addons.mozilla.org](http://addons.mozilla.org).
 Eventually, this step may be automated via the SDK, streamlining the
 distribution process further.
 
-## Next: Programming with the Add-on SDK ##
+## Next: Programming With the Add-on SDK ##
 The next few sections explore programming with the Add-on SDK, starting
 with an [overview of the SDK modules](#guide/module-overview).
 
