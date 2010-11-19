@@ -220,9 +220,9 @@ To distribute your program, you can upload it to
 Eventually, this step may be automated via the SDK, streamlining the
 distribution process further.
 
-## Next: Jetpack modules ##
-The next section provides an [overview of the SDK 
-modules](#guide/module-overview).
+## Next: Programming with the Add-on SDK ##
+The next few sections explore programming with the Add-on SDK, starting
+with an [overview of the SDK modules](#guide/module-overview).
 
   [Packaging]: #guide/packaging
   [troubleshooting]: #guide/troubleshooting
