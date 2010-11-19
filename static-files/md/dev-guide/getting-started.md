@@ -1,5 +1,24 @@
 Welcome to the Add-on SDK.
 
+The Add-on SDK is designed to make it easier to develop, test, package and
+distribute Firefox and Thunderbird add-ons. It provides:
+
+* a set of tools for creating, running, testing, and packaging add-ons. These
+tools are made available through the `cfx` command-line interface.
+
+* a set of modules providing a consistent set of high-level JavaScript APIs
+which add-on developers can use to build user interfaces, interact with the
+browser and with the Web.
+
+This guide is intended to get you started using the SDK to develop add-ons.
+
+After installing the SDK we will go through developing, running and packaging
+a simple add-on, then go over the most commonly used APIs and some of the
+programming techniques they use. Then we will put these together to show
+how to build a more sophisticated add-on. Finally we will look at how you can
+use the SDK not just to develop add-ons, but to develop your own modules that
+extend the functionality of the SDK itself.
+
 Prerequisites
 -------------
 
@@ -84,6 +103,5 @@ This is the `cfx` command-line program.  It's your primary interface to the
 Add-on SDK.  You use it to launch Firefox and test your add-on, package your
 add-on for distribution, view documentation, and run unit tests.
 
-Once you're ready, move on to the next section: [Packaging].
-
-  [Packaging]: #guide/packaging
+Once you're ready, move on to the next section: [Implementing 
+a simple add-on](#guide/implementing-simple).

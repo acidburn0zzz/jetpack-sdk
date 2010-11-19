@@ -191,7 +191,7 @@ code em, code strong {
 }
 
 .hide {
-    font-size: 1.0em;
+    font-size: 0.8em;
     padding: 0.05em 0.4em;
     visibility: hidden;
 }
