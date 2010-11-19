@@ -178,6 +178,14 @@ code em, code strong {
     visibility: visible;
 }
 
+#tutorial-header:hover #hide-tutorial {
+    visibility: visible;
+}
+
+#programming-header:hover #hide-programming {
+    visibility: visible;
+}
+
 #internals-guide-header:hover #hide-internals-guide {
     visibility: visible;
 }
