@@ -178,13 +178,25 @@ code em, code strong {
     visibility: visible;
 }
 
-#hide-dev-guide-toc {
-    font-size: 0.6em;
+#internals-guide-header:hover #hide-internals-guide {
+    visibility: visible;
+}
+
+#reference-header:hover #hide-reference {
+    visibility: visible;
+}
+
+#appendices-header:hover #hide-appendices {
+    visibility: visible;
+}
+
+.hide {
+    font-size: 1.0em;
     padding: 0.05em 0.4em;
     visibility: hidden;
 }
 
-#hide-dev-guide-toc:hover {
+.hide:hover {
     -moz-border-radius: 2em;
     background: #555;
     color: #fff;

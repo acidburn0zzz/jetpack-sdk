@@ -395,25 +395,21 @@ function startApp(jQuery, window) {
     } else {
       window.setInterval(checkHash, CHECK_HASH_DELAY);
     }
-
     
-    var internalsGuide = $("#internals-guide");
-    internalsGuide.hide();
+    $("#internals-guide").hide();
+    $("#reference").hide();
+    $("#appendices").hide();
 
-    $("#more-guides").one('click', function() {
-      $(this).hide();
-      internalsGuide.slideDown();
-    });
-
-    $('#hide-dev-guide-toc').click(function() {
+    $('.hide').click(function() {
       if ($(this).text() == 'hide') {
         $(this).text('show');
-        $('#dev-guide-toc').hide('fast');
+        $(this).parent().next().hide('fast');
       } else {
         $(this).text('hide');
-        $('#dev-guide-toc').show('fast');
+        $(this).parent().next().show('fast');
       }
     });
+
   }
 
   function showGuideDetail(name) {
