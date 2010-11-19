@@ -210,4 +210,4 @@ script. Note that this module is in the
 [jetpack-core](#package/jetpack-core) package.
 
 Next we will take a more detailed look at one of the basic idioms in the SDK:
-the [Event Emitter framework](#guide/working-with-events).
+the [Event Emitter framework](#guide/events).
