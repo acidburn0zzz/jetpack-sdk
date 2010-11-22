@@ -162,7 +162,7 @@ installation.
 
 You can do this by pressing the Ctrl+O key combination from within Firefox.
 This will bring up a file selection dialog: navigate to the
-"my-first-package.xpi" file, open it and follow the prompts to install the
+my-first-package.xpi file, open it and follow the prompts to install the
 add-on.
 
 Alternatively, open the Firefox Add-ons Manager from within Firefox, either
