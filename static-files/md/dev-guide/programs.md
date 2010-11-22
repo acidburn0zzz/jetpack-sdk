@@ -126,7 +126,7 @@ with your program installed.
 ### Trying It Out ###
 
 Once `cfx run` has launched Firefox you can try out the new add-on. Load a
-page that contains some text that is not in English, for example:
+page containing some text that is not in English. For example:
 [http://www.mozilla-europe.org/fr/](http://www.mozilla-europe.org/fr/).
 
 Select some text on that page and right-click to activate the context menu.
