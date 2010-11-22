@@ -16,6 +16,7 @@ import traceback
 from cuddlefish import packaging
 from cuddlefish import Bunch
 from cuddlefish import apiparser
+from cuddlefish import renderapi
 import simplejson as json
 
 try:
@@ -134,6 +135,18 @@ class Server(object):
                                 [('Content-type', "text/plain")])
             return [str(e)]
 
+    def _respond_with_apidoc_div(self, path):
+        docs_md = open(path, 'r').read()
+        try:
+            parsed = renderapi.render(path)
+            self.start_response('200 OK',
+                                [('Content-type', "text/plain")])
+            return parsed
+        except renderapi.ParseError, e:
+            self.start_response('500 Parse Error',
+                                [('Content-type', "text/plain")])
+            return [str(e)]
+
     def _get_files_in_dir(self, path):
         data = {}
         files = os.listdir(path)
@@ -193,17 +206,24 @@ class Server(object):
             else:
                 dir_path = os.path.join(root_dir, *parts[1:])
                 dir_path = os.path.normpath(dir_path)
-                parse_apidoc = False
+                parse_json = False
+                parse_div = False
                 if dir_path.endswith(".md.json"):
-                    parse_apidoc = True
+                    parse_json = True
                     dir_path = dir_path[:-len(".json")]
+                if dir_path.endswith(".md.div"):
+                    parse_div = True
+                    dir_path = dir_path[:-len(".div")]
                 if not (dir_path.startswith(root_dir) and
                         os.path.exists(dir_path) and
                         os.path.isfile(dir_path)):
                     return self._respond('404 Not Found')
                 else:
-                    if parse_apidoc:
+                    if parse_json:
                         return self._respond_with_apidoc_json(dir_path)
+                    elif parse_div:
+                         return '{ "title": "One", "key": "1" }'
+                     #   return self._respond_with_apidoc_div(dir_path)
                     else:
                         return self._respond_with_file(dir_path)
 
@@ -278,7 +298,9 @@ class Server(object):
         if parts[0] == API_PATH:
             return self._respond_with_api(parts[1:])
         elif parts[0] == 'packages':
-            return self._respond_with_pkg_file(parts[1:])
+            response = self._respond_with_pkg_file(parts[1:])
+            print response
+            return response
         else:
             fullpath = os.path.join(self.root, *parts)
             fullpath = os.path.normpath(fullpath)
