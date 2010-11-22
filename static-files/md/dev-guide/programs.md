@@ -169,7 +169,8 @@ Alternatively, open the Firefox Add-ons Manager from within Firefox, either
 from the Add-ons item on the Tools menu, or by typing "about:addons" into the
 address bar. In the Firefox Add-ons Manager there is a gears icon next to the
 search bar. Click the icon and select "Install Add-on From File..." from the
-menu that appears.
+menu that appears. Again, this will bring up a file selection dialog which you
+can use to find and open the XPI file.
 
 Once you have installed the add-on you can test it in exactly the same way as
 in the "Trying It Out" section above.
