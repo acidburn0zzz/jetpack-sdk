@@ -19,16 +19,19 @@ def indent(text_in):
     return text_out
 
 def div_wrap_id(text, classname, id):
-    div_tag = "\n<div id='" + id + "' class='" + classname + "'>\n"
-    return div_tag + text + "\n</div>\n"
+    div_tag = "<div id='" + id + "' class='" + classname + "'>"
+    return div_tag + text + "</div>"
 
 def div_wrap(text, classname):
-    div_tag = "\n<div class='" + classname + "'>\n"
-    return div_tag + text + "\n</div>\n"
+    div_tag = "<div class='" + classname + "'>"
+    return div_tag + text + "</div>"
 
 def span_wrap(text, classname):
     span_tag = "<span class='" + classname + "'>"
     return span_tag + text + "</span>"
+
+def renderDescription(text):
+    return markdown2.markdown(text)[:-1]
 
 class API_Doc:
     def __init__(self, json):
@@ -38,7 +41,7 @@ class API_Doc:
     def render(self):
         text = span_wrap(self._renderName(), 'api-name')
         text += self._renderSubcomponents()
-        text += markdown2.markdown(self.description)
+        text += renderDescription(text)
         return div_wrap(text, 'api_component')
 
     def _renderName(self):
@@ -122,7 +125,7 @@ class Function_Doc(API_Doc):
         if (not self.returns):
             return ""
         text = "Returns: " + span_wrap(self.returns['type'], "property_type")
-        text += markdown2.markdown(self.returns['description'])
+        text += renderDescription(self.returns['description'])
         return div_wrap(text, "returns")
 
 class Parameter_Doc(API_Doc):
@@ -170,7 +173,7 @@ def renderAPIComponentGroup(component_group, title):
 def renderDescriptions(descriptions_md):
     text = ""
     for description_md in descriptions_md:
-        text += markdown2.markdown(description_md)
+        text += renderDescription(description_md)
     return div_wrap(text, "module_description")
 
 def renderAPIReference(classes, functions, properties):

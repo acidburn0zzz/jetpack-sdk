@@ -141,7 +141,13 @@ class Server(object):
             parsed = renderapi.render(path)
             self.start_response('200 OK',
                                 [('Content-type', "text/plain")])
-            return parsed
+            print parsed
+ #           return parsed
+            nonsense = "<div id='daemonic_module_api_docs' class='module_api_docs'><div class='module_description'><p>The <code>localization</code> module provides simple localization functionality.</p></div></div>"
+            if parsed != nonsense:
+                raise Exception("srsly?")
+            print nonsense
+            return nonsense
         except renderapi.ParseError, e:
             self.start_response('500 Parse Error',
                                 [('Content-type', "text/plain")])
@@ -222,8 +228,7 @@ class Server(object):
                     if parse_json:
                         return self._respond_with_apidoc_json(dir_path)
                     elif parse_div:
-                         return '{ "title": "One", "key": "1" }'
-                     #   return self._respond_with_apidoc_div(dir_path)
+                        return self._respond_with_apidoc_div(dir_path)
                     else:
                         return self._respond_with_file(dir_path)
 
@@ -299,7 +304,6 @@ class Server(object):
             return self._respond_with_api(parts[1:])
         elif parts[0] == 'packages':
             response = self._respond_with_pkg_file(parts[1:])
-            print response
             return response
         else:
             fullpath = os.path.join(self.root, *parts)

@@ -136,7 +136,8 @@ function startApp(jQuery, window) {
         dataType: "text",
         success: function(div_text) {
           try {
-            $(where).text(div_text)
+            $(where).empty();
+            $(markdownToHtml(div_text)).appendTo(where)
           } catch (e) {
             $(where).text("Oops, API docs renderer failed: " + e);
           }
