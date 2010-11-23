@@ -1,6 +1,8 @@
 import sys, os
-import markdown2
+import markdown
 import apiparser
+
+markdowner = markdown.Markdown()
 
 def indent(text_in):
     text_out = ""
@@ -31,7 +33,7 @@ def span_wrap(text, classname):
     return span_tag + text + "</span>"
 
 def renderDescription(text):
-    return markdown2.markdown(text)[:-1]
+    return markdowner.convert(text)[:-1]
 
 class API_Doc:
     def __init__(self, json):
@@ -214,7 +216,9 @@ def render(docs_md):
     docs_text = open(docs_md).read()
     hunks = apiparser.parse_hunks(docs_text)
     root, ext = os.path.splitext(os.path.basename(sys.argv[1]))
-    return indent(div(hunks, root))
+    div_text =  indent(div(hunks, root))
+#    md =  div_wrap(markdowner.convert("the ***word*** is: `try me`"), "try-me")
+    return div_text.encode("utf8")
 
 if __name__ == "__main__":
     if (len(sys.argv) == 0):

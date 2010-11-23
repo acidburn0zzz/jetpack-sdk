@@ -133,7 +133,7 @@ function startApp(jQuery, window) {
     if (pkgHasFile(pkg, source_filename)) {
       var options = {
         url: pkgFileUrl(pkg, div_filename),
-        dataType: "text",
+   //     dataType: "html",
         success: function(div_text) {
           try {
             $(where).empty();
