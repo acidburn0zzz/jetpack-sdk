@@ -130,7 +130,7 @@ page containing some text that is not in English. For example:
 [http://www.mozilla-europe.org/fr/](http://www.mozilla-europe.org/fr/).
 
 Select some text on that page and right-click to activate the context menu.
-You should see a new item labelled "Translate Selection". Select that item and
+You should see a new item labeled "Translate Selection". Select that item and
 the text you selected should be replaced with its English translation.
 
 ### Packaging It ###
@@ -160,8 +160,8 @@ the command.
 Test that the package installs correctly by adding it to your own Firefox
 installation.
 
-You can do this by pressing the Ctrl+O key combination from within Firefox.
-This will bring up a file selection dialog: navigate to the
+You can do this by pressing the Ctrl+O key combination (Cmd+O on Mac) from
+within Firefox. This will bring up a file selection dialog: navigate to the
 my-first-package.xpi file, open it and follow the prompts to install the
 add-on.
 
