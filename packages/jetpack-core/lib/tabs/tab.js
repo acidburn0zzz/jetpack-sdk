@@ -81,7 +81,7 @@ const TabTrait = Trait.compose(EventEmitter, {
 
     this.pinned = options.pinned;
     if (!options.inBackground)
-        this.focus();
+        this.activate();
     // Since we will have to identify tabs by a DOM elements facade function
     // is used as constructor that collects all the instances and makes sure
     // that they more then one wrapper is not created per tab.
@@ -145,8 +145,8 @@ const TabTrait = Trait.compose(EventEmitter, {
    * Changing this property will loads page under under the specified location.
    * @type {String}
    */
-  get location() String(this._contentDocument.location),
-  set location(value) this._changeLocation(String(value)),
+  get url() String(this._contentDocument.location),
+  set url(value) this._changeLocation(String(value)),
   // "TabOpen" event is fired when it's still "about:blank" is loaded in the
   // changing `location` property of the `contentDocument` has no effect since
   // seems to be either ignored or overridden by internal listener, there for
@@ -156,7 +156,7 @@ const TabTrait = Trait.compose(EventEmitter, {
    * URI of the favicon for the page currently loaded in this tab.
    * @type {String}
    */
-  get favicon() getFaviconURIForLocation(String(this.location)),
+  get favicon() getFaviconURIForLocation(this.url),
   /**
    * The CSS style for the tab
    */
@@ -191,14 +191,18 @@ const TabTrait = Trait.compose(EventEmitter, {
    * will be the case. Besides this function is called from a constructor where
    * we would like to return instance before firing a 'TabActivated' event.
    */
-  focus: Enqueued(function focus() {
+  activate: Enqueued(function activate() {
     if (this._window) // Ignore if window is closed by the time this is invoked.
       this._window.gBrowser.selectedTab = this._tab;
   }),
   /**
    * Close the tab
    */
-  close: function close() this._window.gBrowser.removeTab(this._tab)
+  close: function close(callback) {
+    if (callback)
+      this.on(EVENTS.close.name, callback);
+    this._window.gBrowser.removeTab(this._tab);
+  }
 });
 
 function Tab(options) {
