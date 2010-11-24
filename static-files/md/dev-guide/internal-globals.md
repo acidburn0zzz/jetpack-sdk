@@ -1,17 +1,22 @@
 
-Globals in this section are subject to change in the future and/or likely to be
-of interest to SDK module developers, rather than add-on developers.
+Globals in this section are subject to change in the future and/or are likely
+to be of interest to SDK module developers, rather than add-on developers.
 
-<code>**\_\_url\_\_**</code>
+## Components ##
+
+To access the infamous and powerful `Components` object, see the
+[Chrome Authority](#guide/chrome) documentation.
+
+## \_\_url\_\_ ##
 
 The `__url__` global is a string identifying the URL from which the code has
 been retrieved.  If the code has no identifiable URL, this value may be `null`.
 
+## packaging ##
+
 <span class="aside">
 For more information on packaging, see the [Package Specification] appendix.
 </span>
-
-<code>**packaging**</code>
 
 The `packaging` global contains methods and metadata related to
 the packages available in the current environment.
@@ -34,7 +39,7 @@ to `data/mydata.dat`:
 If the calling package has no `data` directory, an exception is
 thrown.
 
-<code>**memory**</code>
+## memory ##
 
 `memory` is an object that exposes functionality to track
 objects of interest and help diagnose and prevent memory leaks.
