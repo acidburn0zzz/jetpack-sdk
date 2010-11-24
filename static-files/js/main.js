@@ -395,16 +395,22 @@ function startApp(jQuery, window) {
     } else {
       window.setInterval(checkHash, CHECK_HASH_DELAY);
     }
-
-    $('#hide-dev-guide-toc').click(function() {
+/*    
+    $("#internals").hide();
+    $("#experimental").hide();
+    $("#appendices").hide();
+    $("#reference").hide();
+*/
+    $('.hide').click(function() {
       if ($(this).text() == 'hide') {
         $(this).text('show');
-        $('#dev-guide-toc').hide('fast');
+        $(this).parent().next().hide('fast');
       } else {
         $(this).text('hide');
-        $('#dev-guide-toc').show('fast');
+        $(this).parent().next().show('fast');
       }
     });
+
   }
 
   function showGuideDetail(name) {
