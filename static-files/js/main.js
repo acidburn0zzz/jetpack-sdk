@@ -29,6 +29,7 @@ function startApp(jQuery, window) {
       var pkgName = parts[1];
       var moduleName = parts.slice(2).join("/");
       showModuleDetail(pkgName, moduleName);
+      window.alert('m');
       break;
     case "guide":
       showGuideDetail(parts[1]);
@@ -133,11 +134,11 @@ function startApp(jQuery, window) {
     if (pkgHasFile(pkg, source_filename)) {
       var options = {
         url: pkgFileUrl(pkg, div_filename),
-   //     dataType: "html",
+        dataType: "html",
         success: function(div_text) {
           try {
             $(where).empty();
-            $(markdownToHtml(div_text)).appendTo(where)
+            $(div_text).appendTo(where)
           } catch (e) {
             $(where).text("Oops, API docs renderer failed: " + e);
           }

@@ -1,6 +1,7 @@
 import sys, os
 import markdown
 import apiparser
+import time
 
 markdowner = markdown.Markdown()
 
@@ -21,19 +22,19 @@ def indent(text_in):
     return text_out
 
 def div_wrap_id(text, classname, id):
-    div_tag = "<div id='" + id + "' class='" + classname + "'>"
-    return div_tag + text + "</div>"
+    div_tag = "\n<div id='" + id + "' class='" + classname + "'>\n"
+    return div_tag + text + "\n</div>\n"
 
 def div_wrap(text, classname):
-    div_tag = "<div class='" + classname + "'>"
-    return div_tag + text + "</div>"
+    div_tag = "\n<div class='" + classname + "'>\n"
+    return div_tag + text + "\n</div>\n"
 
 def span_wrap(text, classname):
     span_tag = "<span class='" + classname + "'>"
     return span_tag + text + "</span>"
 
 def renderDescription(text):
-    return markdowner.convert(text)[:-1]
+    return markdowner.convert(text)
 
 class API_Doc:
     def __init__(self, json):
@@ -43,7 +44,7 @@ class API_Doc:
     def render(self):
         text = span_wrap(self._renderName(), 'api-name')
         text += self._renderSubcomponents()
-        text += renderDescription(text)
+        text += renderDescription(self.description)
         return div_wrap(text, 'api_component')
 
     def _renderName(self):
@@ -179,7 +180,7 @@ def renderDescriptions(descriptions_md):
     return div_wrap(text, "module_description")
 
 def renderAPIReference(classes, functions, properties):
-    text = div_wrap("API Reference", "api_header1")
+    text = div_wrap("API Reference", "api_header")
     if (len(classes) > 0):
         text += renderAPIComponentGroup(classes, "Classes")
     if (len(functions) > 0):
@@ -206,7 +207,6 @@ def div(hunks, module_name):
                 functions.append(Function_Doc(entity))
             elif entity['type'] == 'property':
                 properties.append(Property_Doc(entity))
-
     text = renderDescriptions(descriptions_md)
     if (api_exists):
         text += renderAPIReference(classes, functions, properties)
@@ -216,13 +216,12 @@ def render(docs_md):
     docs_text = open(docs_md).read()
     hunks = apiparser.parse_hunks(docs_text)
     root, ext = os.path.splitext(os.path.basename(sys.argv[1]))
-    div_text =  indent(div(hunks, root))
-#    md =  div_wrap(markdowner.convert("the ***word*** is: `try me`"), "try-me")
+    div_text = div(hunks, root)
     return div_text.encode("utf8")
 
 if __name__ == "__main__":
     if (len(sys.argv) == 0):
         print "Supply the name of a docs file to parse"
     else:    
-        print(render(sys.argv[1]))
+        print indent(render(sys.argv[1]))
 

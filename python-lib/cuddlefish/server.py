@@ -141,12 +141,6 @@ class Server(object):
             parsed = renderapi.render(path)
             self.start_response('200 OK',
                                 [('Content-type', "text/plain")])
-            print parsed
- #           return parsed
-            nonsense = "<div id='daemonic_module_api_docs' class='module_api_docs'><div class='module_description'><p>The <code>localization</code> module provides simple localization functionality.</p></div></div>"
- #           if parsed != nonsense:
- #               raise Exception("srsly?")
-            print nonsense
             return parsed
         except renderapi.ParseError, e:
             self.start_response('500 Parse Error',
