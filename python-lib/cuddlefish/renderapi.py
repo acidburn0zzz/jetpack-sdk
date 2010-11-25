@@ -215,7 +215,9 @@ def div(hunks, module_name):
 def render(docs_md):
     docs_text = open(docs_md).read()
     hunks = apiparser.parse_hunks(docs_text)
-    root, ext = os.path.splitext(os.path.basename(sys.argv[1]))
+    print docs_md
+    root, ext = os.path.splitext(os.path.basename(docs_md))
+    print root
     div_text = div(hunks, root)
     return div_text.encode("utf8")
 
