@@ -42,7 +42,7 @@ class API_Doc:
         self.description = json.get('description', "")
 
     def render(self):
-        text = span_wrap(self._renderName(), 'api-name')
+        text = div_wrap(self._renderName(), 'api-name')
         text += self._renderSubcomponents()
         text += renderDescription(self.description)
         return div_wrap(text, 'api_component')
@@ -127,7 +127,7 @@ class Function_Doc(API_Doc):
     def _renderReturns(self):
         if (not self.returns):
             return ""
-        text = "Returns: " + span_wrap(self.returns['type'], "property_type")
+        text = "Returns: " + div_wrap(self.returns['type'], "property_type")
         text += renderDescription(self.returns['description'])
         return div_wrap(text, "returns")
 
@@ -168,7 +168,7 @@ class Property_Doc(API_Doc):
         return self.object_contents.render()
 
 def renderAPIComponentGroup(component_group, title):
-    text = span_wrap(title, "api-header")
+    text = div_wrap(title, "api-header")
     for component_doc in component_group:
         text += component_doc.render()
     return div_wrap(text, "api_component_group")
