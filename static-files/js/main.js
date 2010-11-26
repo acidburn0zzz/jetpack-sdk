@@ -79,24 +79,6 @@ function startApp(jQuery, window) {
       });
   }
 
-  function doRender(where, hunks) {
-    function render_hunk (hunk) {
-      if (hunk[0] == "markdown") {
-        var nh = $("<span>" + markdownToHtml(hunk[1]) + "</span>");
-        nh.appendTo(where);
-      } else if (hunk[0] == "api-json") {
-        var $el = $("<div class='api'/>").appendTo(where);
-        renderDocumentationJSON(hunk[1], $el);
-      }
-    }
-    hunks.forEach(render_hunk);
-  }
-
-  function renderStructuredDocs(where, div_text) {
-    $(where).empty();
-    $(div_text).appendTo($where)
-  }
-
   function getPkgFile(pkg, filename, filter, cb) {
     if (pkgHasFile(pkg, filename)) {
       var options = {

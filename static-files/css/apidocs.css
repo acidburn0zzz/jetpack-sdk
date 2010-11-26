@@ -24,7 +24,7 @@ Text title for some collection of API elements, like "Properties" or "Methods".
   }
 
 /* top level heading: something like "API Reference" */
-.api_reference>api_header 
+.api_reference>.api_header 
   {
   font-size: 200%;
   margin-top:30px;
@@ -54,21 +54,27 @@ NAMES
 Name of some API component, like widget or postMessage()
 ***/
 
+/* default style for all names */
+.api_name
+  {
+  font-weight: bold;
+  }
+
 /* top level api component: module-level classes,functions, properties */
 .api_reference>.api_component_group>.api_component>.api_name
   {
+  font-weight: normal;
   font-size: 150%;
   padding: 3px;
   border: solid 1px #EEE;
   background: #EEE;
   margin-bottom:5px;
-
   }
 
 /* next level API component: methods or object properties */
 .api_reference>.api_component_group>.api_component>.api_component_group>.api_component>.api_name
   {
-  font-size: 110%;
+  font-size: 120%;
   font-weight: bold;
   margin-bottom:0px;
   }

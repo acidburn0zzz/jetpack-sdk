@@ -297,8 +297,7 @@ class Server(object):
         if parts[0] == API_PATH:
             return self._respond_with_api(parts[1:])
         elif parts[0] == 'packages':
-            response = self._respond_with_pkg_file(parts[1:])
-            return response
+            return self._respond_with_pkg_file(parts[1:])
         else:
             fullpath = os.path.join(self.root, *parts)
             fullpath = os.path.normpath(fullpath)

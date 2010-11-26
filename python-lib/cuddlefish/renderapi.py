@@ -17,7 +17,11 @@ RETURNS = "returns"
 PARAMETER_SET = "parameter_set"
 MODULE_DESCRIPTION = "module_description"
 
-markdowner = markdown.Markdown()
+# class attribute used to indicate an internal link that must
+# be fixed up by some script in the front end
+INTERNAL_LINK = "internal_link"
+
+module_name = ""
 
 def indent(text_in):
     text_out = ""
@@ -47,7 +51,7 @@ def span_wrap(text, classname):
     return span_tag + text + "</span>"
 
 def renderDescription(text):
-    return markdowner.convert(text)
+    return text
 
 class API_Renderer(object):
     @staticmethod
@@ -210,7 +214,7 @@ def renderAPIReference(apis_json):
     text += renderGroup(apis_json, "Properties", "property")
     return div_wrap(text, API_REFERENCE)
 
-def div(hunks, module_name):
+def div(hunks):
     hunks_list = list(hunks)
     descriptions_md = [hunk[1] for hunk in hunks_list if hunk[0]=='markdown']
     api_docs_md = [hunk[1] for hunk in hunks_list if hunk[0]=='api-json']
@@ -223,7 +227,9 @@ def render(docs_md):
     docs_text = open(docs_md).read()
     hunks = apiparser.parse_hunks(docs_text)
     root, ext = os.path.splitext(os.path.basename(docs_md))
-    div_text = div(hunks, root)
+    module_name = root
+    div_text = div(hunks)
+    div_text = markdown.markdown(div_text)
     return div_text.encode("utf8")
 
 if __name__ == "__main__":
