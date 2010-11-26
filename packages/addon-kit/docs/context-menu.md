@@ -238,6 +238,8 @@ in your package's `data` directory, get the URLs of those files using the
 [`self`][self] module, and pass them to menu item constructors using the
 `contentScriptURL` options object property.
 
+[self]: #module/jetpack-core/self
+
 First, don't forget to import the module:
 
     var contextMenu = require("context-menu");
@@ -459,4 +461,3 @@ top-level context menu.
 </api>
 </api>
 
-[self]: #module/jetpack-core/self

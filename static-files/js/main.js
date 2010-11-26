@@ -29,7 +29,6 @@ function startApp(jQuery, window) {
       var pkgName = parts[1];
       var moduleName = parts.slice(2).join("/");
       showModuleDetail(pkgName, moduleName);
-      window.alert('m');
       break;
     case "guide":
       showGuideDetail(parts[1]);

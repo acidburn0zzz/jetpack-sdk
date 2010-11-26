@@ -34,6 +34,8 @@ def span_wrap(text, classname):
     return span_tag + text + "</span>"
 
 def renderDescription(text):
+    print "description:"
+    print text
     return markdowner.convert(text)
 
 class API_Doc:
@@ -42,9 +44,9 @@ class API_Doc:
         self.description = json.get('description', "")
 
     def render(self):
-        text = div_wrap(self._renderName(), 'api-name')
-        text += self._renderSubcomponents()
+        text = div_wrap(self._renderName(), 'api_name')
         text += renderDescription(self.description)
+        text += self._renderSubcomponents()
         return div_wrap(text, 'api_component')
 
     def _renderName(self):
@@ -62,7 +64,7 @@ class ObjectContents_Doc():
         constructors_json = json.get('constructors', None)
         if (constructors_json):
             for constructor_json in constructors_json:
-                self.constructors.append(Function_Doc(constructor_json, self.owner))
+                self.constructors.append(Function_Doc(constructor_json))
         methods_json = json.get('methods', None)
         if (methods_json):
             for method_json in methods_json:
@@ -92,7 +94,7 @@ class Class_Doc(API_Doc):
         self.object_contents = ObjectContents_Doc(json, self.name)
                 
     def _renderName(self):
-        return self.name
+        return "Class: " + self.name
 
     def _renderSubcomponents(self):
         return self.object_contents.render()
@@ -113,13 +115,15 @@ class Function_Doc(API_Doc):
         if (self.owner):
             return self.owner + "." + self.signature
         else:
-            return self.signature
+            return "Function: " + self.signature
 
     def _renderSubcomponents(self):
         return self._renderParameters() + self._renderReturns()
 
     def _renderParameters(self):
         text = ""
+        if (len(self.parameters) == 0):
+            return text
         for parameter in self.parameters:
             text += parameter.render()
         return div_wrap(text, "parameter_set")
@@ -127,7 +131,7 @@ class Function_Doc(API_Doc):
     def _renderReturns(self):
         if (not self.returns):
             return ""
-        text = "Returns: " + div_wrap(self.returns['type'], "property_type")
+        text = "Returns: " + span_wrap(self.returns['type'], "data_type")
         text += renderDescription(self.returns['description'])
         return div_wrap(text, "returns")
 
@@ -139,7 +143,7 @@ class Parameter_Doc(API_Doc):
         props_json = json.get("props", None)
         if (props_json):
             for prop_json in props_json:
-                self.props.append(Property_Doc(prop_json))
+                self.props.append(Property_Doc(prop_json, self.name))
 
     def _renderName(self):
         return self.name + " : " + span_wrap(self.datatype, "data_type")
@@ -154,21 +158,22 @@ class Property_Doc(API_Doc):
     def __init__(self, json, owner = None):
         API_Doc.__init__(self, json)
         self.owner = owner
-        self.datatype = json.get('property_type', 'type')
+        self.datatype = json.get('property_type', json.get('type', None))
         self.object_contents = ObjectContents_Doc(json, self.name)
 
     def _renderName(self):
         if self.owner:
             renderedName = self.owner + "." + self.name
         else:
-            renderedName = self.name
+            renderedName = "Property: " + self.name
         return renderedName + " : " + span_wrap(self.datatype, "data_type")
 
     def _renderSubcomponents(self):
         return self.object_contents.render()
 
 def renderAPIComponentGroup(component_group, title):
-    text = div_wrap(title, "api-header")
+#    text = div_wrap(title, "api_header")
+    text = ""
     for component_doc in component_group:
         text += component_doc.render()
     return div_wrap(text, "api_component_group")
@@ -215,10 +220,9 @@ def div(hunks, module_name):
 def render(docs_md):
     docs_text = open(docs_md).read()
     hunks = apiparser.parse_hunks(docs_text)
-    print docs_md
     root, ext = os.path.splitext(os.path.basename(docs_md))
-    print root
     div_text = div(hunks, root)
+    print div_text
     return div_text.encode("utf8")
 
 if __name__ == "__main__":
