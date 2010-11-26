@@ -24,7 +24,7 @@ Text title for some collection of API elements, like "Properties" or "Methods".
   }
 
 /* top level heading: something like "API Reference" */
-.api_reference>.api_header 
+.api_reference>api_header 
   {
   font-size: 200%;
   margin-top:30px;
@@ -58,7 +58,6 @@ Name of some API component, like widget or postMessage()
 .api_reference>.api_component_group>.api_component>.api_name
   {
   font-size: 150%;
-  font-weight: bold;
   padding: 3px;
   border: solid 1px #EEE;
   background: #EEE;
@@ -127,6 +126,4 @@ Subcomponents of parameters are indented
  {
   padding-left: 20px;
  }
-
-
 
