@@ -138,7 +138,7 @@ class Server(object):
     def _respond_with_apidoc_div(self, path):
         docs_md = open(path, 'r').read()
         try:
-            parsed = renderapi.render(path)
+            parsed = renderapi.md_to_div(path)
             self.start_response('200 OK',
                                 [('Content-type', "text/plain")])
             return parsed
@@ -450,6 +450,9 @@ def generate_static_docs(env_root, tgz_filename):
                     docs_parsed = list(apiparser.parse_hunks(docs_md))
                     docs_json = json.dumps(docs_parsed)
                     open(dest_path + ".json", "w").write(docs_json)
+                    # write the HTML div files
+                    docs_div = renderapi.json_to_div(docs_parsed, docs_md)
+                    open(dest_path + ".div.html", "w").write(docs_div)
 
     # finally, build a tarfile out of everything
     tgz = tarfile.open(tgz_filename, 'w:gz')
