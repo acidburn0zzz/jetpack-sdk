@@ -211,7 +211,7 @@ def render_api_reference(apis_json):
     text += render_group(apis_json, "Properties", "property")
     return div_wrap(text, API_REFERENCE)
 
-def div(hunks):
+def div(hunks, module_name):
     descriptions_md = [hunk[1] for hunk in hunks if hunk[0]=='markdown']
     api_docs_md = [hunk[1] for hunk in hunks if hunk[0]=='api-json']
     text = render_descriptions(descriptions_md)
@@ -222,7 +222,8 @@ def div(hunks):
 def json_to_div(json, docs_md):
     root, ext = os.path.splitext(os.path.basename(docs_md))
     module_name = root
-    div_text = div(json)
+    print root
+    div_text = div(json, module_name)
     div_text = markdown.markdown(div_text)
     return div_text.encode("utf8")
 
