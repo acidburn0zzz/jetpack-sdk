@@ -17,12 +17,6 @@ RETURNS = "returns"
 PARAMETER_SET = "parameter_set"
 MODULE_DESCRIPTION = "module_description"
 
-# class attribute used to indicate an internal link that must
-# be fixed up by some script in the front end
-INTERNAL_LINK = "internal_link"
-
-module_name = ""
-
 def indent(text_in):
     text_out = ""
     lines = text_in.splitlines(True)
@@ -50,23 +44,14 @@ def span_wrap(text, classname):
     span_tag = "<span class='" + classname + "'>"
     return span_tag + text + "</span>"
 
-def render_description(text):
-    return text
-
 class API_Renderer(object):
-    @staticmethod
-    def create_renderer(json):
-        for subclass in API_Renderer.__subclasses__():
-            if subclass._is_renderer_for(json):
-                return subclass(json)
-
     def __init__(self, json):
         self.name = json['name']
         self.description = json.get('description', "")
 
     def render(self):
         text = div_wrap(self._render_name(), API_NAME)
-        text += render_description(self.description)
+        text += self.description
         text += self._render_subcomponents()
         return div_wrap(text, API_COMPONENT)
 
@@ -78,15 +63,18 @@ class API_Renderer(object):
 
 class ObjectContents_Doc():
     def __init__(self, json, owner):
-        self.owner = owner 
+        self.owner = owner
         self.constructors_json = json.get('constructors', None)
         self.methods_json = json.get('methods', None)
         self.properties_json = json.get('properties', None)
 
     def render(self):
-        text =  self._render_subcomponents(self.constructors_json, Function_Doc, "Constructors")
-        text += self._render_subcomponents(self.methods_json, Function_Doc, "Methods")
-        text += self._render_subcomponents(self.properties_json, Property_Doc, "Properties")
+        text =  self._render_subcomponents(self.constructors_json, \
+                                           Function_Doc, "Constructors")
+        text += self._render_subcomponents(self.methods_json, \
+                                           Function_Doc, "Methods")
+        text += self._render_subcomponents(self.properties_json, \
+                                           Property_Doc, "Properties")
         return text
 
     def _render_subcomponents(self, components_json, ctor_function, title):
@@ -102,10 +90,6 @@ class Class_Doc(API_Renderer):
         API_Renderer.__init__(self, json)
         self.object_contents = ObjectContents_Doc(json, self.name)
 
-    @classmethod
-    def _is_renderer_for(self, json):
-        return json['type'] == 'class'
-
     def _render_name(self):
         return self.name
 
@@ -119,12 +103,6 @@ class Function_Doc(API_Renderer):
         self.signature = json['signature']
         self.returns = json.get('returns', None)
         self.parameters_json = json.get('params', None)
-
-    @classmethod
-    def _is_renderer_for(self, json):
-        return (json['type'] == 'function') or \
-               (json['type'] == 'constructor') or \
-               (json['type'] == 'method')
 
     def _render_name(self):
         if (self.owner):
@@ -146,7 +124,7 @@ class Function_Doc(API_Renderer):
         if not self.returns:
             return ""
         text = "Returns: " + span_wrap(self.returns['datatype'], DATATYPE)
-        text += render_description(self.returns['description'])
+        text += self.returns['description']
         return div_wrap(text, RETURNS)
 
 class Parameter_Doc(API_Renderer):
@@ -154,10 +132,6 @@ class Parameter_Doc(API_Renderer):
         API_Renderer.__init__(self, json)
         self.datatype = json['datatype']
         self.properties_json = json.get("props", None)
-
-    @classmethod
-    def _is_renderer_for(self, json):
-        return json['type'] == 'parameter'
 
     def _render_name(self):
         return self.name + " : " + span_wrap(self.datatype, DATATYPE)
@@ -176,10 +150,6 @@ class Property_Doc(API_Renderer):
         self.datatype = json['datatype']
         self.object_contents = ObjectContents_Doc(json, self.name)
 
-    @classmethod
-    def _is_renderer_for(self, json):
-        return json['type'] == 'property'
-
     def _render_name(self):
         if self.owner:
             rendered_name = self.owner + "." + self.name
@@ -191,12 +161,12 @@ class Property_Doc(API_Renderer):
         return self.object_contents.render()
 
 def render_descriptions(descriptions_md):
-    text = "".join([render_description(description_md) for description_md in descriptions_md])
+    text = "".join([render_description(description_md) \
+                    for description_md in descriptions_md])
     return div_wrap(text, MODULE_DESCRIPTION)
 
-def render_group(apis_json, group_name, group_type):
-    renderers = [API_Renderer.create_renderer(api_json) \
-                for api_json in apis_json 
+def render_group(apis_json, group_name, group_type, ctor_function):
+    renderers = [ctor_function(api_json) for api_json in apis_json
                 if api_json['type'] == group_type]
     if len(renderers) == 0:
         return ""
@@ -206,9 +176,9 @@ def render_group(apis_json, group_name, group_type):
 
 def render_api_reference(apis_json):
     text = div_wrap("API Reference", API_HEADER)
-    text += render_group(apis_json, "Classes", "class")
-    text += render_group(apis_json, "Functions", "function")
-    text += render_group(apis_json, "Properties", "property")
+    text += render_group(apis_json, "Classes", "class", Class_Doc)
+    text += render_group(apis_json, "Functions", "function", Function_Doc)
+    text += render_group(apis_json, "Properties", "property", Property_Doc)
     return div_wrap(text, API_REFERENCE)
 
 def div(hunks, module_name):
@@ -217,12 +187,12 @@ def div(hunks, module_name):
     text = render_descriptions(descriptions_md)
     if (len(api_docs_md) > 0):
         text += render_api_reference(api_docs_md)
-    return div_wrap_id(text, MODULE_API_DOCS_CLASS, module_name + MODULE_API_DOCS_ID)
+    return div_wrap_id(text, MODULE_API_DOCS_CLASS, \
+                       module_name + MODULE_API_DOCS_ID)
 
 def json_to_div(json, docs_md):
     root, ext = os.path.splitext(os.path.basename(docs_md))
     module_name = root
-    print root
     div_text = div(json, module_name)
     div_text = markdown.markdown(div_text)
     return div_text.encode("utf8")
