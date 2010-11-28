@@ -24,7 +24,7 @@ Text title for some collection of API elements, like "Properties" or "Methods".
   }
 
 /* top level heading: something like "API Reference" */
-.api_reference>.api_header 
+.api_reference>.api_header
   {
   font-size: 200%;
   margin-top:30px;
@@ -39,13 +39,13 @@ Text title for some collection of API elements, like "Properties" or "Methods".
   margin-bottom:10px;
   padding: 3px;
   border: solid 1px #EEE;
-  background: #EEE; 
+  background: #EEE;
   }
 
 /* next-level heading: something like "Methods", "Object properties" */
-.api_reference>.api_component_group>.api_component>.api_component_group>.api_header 
+.api_reference>.api_component_group>.api_component>.api_component_group>.api_header
   {
-  font-size: 125%; 
+  font-size: 125%;
   margin-bottom:5px;
   }
 
@@ -121,7 +121,7 @@ Parameter components are divided by a thin border
 */
 .parameter_set .api_component
   {
-  padding: 3px; 
+  padding: 3px;
   border-top: 2px solid rgba(255,255,255,.3);
   }
 

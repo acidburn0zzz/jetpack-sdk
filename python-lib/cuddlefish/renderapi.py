@@ -3,98 +3,71 @@ import markdown
 import apiparser
 import time
 
-# list of all the "class" and "id" attributes assigned to
+# list of all the 'class' and 'id' attributes assigned to
 # <div> and <span> tags by the renderer.
-API_REFERENCE = "api_reference"
-MODULE_API_DOCS_CLASS = "module_api_docs"
-MODULE_API_DOCS_ID = "_module_api_docs"
-API_HEADER = "api_header"
-API_NAME = "api_name"
-API_COMPONENT_GROUP = "api_component_group"
-API_COMPONENT = "api_component"
-DATATYPE = "datatype"
-RETURNS = "returns"
-PARAMETER_SET = "parameter_set"
-MODULE_DESCRIPTION = "module_description"
+API_REFERENCE = 'api_reference'
+MODULE_API_DOCS_CLASS = 'module_api_docs'
+MODULE_API_DOCS_ID = '_module_api_docs'
+API_HEADER = 'api_header'
+API_NAME = 'api_name'
+API_COMPONENT_GROUP = 'api_component_group'
+API_COMPONENT = 'api_component'
+DATATYPE = 'datatype'
+RETURNS = 'returns'
+PARAMETER_SET = 'parameter_set'
+MODULE_DESCRIPTION = 'module_description'
 
 def indent(text_in):
-    text_out = ""
+    text_out = ''
     lines = text_in.splitlines(True)
     indentation_level = 0
     indentation_depth = 2
     for line in lines:
-        if (line.startswith("<div")):
-            text_out += ((" " * indentation_depth) * indentation_level) + line
+        if (line.startswith('<div')):
+            text_out += ((' ' * indentation_depth) * indentation_level) + line
             indentation_level += 1
         else:
-            if (line.startswith("</div>")):
+            if (line.startswith('</div>')):
                 indentation_level -= 1
-            text_out += ((" " * indentation_depth) * indentation_level) + line
+            text_out += ((' ' * indentation_depth) * indentation_level) + line
     return text_out
 
 def div_wrap_id(text, classname, id):
-    div_tag = "\n<div id='" + id + "' class='" + classname + "'>\n"
-    return div_tag + text + "\n</div>\n"
+    return ''.join(['\n<div id="', id, '" class="', classname, '">\n', \
+                   text + '\n</div>\n'])
 
 def div_wrap(text, classname):
-    div_tag = "\n<div class='" + classname + "'>\n"
-    return div_tag + text + "\n</div>\n"
+    return ''.join(['\n<div class="', classname, '">\n', \
+                   text, '\n</div>\n'])
 
 def span_wrap(text, classname):
-    span_tag = "<span class='" + classname + "'>"
-    return span_tag + text + "</span>"
+    span_tag = '<span class="' + classname + '">'
+    return span_tag + text + '</span>'
 
 class API_Renderer(object):
     def __init__(self, json):
         self.name = json['name']
-        self.description = json.get('description', "")
+        self.description = json.get('description', '')
+        self.json = json
 
-    def render(self):
-        text = div_wrap(self._render_name(), API_NAME)
-        text += self.description
-        text += self._render_subcomponents()
-        return div_wrap(text, API_COMPONENT)
+    def render_name(self):
+        raise Exception('not implemented in this class')
 
-    def _render_name(self):
-        raise Exception("not implemented in this class")
+    def render_description(self):
+        return self.description
 
-    def _render_subcomponents(self):
-        raise Exception("not implemented in this class")
-
-class ObjectContents_Doc():
-    def __init__(self, json, owner):
-        self.owner = owner
-        self.constructors_json = json.get('constructors', None)
-        self.methods_json = json.get('methods', None)
-        self.properties_json = json.get('properties', None)
-
-    def render(self):
-        text =  self._render_subcomponents(self.constructors_json, \
-                                           Function_Doc, "Constructors")
-        text += self._render_subcomponents(self.methods_json, \
-                                           Function_Doc, "Methods")
-        text += self._render_subcomponents(self.properties_json, \
-                                           Property_Doc, "Properties")
-        return text
-
-    def _render_subcomponents(self, components_json, ctor_function, title):
-        if (not components_json):
-            return ""
-        text = div_wrap(title, API_HEADER)
-        text += "".join([ctor_function(component_json).render() \
-                       for component_json in components_json])
-        return div_wrap(text, API_COMPONENT_GROUP)
+    def render_subcomponents(self):
+        raise Exception('not implemented in this class')
 
 class Class_Doc(API_Renderer):
     def __init__(self, json):
         API_Renderer.__init__(self, json)
-        self.object_contents = ObjectContents_Doc(json, self.name)
 
-    def _render_name(self):
+    def render_name(self):
         return self.name
 
-    def _render_subcomponents(self):
-        return self.object_contents.render()
+    def render_subcomponents(self):
+        return render_object_contents(self.json)
 
 class Function_Doc(API_Renderer):
     def __init__(self, json, owner=None):
@@ -104,26 +77,26 @@ class Function_Doc(API_Renderer):
         self.returns = json.get('returns', None)
         self.parameters_json = json.get('params', None)
 
-    def _render_name(self):
+    def render_name(self):
         if (self.owner):
-            return self.owner + "." + self.signature
+            return self.owner + '.' + self.signature
         else:
             return self.signature
 
-    def _render_subcomponents(self):
+    def render_subcomponents(self):
         return self._render_parameters() + self._render_returns()
 
     def _render_parameters(self):
         if  not self.parameters_json:
-            return ""
-        text = "".join([Parameter_Doc(parameter_json).render() \
+            return ''
+        text = ''.join([render_component(Parameter_Doc(parameter_json)) \
                        for parameter_json in self.parameters_json])
         return div_wrap(text, PARAMETER_SET)
 
     def _render_returns(self):
         if not self.returns:
-            return ""
-        text = "Returns: " + span_wrap(self.returns['datatype'], DATATYPE)
+            return ''
+        text = 'Returns: ' + span_wrap(self.returns['datatype'], DATATYPE)
         text += self.returns['description']
         return div_wrap(text, RETURNS)
 
@@ -131,15 +104,15 @@ class Parameter_Doc(API_Renderer):
     def __init__(self, json):
         API_Renderer.__init__(self, json)
         self.datatype = json['datatype']
-        self.properties_json = json.get("props", None)
+        self.properties_json = json.get('props', None)
 
-    def _render_name(self):
-        return self.name + " : " + span_wrap(self.datatype, DATATYPE)
+    def render_name(self):
+        return self.name + ' : ' + span_wrap(self.datatype, DATATYPE)
 
-    def _render_subcomponents(self):
+    def render_subcomponents(self):
         if not self.properties_json:
-            return ""
-        text = "".join([Property_Doc(property_json).render() \
+            return ''
+        text = ''.join([render_component(Property_Doc(property_json)) \
                        for property_json in self.properties_json])
         return text
 
@@ -148,68 +121,103 @@ class Property_Doc(API_Renderer):
         API_Renderer.__init__(self, json)
         self.owner = owner
         self.datatype = json['datatype']
-        self.object_contents = ObjectContents_Doc(json, self.name)
 
-    def _render_name(self):
+    def render_name(self):
         if self.owner:
-            rendered_name = self.owner + "." + self.name
+            rendered_name = self.owner + '.' + self.name
         else:
             rendered_name = self.name
-        return rendered_name + " : " + span_wrap(self.datatype, DATATYPE)
+        return rendered_name + ' : ' + span_wrap(self.datatype, DATATYPE)
 
-    def _render_subcomponents(self):
-        return self.object_contents.render()
+    def render_subcomponents(self):
+        return render_object_contents(self.json)
 
-def render_descriptions(descriptions_md):
-    text = "".join([render_description(description_md) \
-                    for description_md in descriptions_md])
-    return div_wrap(text, MODULE_DESCRIPTION)
+def render_object_contents(json):
+    ctors = json.get('constructors', None)
+    text = render_component_group(ctors, 'Constructors', Function_Doc)
+    methods = json.get('methods', None)
+    text += render_component_group(methods, 'Methods', Function_Doc)
+    properties = json.get('properties', None)
+    text += render_component_group(properties, 'Properties', Property_Doc)
+    return text
 
-def render_group(apis_json, group_name, group_type, ctor_function):
-    renderers = [ctor_function(api_json) for api_json in apis_json
-                if api_json['type'] == group_type]
-    if len(renderers) == 0:
-        return ""
+def render_component(component):
+    # a component is wrapped inside a single div marked 'API_COMPONENT'
+    # containing:
+    # 1) the component name, marked 'API_NAME'
+    text = div_wrap(component.render_name(), API_NAME)
+    # 2) the component description
+    text += component.render_description()
+    # 3) the component contents
+    text += component.render_subcomponents()
+    return div_wrap(text, API_COMPONENT)
+
+def render_component_group(group, group_name, ctor_function):
+    if not group:
+        return ''
+    # component group is a list of components in a single div called
+    # 'API_COMPONENT_GROUP' containing:
+    # 1) a title for the group marked with 'API_HEADER'
     text = div_wrap(group_name, API_HEADER)
-    text += "".join([renderer.render() for renderer in renderers])
+    # 2) each component
+    text += ''.join([render_component(ctor_function(api)) for api in group])
     return div_wrap(text, API_COMPONENT_GROUP)
 
-def render_api_reference(apis_json):
-    text = div_wrap("API Reference", API_HEADER)
-    text += render_group(apis_json, "Classes", "class", Class_Doc)
-    text += render_group(apis_json, "Functions", "function", Function_Doc)
-    text += render_group(apis_json, "Properties", "property", Property_Doc)
+def render_descriptions(descriptions_md):
+    text = ''.join([description_md for description_md in descriptions_md])
+    return div_wrap(text, MODULE_DESCRIPTION)
+
+def render_api_reference(api_docs):
+    if (len(api_docs) == 0):
+        return ''
+    # at the top level api reference is in a single div marked 'API_REFERENCE',
+    # containing:
+    # 1) a title 'API Reference' marked with 'API_HEADER'
+    text = div_wrap('API Reference', API_HEADER)
+    # 2) a component group called 'Classes' containing any class elements
+    classes = [api for api in api_docs if api['type'] == 'class']
+    text += render_component_group(classes, 'Classes', Class_Doc)
+    # 3) a component group called 'Functions' containing any global functions
+    functions = [api for api in api_docs if api['type'] == 'function']
+    text += render_component_group(functions, 'Functions', Function_Doc)
+    # 4) a component group called 'Properties' containing any global properties
+    properties = [api for api in api_docs if api['type'] == 'property']
+    text += render_component_group(properties, 'Properties', Property_Doc)
     return div_wrap(text, API_REFERENCE)
 
-def div(hunks, module_name):
-    descriptions_md = [hunk[1] for hunk in hunks if hunk[0]=='markdown']
-    api_docs_md = [hunk[1] for hunk in hunks if hunk[0]=='api-json']
-    text = render_descriptions(descriptions_md)
-    if (len(api_docs_md) > 0):
-        text += render_api_reference(api_docs_md)
-    return div_wrap_id(text, MODULE_API_DOCS_CLASS, \
+# take the JSON output of apiparser
+# return the HTML DIV containing the rendered component
+def json_to_div(json, module_name):
+    descriptions = [hunk[1] for hunk in json if hunk[0]=='markdown']
+    api_docs = [hunk[1] for hunk in json if hunk[0]=='api-json']
+    text = render_descriptions(descriptions)
+    text += render_api_reference(api_docs)
+    text = div_wrap_id(text, MODULE_API_DOCS_CLASS, \
                        module_name + MODULE_API_DOCS_ID)
+    text = markdown.markdown(text)
+    return text.encode('utf8')
 
-def json_to_div(json, docs_md):
-    root, ext = os.path.splitext(os.path.basename(docs_md))
+# take the JSON output of apiparser
+# return standalone HTML containing the rendered component
+def json_to_html(json, module_name):
+    return json_to_div(json, module_name)
+
+# take the name of a Markdown file
+# return the HTML DIV containing the rendered component
+def md_to_div(markdown_filename):
+    markdown_contents = open(markdown_filename).read()
+    root, ext = os.path.splitext(os.path.basename(markdown_filename))
     module_name = root
-    div_text = div(json, module_name)
-    div_text = markdown.markdown(div_text)
-    return div_text.encode("utf8")
+    json = list(apiparser.parse_hunks(markdown_contents))
+    return json_to_html(json, module_name)
 
-def json_to_html(json, docs_md):
-    return json_to_div(json, docs_md)
+# take the name of a Markdown file
+# return standalone HTML containing the rendered component
+def md_to_html(markdown_filename):
+    return md_to_div(markdown_filename)
 
-def md_to_div(docs_md):
-    docs_text = open(docs_md).read()
-    hunks = list(apiparser.parse_hunks(docs_text))
-    return json_to_html(hunks, docs_md)
-
-def md_to_html(docs_md):
-    return md_to_div(docs_md)
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     if (len(sys.argv) == 0):
-        print "Supply the name of a docs file to parse"
+        print 'Supply the name of a docs file to parse'
     else:
-        print indent(md_to_html(sys.argv[1]))
+        print(indent(md_to_html(sys.argv[1])))
