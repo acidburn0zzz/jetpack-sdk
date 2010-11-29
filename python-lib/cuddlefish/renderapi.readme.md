@@ -38,9 +38,9 @@ DIV structure
 The top level DIV is marked with the id attribute and the "module_api_docs" class
 attribute:
 
-  <div id='tabs_module_api_docs' class='module_api_docs'> 
-    //module doc contents
-  </div>
+      <div id='tabs_module_api_docs' class='module_api_docs'> 
+        //module doc contents
+      </div>
 
 
 Inside this:
@@ -52,36 +52,37 @@ inside <api></api> tags) are rendered inside a DIV marked with the
 - all <api></api> content is rendered, enclosed in a single tag marked
 with the "api_reference" class attribute:
 
-<div id='tabs_module_api_docs' class='module_api_docs'> 
-  <div class='module_description'>
-    //descriptions
-  </div>  
-  <div class='api_reference'>
-    //api reference
-  </div>
-</div>
+
+    <div id='tabs_module_api_docs' class='module_api_docs'> 
+      <div class='module_description'>
+        //descriptions
+      </div>  
+        <div class='api_reference'>
+        //api reference
+      </div>
+    </div>
 
 If there is no <api></api> content, then the "api-reference" section is absent.
 
-API Reference structure
------------------------
+### API Reference structure ###
+
 The first item in API reference is a top level title marked with the
 "api_header" attribute. This might have the text content "API Reference"
 (but you should not rely on that):
 
-  <div class='api_reference'>
+      <div class='api_reference'>
 
-    <div class='api_header'>
-      API Reference
-    </div>
-    //api contents
+        <div class='api_header'>
+          API Reference
+        </div>
+        //api contents
 
-  </div>
+      </div>
 
 After the title come one or more component groups. 
 
-Component Group
----------------
+#### Component Group ####
+
 A component group is marked with the "api_component_group" attribute. The
 component group is a collection of some sort of component: for example, a group
 of classes, a group of functions, or a group of events.
@@ -90,47 +91,49 @@ Each component group starts off with a header marked with the "api_header" attri
 and is followed by one or more sections marked with the "api_component"
 attribute:
 
-  <div class='api_reference'>
-
-    <div class='api_header'>
-      API Reference
-    </div>
-
-    <div class='api_component_group'>
+    <div class='api_reference'>
 
       <div class='api_header'>
-        Classes
+        API Reference
       </div>
 
-      <div class='api_component'>
-        // the first class
+      <div class='api_component_group'>
+
+        <div class='api_header'>
+          Classes
+        </div>
+
+        <div class='api_component'>
+          // the first class
+        </div>
+
+        <div class='api_component'>
+          // another class
+        </div>
+
       </div>
 
-      <div class='api_component'>
-        // another class
-      </div>    
+      <div class='api_component_group'>
+        //some different components
+
+        <div class='api_header'>
+          Functions
+        </div>
+
+        <div class='api_component'>
+          the first function
+        </div>
+
+        <div class='api_component'>
+          another function
+        </div>
+
+      </div>
 
     </div>
 
-    <div class='api_component_group'>
-      //some different components
+#### Component ####
 
-      <div class='api_header'>
-        Functions
-      </div>
-
-      <div class='api_component'>
-        the first function
-      </div>
-
-      <div class='api_component'>
-        another function
-      </div>
-
-    </div>
-
-Component
----------
 API components represent actual objects in the API like classes, functions,
 properties and events. 
 
@@ -146,23 +149,63 @@ which might be grouped together.
 
 
 
-<div class='api_component'>
+    <div class='api_component'>
 
-    <div class='api_name'>
-      Panel
-    </div>
+      <div class='api_name'>
+        Panel
+      </div>
     
-    <div class='api_component_group'>
+      <div class='api_component_group'>
 
-      <div class='api_header'>
-        Methods
-      </div>
+        <div class='api_header'>
+          Methods
+        </div>
 
-      <div class='api_component'>
-        show()
+        <div class='api_component'>
+          show()
+        </div>
+
       </div>
 
     </div>
 
-  </div>
+Other attributes
+-----------------------------
 
+### Datatype ###
+All primitive data types, like "string" and "number", are marked with the
+"datatype" class attribute:
+
+    <div class="api_component">
+
+    <div class="api_name">
+      label : <span class="datatype">string</span>
+    </div>
+
+    <p>A required string description of the widget used for accessibility,
+    title bars, and error reporting.</p>
+    
+    </div>
+
+### Returns ###
+
+Functions mark return values with the "returns" class attribute.
+
+    <div class="api_component">
+
+      <div class="api_name">
+        get()
+      </div>
+
+      Make a `GET` request.
+
+      <div class="returns">
+        Returns: <span class="datatype">Request</span>
+      </div>
+
+    </div>
+
+### Parameter_set ###
+
+Functions that take parameters mark them with the parameter_set class
+attribute.

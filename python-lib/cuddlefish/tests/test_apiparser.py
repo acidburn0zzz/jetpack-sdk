@@ -21,9 +21,11 @@ class ParserTests(unittest.TestCase):
         #for i,h in enumerate(parsed):
         #    print i, h
         self.assertEqual(parsed[0],
+                         ("version", 2))
+        self.assertEqual(parsed[1],
                          ("markdown", "# Title #\n\nSome text here\n\n"))
-        self.assertEqual(parsed[1][0], "api-json")
-        p_test = parsed[1][1]
+        self.assertEqual(parsed[2][0], "api-json")
+        p_test = parsed[2][1]
         self.assertEqual(p_test["name"], "test")
         self.assertEqual(p_test["type"], "method")
         self.assertEqual(p_test["signature"], "test(argOne, argTwo, \
@@ -32,18 +34,21 @@ argThree, options)")
                          "This is a function which does nothing in \
 particular.")
         r = p_test["returns"]
-        self.assertEqual(r["type"], "object")
+        self.assertEqual(r["datatype"], "object")
         self.assertEqual(r["description"], "")
         self.assertEqual(len(r["props"]), 2)
-        self.assertEqual(r["props"][0]["type"], "string")
+        self.assertEqual(r["props"][0]["type"], "property")
+        self.assertEqual(r["props"][0]["datatype"], "string")
         self.assertEqual(r["props"][0]["description"], "First string")
-        self.assertEqual(r["props"][1]["type"], "url")
+        self.assertEqual(r["props"][0]["type"], "property")
+        self.assertEqual(r["props"][1]["datatype"], "url")
         self.assertEqual(r["props"][1]["description"], "First URL")
 
         self.assertEqual(p_test["params"][0],
                          {"name": "argOne",
                           "required": True,
-                          "type": "string",
+                          "type": "parameter",
+                          "datatype": "string", 
                           "description": "This is the first argument.",
                           "line_number": 11,
                           })
@@ -51,7 +56,8 @@ particular.")
         self.assertEqual(p_test["params"][1],
                          {"name": "argTwo",
                           "required": False,
-                          "type": "bool",
+                          "type": "parameter",
+                          "datatype": "bool",
                           "description": "This is the second argument.",
                           "line_number": 12,
                           })
@@ -60,7 +66,8 @@ particular.")
                          {"name": "argThree",
                           "required": False,
                           "default": "default",
-                          "type": "uri",
+                          "type": "parameter",
+                          "datatype": "uri",
                           "line_number": 13,
                           "description": """\
 This is the third and final argument. And this is
@@ -70,12 +77,12 @@ text.""",
         p3 = p_test["params"][3]
         self.assertEqual(p3["name"], "options")
         self.assertEqual(p3["required"], False)
-        self.failIf("type" in p3)
         self.assertEqual(p3["description"], "Options Bag")
         self.assertEqual(p3["props"][0],
                          {"name": "style",
                           "required": False,
-                          "type": "string",
+                          "type": "property",
+                          "datatype": "string",
                           "description": "Some style information.",
                           "line_number": 18,
                           })
@@ -83,83 +90,95 @@ text.""",
                          {"name": "secondToLastOption",
                           "required": False,
                           "default": "True",
-                          "type": "bool",
+                          "type": "property",
+                          "datatype": "bool",
                           "description": "The last property.",
                           "line_number": 19,
                           })
         self.assertEqual(p3["props"][2]["name"], "lastOption")
         self.assertEqual(p3["props"][2]["required"], False)
-        self.assertEqual(p3["props"][2]["type"], "uri")
+        self.assertEqual(p3["props"][2]["type"], "property")
+        self.assertEqual(p3["props"][2]["datatype"], "uri")
         self.assertEqual(p3["props"][2]["description"], """\
 And this time we have
 A multiline description
 Written as haiku""")
 
-        self.assertEqual(parsed[2][0], "markdown")
-        self.assertEqual(parsed[2][1], "\n\nThis text appears between the \
+        self.assertEqual(parsed[3][0], "markdown")
+        self.assertEqual(parsed[3][1], "\n\nThis text appears between the \
 API blocks.\n\n")
 
-        self.assertEqual(parsed[3][0], "api-json")
-        p_test = parsed[3][1]
+        self.assertEqual(parsed[4][0], "api-json")
+        p_test = parsed[4][1]
 
         expected = {'line_number': 28,
  'name': 'append',
  'params': [{'props':[{'line_number': 33,
                        'required': False,
-                       'type': 'uri',
+                       'type': 'property',
+                       'datatype': 'uri',
                        'name': 'icon',
                        'description': 'The HREF of an icon to show as the \
 method of accessing your features slideBar'},
                       {'line_number': 34,
                        'required': False,
-                       'type': 'string/xml',
+                       'type': 'property',
+                       'datatype': 'string/xml',
                        'name': 'html',
                        'description': 'The content of the feature, either \
 as an HTML string,\nor an E4X document fragment (e.g., <><h1>Hi!</h1></>)'},
                       {'line_number': 37,
                        'required': False,
-                       'type': 'uri',
+                       'type': 'property',
+                       'datatype': 'uri',
                        'name': 'url',
                        'description': 'The url to load into the content area \
 of the feature'},
                       {'line_number': 38,
                        'required': False,
-                       'type': 'int',
+                       'type': 'property',
+                       'datatype': 'int',
                        'name': 'width',
                        'description': 'Width of the content area and the \
 selected slide size'},
                       {'line_number': 39,
                        'required': False,
-                       'type': 'bool',
+                       'type': 'property',
+                       'datatype': 'bool',
                        'name': 'persist',
                        'description': 'Default slide behavior when being \
 selected as follows:\nIf true: blah; If false: double blah.'},
                       {'line_number': 42,
                        'required': False,
-                       'type': 'bool',
+                       'type': 'property',
+                       'datatype': 'bool',
                        'name': 'autoReload',
                        'description': 'Automatically reload content on \
 select'},
                       {'line_number': 43,
                        'required': False,
-                       'type': 'function',
+                       'type': 'property',
+                       'datatype': 'function',
                        'name': 'onClick',
                        'description': 'Callback when the icon is \
 clicked'},
                       {'line_number': 44,
                        'required': False,
-                       'type': 'function',
+                       'type': 'property',
+                       'datatype': 'function',
                        'name': 'onSelect',
                        'description': 'Callback when the feature is selected'},
                       {'line_number': 45,
                        'required': False,
-                       'type': 'function',
+                       'type': 'property',
+                       'datatype': 'function',
                        'name': 'onReady',
                        'description':
                        'Callback when featured is loaded'}],
                        'line_number': 31,
              'required': True,
              'name': 'options',
+             'type': 'parameter',
              'description': 'Pass in all of your options here.'}],
  'signature': 'append(options)',
  'type': 'method',
@@ -167,11 +186,12 @@ clicked'},
 slideBar instance.'}
         self.assertEqual(p_test, expected)
 
-        self.assertEqual(parsed[5][0], "api-json")
-        p_test = parsed[5][1]
+        self.assertEqual(parsed[6][0], "api-json")
+        p_test = parsed[6][1]
         self.assertEqual(p_test["name"], "cool-func.dot")
         self.assertEqual(p_test["signature"], "cool-func.dot(howMuch, double, \
 options, onemore, options2)")
+        self.assertEqual(p_test["returns"]["datatype"], "string")
         self.assertEqual(p_test["returns"]["description"],
                          """\
 A value telling you just how cool you are.
@@ -184,30 +204,32 @@ some **realy** fancy things. Like `code`, or even
         self.assertEqual(p_test["params"][2]["props"][0],
                          {"name": "callback",
                           "required": True,
-                          "type": "function",
+                          "type": "property",
+                          "datatype": "function",
                           "line_number": 63,
                           "description": "The callback",
                           })
         self.assertEqual(p_test["params"][2]["props"][1],
                          {"name": "random",
                           "required": False,
-                          "type": "bool",
+                          "type": "property",
+                          "datatype": "bool",
                           "line_number": 64,
                           "description": "Do something random?",
                           })
 
-        p_test = parsed[7][1]
+        p_test = parsed[8][1]
         self.assertEqual(p_test["signature"],"random()")
 
         # tests for classes
         #1) empty class
-        p_test = parsed[9][1]
+        p_test = parsed[10][1]
         self.assertEqual(len(p_test), 4)
         self.assertEqual(p_test["name"], "empty-class")
         self.assertEqual(p_test["description"], "This class contains nothing.")
         self.assertEqual(p_test["type"], "class")
         # 2) class with just one ctor
-        p_test = parsed[11][1]
+        p_test = parsed[12][1]
         self.assertEqual(len(p_test), 5)
         self.assertEqual(p_test["name"], "only-one-ctor")
         self.assertEqual(p_test["description"], "This class contains only \
@@ -217,7 +239,7 @@ one constructor.")
         self.assertEqual(len(constructors), 1)
         self._test_class_constructor(constructors[0], "one-constructor")
         # 3) class with 2 ctors
-        p_test = parsed[13][1]
+        p_test = parsed[14][1]
         self.assertEqual(len(p_test), 5)
         self.assertEqual(p_test["name"], "two-ctors")
         self.assertEqual(p_test["description"], "This class contains two \
@@ -228,7 +250,7 @@ constructors.")
         self._test_class_constructor(constructors[0], "one-constructor")
         self._test_class_constructor(constructors[1], "another-constructor")
         # 4) class with ctor + method
-        p_test = parsed[15][1]
+        p_test = parsed[16][1]
         self.assertEqual(len(p_test), 6)
         self.assertEqual(p_test["name"], "ctor-and-method")
         self.assertEqual(p_test["description"], "This class contains one \
@@ -241,7 +263,7 @@ constructor and one method.")
         self.assertEqual(len(methods), 1)
         self._test_class_method(methods[0])
         # 5) class with ctor + method + property
-        p_test = parsed[17][1]
+        p_test = parsed[18][1]
         self.assertEqual(len(p_test), 7)
         self.assertEqual(p_test["name"], "ctor-and-method-and-prop")
         self.assertEqual(p_test["description"], "This class contains one \
@@ -282,7 +304,7 @@ at the end of the file.\n\n")
         self.assertEqual(prop["type"], "property")
         self.assertEqual(prop["name"], "a-property")
         self.assertEqual(prop["description"], "Represents stuff.")
-        self.assertEqual(prop["property_type"], "bool")
+        self.assertEqual(prop["datatype"], "bool")
 
     def test_missing_return_propname(self):
         md = '''\
@@ -323,18 +345,20 @@ This is a function which does nothing in particular.
 </api>
 '''
         parsed = self.parse_text(md)
-        r = parsed[0][1]["returns"]
+        r = parsed[1][1]["returns"]
         self.assertEqual(r["props"][0]["name"], "firststring")
         self.assertEqual(r["props"][0],
                          {"name": "firststring",
-                          "type": "string",
+                          "type": "property",
+                          "datatype": "string",
                           "description": "First string.",
                           "required": True,
                           "line_number": 5, # 1-indexed
                           })
         self.assertEqual(r["props"][1],
                          {"name": "firsturl",
-                          "type": "url",
+                          "type": "property",
+                          "datatype": "url",
                           "description": "First URL, not always provided.",
                           "required": False,
                           "line_number": 6,
@@ -353,7 +377,7 @@ This is a function which does nothing in particular.
 </api>
 '''
         parsed = self.parse_text(md)
-        r = parsed[0][1]["returns"]
+        r = parsed[1][1]["returns"]
         self.assertEqual(r["description"], "A one-line description.")
 
     def test_return_description_2(self):
@@ -374,7 +398,7 @@ This is a function which does nothing in particular.
 </api>
 '''
         parsed = self.parse_text(md)
-        r = parsed[0][1]["returns"]
+        r = parsed[1][1]["returns"]
         self.assertEqual(r["description"],
                          "A six-line description\n"
                          "which is consistently indented by two spaces\n"
@@ -394,7 +418,7 @@ This is a function which does nothing in particular.
 </api>
 '''
         parsed = self.parse_text(md)
-        r = parsed[0][1]["returns"]
+        r = parsed[1][1]["returns"]
         self.assertEqual(r["description"], "A one-line untyped description.")
 
     # if the return value was supposed to be an array, the correct syntax
@@ -414,7 +438,7 @@ This is a function which returns an array.
 </api>
 '''
         parsed = self.parse_text(md)
-        r = parsed[0][1]["returns"]
+        r = parsed[1][1]["returns"]
         self.assertEqual(r["description"],
                          "Array consists of two elements, a string and a url.")
 
@@ -471,11 +495,11 @@ An object property named test of type foo.
 </api>
 '''
         parsed = self.parse_text(md)
-        self.assertEqual(parsed[0][0], 'api-json')
-        actual_api_json_obj = parsed[0][1]
+        self.assertEqual(parsed[1][0], 'api-json')
+        actual_api_json_obj = parsed[1][1]
         expected_api_json_obj = {
             'line_number': 1,
-            'property_type': 'foo',
+            'datatype': 'foo',
             'type': 'property',
             'name': 'test',
             'description': "An object property named test of type foo."
