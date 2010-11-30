@@ -453,6 +453,9 @@ def generate_static_docs(env_root, tgz_filename):
                     # write the HTML div files
                     docs_div = renderapi.json_to_div(docs_parsed, src_path)
                     open(dest_path + ".div.html", "w").write(docs_div)
+                    # write the standalone HTML files
+                    docs_html = renderapi.json_to_html(docs_parsed, src_path)
+                    open(dest_path + ".html", "w").write(docs_html)
 
     # finally, build a tarfile out of everything
     tgz = tarfile.open(tgz_filename, 'w:gz')

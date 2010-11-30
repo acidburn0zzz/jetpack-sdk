@@ -17,6 +17,42 @@ RETURNS = 'returns'
 PARAMETER_SET = 'parameter_set'
 MODULE_DESCRIPTION = 'module_description'
 
+HTML_HEADER = '\
+<!DOCTYPE html>\n\
+<html>\n\
+<head>\n\
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n\
+  <base target="_blank"/>\n\
+  <link rel="stylesheet" type="text/css" media="all"\n\
+        href="../../../css/base.css" />\n\
+  <link rel="stylesheet" type="text/css" media="all"\n\
+        href="../../../css/apidocs.css" />\n\
+  <title>Add-on SDK Documentation</title>\n\
+  <style type="text/css">\n\
+    body {\n\
+      border: 50px solid #FFFFFF;\n\
+    }\n\
+  </style>\n\
+\n\
+  <script type="text/javascript">\n\
+    function rewrite_links() {\n\
+      var images = document.getElementsByTagName("img");\n\
+      for (var i = 0; i < images.length; i++) {\n\
+        var before = images[i].src.split("packages/")[0];\n\
+        var after = images[i].src.split("/docs")[1];\n\
+        images[i].src = before + after;\n\
+      }\n\
+    }\n\
+    </script>\n\
+</head>\n\
+\n\
+<body onload = "rewrite_links()">\n'
+
+HTML_FOOTER = '\n\
+</body>\n\
+\n\
+</html>\n'
+
 def indent(text_in):
     text_out = ''
     lines = text_in.splitlines(True)
@@ -33,12 +69,12 @@ def indent(text_in):
     return text_out
 
 def div_wrap_id(text, classname, id):
-    return ''.join(['\n<div id="', id, '" class="', classname, '">\n', \
-                   text + '\n</div>\n'])
+    return ''.join(['<div id="', id, '" class="', classname, '">', \
+                   text + '</div>'])
 
 def div_wrap(text, classname):
-    return ''.join(['\n<div class="', classname, '">\n', \
-                   text, '\n</div>\n'])
+    return ''.join(['<div class="', classname, '">', \
+                   text, '</div>'])
 
 def span_wrap(text, classname):
     span_tag = '<span class="' + classname + '">'
@@ -187,37 +223,37 @@ def render_api_reference(api_docs):
 
 # take the JSON output of apiparser
 # return the HTML DIV containing the rendered component
-def json_to_div(json, module_name):
+def json_to_div(json, markdown_filename):
+    module_name, ext = os.path.splitext(os.path.basename(markdown_filename))
     descriptions = [hunk[1] for hunk in json if hunk[0]=='markdown']
     api_docs = [hunk[1] for hunk in json if hunk[0]=='api-json']
-    text = render_descriptions(descriptions)
+    text = "<h1>" + module_name + "</h1>"
+    text += render_descriptions(descriptions)
     text += render_api_reference(api_docs)
     text = div_wrap_id(text, MODULE_API_DOCS_CLASS, \
                        module_name + MODULE_API_DOCS_ID)
-    text = markdown.markdown(text)
+#    text = markdown.markdown(text)
     return text.encode('utf8')
 
 # take the JSON output of apiparser
 # return standalone HTML containing the rendered component
-def json_to_html(json, module_name):
-    return json_to_div(json, module_name)
+def json_to_html(json, markdown_filename):
+    return HTML_HEADER + json_to_div(json, markdown_filename) + HTML_FOOTER
 
 # take the name of a Markdown file
 # return the HTML DIV containing the rendered component
 def md_to_div(markdown_filename):
     markdown_contents = open(markdown_filename).read()
-    root, ext = os.path.splitext(os.path.basename(markdown_filename))
-    module_name = root
     json = list(apiparser.parse_hunks(markdown_contents))
-    return json_to_html(json, module_name)
+    return json_to_div(json, markdown_filename)
 
 # take the name of a Markdown file
 # return standalone HTML containing the rendered component
 def md_to_html(markdown_filename):
-    return md_to_div(markdown_filename)
+    return HTML_HEADER + md_to_div(markdown_filename) + HTML_FOOTER
 
 if __name__ == '__main__':
     if (len(sys.argv) == 0):
         print 'Supply the name of a docs file to parse'
     else:
-        print(indent(md_to_html(sys.argv[1])))
+        print md_to_html(sys.argv[1])
