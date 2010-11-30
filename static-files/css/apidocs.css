@@ -36,7 +36,7 @@ Text title for some collection of API elements, like "Properties" or "Methods".
 .api_reference>.api_component_group>.api_header
   {
   font-size: 150%;
-  margin-top:10px;
+  margin-top:20px;
   margin-bottom:10px;
   padding: 3px;
   border: solid 1px #EEE;
@@ -47,7 +47,9 @@ Text title for some collection of API elements, like "Properties" or "Methods".
 .api_reference>.api_component_group>.api_component>.api_component_group>.api_header
   {
   font-size: 125%;
+  margin-top:20px;
   margin-bottom:5px;
+  border-bottom: solid 2px #EEE;
   }
 
 /***

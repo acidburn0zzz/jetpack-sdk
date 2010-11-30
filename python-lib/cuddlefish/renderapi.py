@@ -69,12 +69,12 @@ def indent(text_in):
     return text_out
 
 def div_wrap_id(text, classname, id):
-    return ''.join(['<div id="', id, '" class="', classname, '">\n\n', \
-                   text + '</div>\n\n'])
+    return ''.join(['\n<div id="', id, '" class="', classname, '">\n\n', \
+                   text + '\n</div>\n\n'])
 
 def div_wrap(text, classname):
-    return ''.join(['<div class="', classname, '">\n\n', \
-                   text, '</div>\n\n'])
+    return ''.join(['\n<div class="', classname, '">\n\n', \
+                   text, '\n</div>\n\n'])
 
 def span_wrap(text, classname):
     span_tag = '<span class="' + classname + '">'
@@ -238,7 +238,7 @@ def json_to_div(json, markdown_filename):
 # take the JSON output of apiparser
 # return standalone HTML containing the rendered component
 def json_to_html(json, markdown_filename):
-    return HTML_HEADER + json_to_div(json, markdown_filename) + HTML_FOOTER
+    return indent(HTML_HEADER + json_to_div(json, markdown_filename) + HTML_FOOTER)
 
 # take the name of a Markdown file
 # return the HTML DIV containing the rendered component
@@ -250,7 +250,7 @@ def md_to_div(markdown_filename):
 # take the name of a Markdown file
 # return standalone HTML containing the rendered component
 def md_to_html(markdown_filename):
-    return HTML_HEADER + md_to_div(markdown_filename) + HTML_FOOTER
+    return indent(HTML_HEADER + md_to_div(markdown_filename) + HTML_FOOTER)
 
 if __name__ == '__main__':
     if (len(sys.argv) == 0):
