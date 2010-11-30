@@ -69,12 +69,12 @@ def indent(text_in):
     return text_out
 
 def div_wrap_id(text, classname, id):
-    return ''.join(['<div id="', id, '" class="', classname, '">', \
-                   text + '</div>'])
+    return ''.join(['<div id="', id, '" class="', classname, '">\n\n', \
+                   text + '</div>\n\n'])
 
 def div_wrap(text, classname):
-    return ''.join(['<div class="', classname, '">', \
-                   text, '</div>'])
+    return ''.join(['<div class="', classname, '">\n\n', \
+                   text, '</div>\n\n'])
 
 def span_wrap(text, classname):
     span_tag = '<span class="' + classname + '">'
@@ -232,7 +232,7 @@ def json_to_div(json, markdown_filename):
     text += render_api_reference(api_docs)
     text = div_wrap_id(text, MODULE_API_DOCS_CLASS, \
                        module_name + MODULE_API_DOCS_ID)
-#    text = markdown.markdown(text)
+    text = markdown.markdown(text)
     return text.encode('utf8')
 
 # take the JSON output of apiparser

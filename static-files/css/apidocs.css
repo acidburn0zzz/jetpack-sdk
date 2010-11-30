@@ -5,6 +5,7 @@ Some global styles for api_refernece
 .api_reference p
   {
   margin-top: 0px;
+  margin-bottom: 5px;
   }
 
 .api_reference .datatype
