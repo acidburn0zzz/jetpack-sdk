@@ -1,18 +1,17 @@
 
-Welcome to the Add-on SDK
--------------------------
+# Welcome to the Add-on SDK #
 
 The Add-on SDK is designed to make it easier to develop Firefox and Thunderbird
 add-ons.
 
 It includes:
 
-* a set of modules providing high-level JavaScript APIs which you can use to
+* a set of ***modules*** providing high-level JavaScript APIs which you can use to
 create add-ons. These modules simplify tasks such as building a user interface
 and interacting with the Web, and will help ensure your add-on continues to
 work as new versions of the host application are released.
 
-* a set of tools for creating, running, testing, and packaging add-ons
+* a set of ***tools*** for creating, running, testing, and packaging add-ons
 
 The documentation is divided into two parts: the Developer Guide and the
 Package Reference. The Developer Guide is a collection of documents explaining
@@ -44,16 +43,12 @@ supplied in the SDK. The SDK follows the [CommonJS](http://www.commonjs.org/)
 standard according to which modules - pieces of reusable JavaScript - are
 collected into packages. There are two main packages.
 
-### addon-kit ###
-
-The addon-kit package provides high-level APIs for add-on developers. Most of
+* The ***addon-kit*** package provides high-level APIs for add-on developers. Most of
 the needs of most add-on developers should be served by the modules found here,
 and the bulk of the developer guide is dedicated to modules from this package.
 Modules in this packages also don't require any special privileges to run.
 
-### api-utils ###
-
-The api-utils package provides low-level APIs. Most of the modules it contains
+* The ***api-utils*** package provides low-level APIs. Most of the modules it contains
 are intended for people writing certain specific types of add-ons, and for
 people writing their own reusable modules. In particular it contains modules
 that supply basic services, like messaging, for higher-level modules. Many of
