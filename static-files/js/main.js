@@ -5,7 +5,7 @@ function startApp(jQuery, window) {
   var currentHash = "";
   var shouldFadeAndScroll = true;
 
-  const DEFAULT_HASH = "guide/getting-started";
+  const DEFAULT_HASH = "guide/welcome";
   const IDLE_PING_DELAY = 500;
   const CHECK_HASH_DELAY = 100;
 
