@@ -428,18 +428,18 @@ function startApp(jQuery, window) {
     });
   }
 
-  function linkDeveloperGuide() {
-    $("#dev-guide-toc li").each(
-      function() {
-        if ($(this).children().length == 0) {
-          var hash = "#guide/" + $(this).attr("id");
-          var hyperlink = $('<a target="_self"></a>');
-          hyperlink.attr("href", hash).text($(this).text());
-          $(this).text("");
-          $(this).append(hyperlink);
-        }
-      });
-  }
+function linkDeveloperGuide() {
+  $(".link").each(
+    function() {
+      if ($(this).children().length == 0) {
+        var hash = "#guide/" + $(this).attr("id");
+        var hyperlink = $('<a target="_self"></a>');
+        hyperlink.attr("href", hash).text($(this).text());
+        $(this).text("");
+        $(this).append(hyperlink);
+      }
+    });
+}
 
   var isPingWorking = true;
 
