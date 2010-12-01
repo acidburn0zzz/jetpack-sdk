@@ -10,7 +10,7 @@ It includes:
 * a set of modules providing high-level JavaScript APIs which you can use to
 create add-ons. These modules simplify tasks such as building a user interface
 and interacting with the Web, and will help ensure your add-on continues to
-work as new versions of the host application are released. 
+work as new versions of the host application are released.
 
 * a set of tools for creating, running, testing, and packaging add-ons
 
