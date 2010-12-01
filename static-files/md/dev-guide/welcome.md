@@ -43,13 +43,15 @@ supplied in the SDK. The SDK follows the [CommonJS](http://www.commonjs.org/)
 standard according to which modules - pieces of reusable JavaScript - are
 collected into packages. There are two main packages.
 
-* The ***addon-kit*** package provides high-level APIs for add-on developers. Most of
-the needs of most add-on developers should be served by the modules found here,
-and the bulk of the developer guide is dedicated to modules from this package.
-Modules in this packages also don't require any special privileges to run.
+* The ***addon-kit*** package provides high-level APIs for add-on developers.
+Most of the needs of most add-on developers should be served by the modules
+found here, and the bulk of the developer guide is dedicated to modules from
+this package. Modules in this packages also don't require any special
+privileges to run.
 
-* The ***api-utils*** package provides low-level APIs. Most of the modules it contains
-are intended for people writing certain specific types of add-ons, and for
-people writing their own reusable modules. In particular it contains modules
-that supply basic services, like messaging, for higher-level modules. Many of
-the modules in this package require privileged access to the browser chrome.
+* The ***api-utils*** package provides low-level APIs. Most of the modules it
+contains are intended for people writing certain specific types of add-ons, and
+for people writing their own reusable modules. In particular it contains
+modules that supply basic services, like messaging, for higher-level modules.
+Many of the modules in this package require privileged access to the browser
+chrome.
