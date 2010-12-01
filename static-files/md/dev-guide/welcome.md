@@ -58,4 +58,3 @@ are intended for people writing certain specific types of add-ons, and for
 people writing their own reusable modules. In particular it contains modules
 that supply basic services, like messaging, for higher-level modules. Many of
 the modules in this package require privileged access to the browser chrome.
-
