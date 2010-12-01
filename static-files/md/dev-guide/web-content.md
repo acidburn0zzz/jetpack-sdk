@@ -48,7 +48,7 @@ relationships. The gray fill represents code written by the add-on developer.
 ![Content script overview](media/content-scripting-overview.jpg)
 
 This might sound complicated but it doesn't need to be. The following add-on
-uses the [page-mod](#module/jetpack-core/page-mod) module to replace the
+uses the [page-mod](#module/api-utils/page-mod) module to replace the
 content of any web page in the `.co.uk` domain by executing a content script
 in the context of that page:
 
@@ -176,7 +176,7 @@ modules. The panel and page objects integrate the worker API directly. So to
 receive messages from a content script associated with a panel you can
 register as a listener in its constructor:
 
-    panel = panels.add(panels.Panel({
+    panel = require("panel").Panel({
       contentURL: "http://www.reddit.com/.mobile?keep_extension=True",
       contentScriptFile: data.url("panel.js"),
       contentScriptWhen: "ready",
@@ -184,7 +184,7 @@ register as a listener in its constructor:
       onMessage: function handleMessage(message) {
         // Handle the message
       }
-    }));
+    });
 
 To send messages to a content script from a panel you can just call
 `panel.postMessage()`.
@@ -261,7 +261,7 @@ mouse clicks.
 
 It also supplies a function to the `onMessage` option which passes the message
 parameter (the story URL) into the `addTab` function from the
-[tab-browser](#module/jetpack-core/tab-browser) module. This is the target for
+[tab-browser](#module/api-utils/tab-browser) module. This is the target for
 messages from any content scripts associated with the panel.
 
 This is the content script that intercepts the link clicks:
