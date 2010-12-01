@@ -7,10 +7,10 @@ add-ons.
 
 It includes:
 
-* a set of modules providing high-level JavaScript APIs which you can use
-      to create add-ons. These modules simplify tasks such as building a user
-      interface and interacting with the Web, and will help ensure your add-on
-      continues to work as new versions of the host application are released. 
+* a set of modules providing high-level JavaScript APIs which you can use to
+create add-ons. These modules simplify tasks such as building a user interface
+and interacting with the Web, and will help ensure your add-on continues to
+work as new versions of the host application are released. 
 
 * a set of tools for creating, running, testing, and packaging add-ons
 
@@ -18,13 +18,13 @@ The documentation is divided into two parts: the Developer Guide and the Package
 
 ## Developer Guide ##
 
-The [***Tutorial***](#guide/getting-started) is probably the best place to start: it explains how to install the SDK, takes you through the process of writing a simple add-on and introduces some of the main APIs.
+* The [***Tutorial***](#guide/getting-started) is probably the best place to start: it explains how to install the SDK, takes you through the process of writing a simple add-on and introduces some of the main APIs.
 
-The [***Reference***](#guide/reference) section provides some more in-depth documentation for various aspects of the SDK.
+* The [***Reference***](#guide/reference) section provides some more in-depth documentation for various aspects of the SDK.
 
-The ***Experimental*** section includes documentation of features which we expect might change in incompatible ways in future releases.
+* The ***Experimental*** section includes documentation of features which we expect might change in incompatible ways in future releases.
 
-The ***Internals*** section includes documentation which is more likely to be useful to people extending the SDK itself than to add-on developers. In particular, it contains important information for people developing modules which require privileged access to browser objects such as the chrome. If you are interested in helping to extend the SDK, then this section should be useful.
+* The ***Internals*** section includes documentation which is more likely to be useful to people extending the SDK itself than to add-on developers. In particular, it contains important information for people developing modules which require privileged access to browser objects such as the chrome. If you are interested in helping to extend the SDK, then this section should be useful.
 
 ## Package Reference ##
 
