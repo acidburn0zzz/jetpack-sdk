@@ -1,0 +1,221 @@
+This section of the tutorial takes you through the process of implementing,
+running and packaging a simple add-on using the SDK. The add-on will add a
+menu item to Firefox's context menu that replaces selected text with its
+English translation.
+
+First, create a directory called "translator". This is where we will keep all
+the files for this add-on. 
+
+You *do not* have to keep your add-ons under the SDK root: once you have called
+`source bin/activate` from the SDK root, `cfx` will remember where the SDK is,
+and you will be able to reference SDK packages from any directory.
+
+## Packages, Modules, and Add-ons ##
+
+Before we start it's worth taking a short detour into CommonJS, as this is the
+underlying infrastructure for both modules and add-ons.
+
+The [CommonJS group](http://wiki.commonjs.org/wiki/CommonJS) defines
+specifications for ***modules*** and ***packages***. 
+
+A CommonJS **module** is a piece of reusable JavaScript: it exports certain
+objects which are thus made available to dependent code. To facilitate this
+CommonJS defines:
+
+* an object called `exports` which contains all the objects which a CommonJS
+module wants to make available to other modules
+
+* a function called `require` which a module can use to import the exports 
+object of another module
+
+A CommonJS **package** is a structure which can wrap a collection of related
+modules: this makes it easier to distribute, install and manage modules.
+Minimally, a package must include a package specification file named
+"package.json". Among other things this file describes the other CommonJS
+packages that this package depends on. Packages must also follow a particular
+directory structure.
+
+* The JavaScript modules which the SDK provides are CommonJS modules, and they
+are collected into CommonJS packages.
+
+* The JavaScript components of an add-on constitute one or more
+CommonJS modules, and a complete add-on is a CommonJS package.
+
+So in terms of CommonJS objects we could depict the translator add-on as
+follows:
+
+![CommonJS translator](media/commonjs-translator.jpg)
+
+## Package Specification ##
+
+Since an add-on is a CommonJS package, the first file we will create is the
+package specification file.
+
+In your "translator" directory create a file called "package.json" and give it
+the following contents:
+
+    {
+      "description": "Translates selected text into English.",
+      "author": "Me (http://me.org)",
+    }
+
+## Adding Your Code ##
+
+According to the CommonJS package definition, all JavaScript modules are kept
+in a directory named "lib" under the top level directory.
+
+If a module called "main" exists in a CommonJS package, that module will be
+evaluated as soon as your program is loaded. For an add-on, that means that
+the "main" module will be evaluated as soon as the host application (such as
+Firefox or Thunderbird) has enabled your program as an extension.
+
+So: create a directory called "lib" under the root "translator" directory,
+and in that directory add a file called "main.js" with the following content:
+
+    // Import the APIs we need.
+    var contextMenu = require("context-menu");
+    var request = require("request");
+    var selection = require("selection");
+
+    // Create a new context menu item.
+    var menuItem = contextMenu.Item({
+
+      label: "Translate Selection",
+
+      // Show this item when a selection exists.
+      context: contextMenu.SelectionContext(),
+
+      // When this item is clicked, post a message to the item with the
+      // selected text and current URL.
+      contentScript: 'on("click", function () {' +
+                     '  var text = window.getSelection().toString();' +
+                     '  postMessage({ text: text, url: document.URL });' +
+                     '});',
+
+      // When we receive the message, call the Google Translate API with the
+      // selected text and replace it with the translation.
+      onMessage: function (selectionInfo) {
+        var req = request.Request({
+          url: "http://ajax.googleapis.com/ajax/services/language/translate",
+          content: {
+            v: "1.0",
+            q: selectionInfo.text,
+            langpair: "|en"
+          },
+          headers: {
+            Referer: selectionInfo.url
+          },
+          onComplete: function (response) {
+            selection.text = response.json.responseData.translatedText;
+          }
+        });
+        req.get();
+      }
+    });
+
+The first three lines are used to import three SDK modules from the
+addon-kit package:
+
+* ***[`context-menu`](#module/addon-kit/context-menu)*** enables add-ons to
+add new items to the context menu
+
+* ***[`request`](#module/addon-kit/request)*** enables add-ons to make
+network requests
+
+* ***[`selection`](#module/addon-kit/selection)*** gives add-ons access to
+selected text in the active browser window
+
+Next, this code constructs a context menu item. It supplies:
+
+* the name of the item to display: "Translate Selection"
+
+* a context in which the item should be displayed: `SelectionContext()`,
+meaning: include this item in the context menu whenever some content on the
+page is selected
+
+* a script to execute when the item is clicked: this script sends the selected
+text and document URL to the function assigned to the `onMessage` property
+* a value for the `onMessage` property: this function will now be called with
+the selected text and document URL, whenever the user clicks the menu. It uses
+Google's AJAX-based translation service to translate the selection to English
+and sets the selection to the translated text.
+
+
+## Running It ##
+
+To run your program, navigate to the root of your package directory
+in your shell and type:
+
+    cfx run
+
+The first time you do this, you'll see a message like this:
+
+    No 'id' in package.json: creating a new keypair for you.
+    package.json modified: please re-run 'cfx run'
+
+Run it again, and it will run an instance of Firefox (or your default
+application) with your add-on installed.
+
+The ID that `cfx` generated the first time you executed `cfx run` is a unique
+identifier for you add-on called the **Program ID** and it is important. It is
+used by various tools and services to distinguish this add-on from any other.
+
+To learn more about the Program ID refer to the [Program ID](#guide/program-id)
+document.
+
+Once `cfx run` has launched Firefox you can try out the new add-on. Load a
+page containing some text that is not in English. For example:
+[http://www.mozilla-europe.org/fr/](http://www.mozilla-europe.org/fr/).
+
+Select some text on that page and right-click to activate the context menu.
+You should see a new item labeled "Translate Selection". Select that item and
+the text you selected should be replaced with its English translation.
+
+## Packaging It ##
+
+Your program is packaged like any other extension for a Mozilla-based
+application, as a XPI file. The Add-on SDK simplifies the packaging
+process by generating this file for you.
+
+To package your program as a XPI, navigate to the root of your package
+directory in your shell and run `cfx xpi`. The first time you do this,
+you'll see a message about generating a keypair and modifying your
+`package.json` to add an `id` field, asking you to run `cfx xpi` again.
+When you re-run it, you should see a message:
+
+    Exporting extension to translator.xpi.
+
+The translator.xpi file can be found in the directory in which you ran
+the command.
+
+## Installing the Package ##
+
+Test that the package installs correctly by adding it to your own Firefox
+installation.
+
+You can do this by pressing the Ctrl+O key combination (Cmd+O on Mac) from
+within Firefox. This will bring up a file selection dialog: navigate to the
+my-first-package.xpi file, open it and follow the prompts to install the
+add-on.
+
+Alternatively, open the Firefox Add-ons Manager from within Firefox, either
+from the Add-ons item on the Tools menu, or by typing "about:addons" into the
+address bar. In the Firefox Add-ons Manager there is a gears icon next to the
+search bar. Click the icon and select "Install Add-on From File..." from the
+menu that appears. Again, this will bring up a file selection dialog which you
+can use to find and open the XPI file.
+
+Once you have installed the add-on you can test it in exactly the same way as
+in the "Running It" section above.
+
+## Distributing It ##
+
+To distribute your program, you can upload it to
+[Addons.mozilla.org](http://addons.mozilla.org).
+Eventually, this step may be automated via the SDK, streamlining the
+distribution process further.
+
+## Next: Implementing Reusable Modules ##
+
+Next we'll look at how you can use the SDK to create your own [reusable 
+modules](implementing-simple-module).
