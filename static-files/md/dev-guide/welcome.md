@@ -56,7 +56,7 @@ modules that supply basic services, like messaging, for higher-level modules.
 Many of the modules in this package require privileged access to the browser
 chrome.
 
-## Stability and Compatibility ###
+## Stability and Compatibility ##
 
 The different categories listed above also reflect differences in the stability
 of the different parts of the SDK.
