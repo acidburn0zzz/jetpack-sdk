@@ -14,6 +14,7 @@ In the /lib directory under your translator's root, create a new file called
     // Import the APIs we need.
     var request = require("request");
 
+    // Define the 'translate' function using Request
     function translate(text, callback) {
       var req = request.Request({
           url: "http://ajax.googleapis.com/ajax/services/language/translate",
@@ -29,6 +30,7 @@ In the /lib directory under your translator's root, create a new file called
       req.get();
     }
 
+    // Export the 'translate' function
     exports.translate = translate;
 
 
@@ -97,48 +99,54 @@ a file called "test-translator.js" with the following contents:
     var remainingTests;
 
     function check_translation(translation) {
-      testRunner.assertEqual(this, translation);
-      if (--remainingTests == 0) {
-        testRunner.done();
-      }
+      testRunner.assertEqual("Lizard", translation);
+      testRunner.done();
     }
 
-    function test_languages(test) {
-      remainingTests = 3;
+    function test_languages(test, text) {
       testRunner= test;
-      testRunner.waitUntilDone(20000);
-      check_lizard = check_translation.bind("Lizard");
-
-      translator.translate("Eidechse", check_lizard);
-      translator.translate("Lucertola", check_lizard);
-      translator.translate("Lisko", check_lizard);
+      testRunner.waitUntilDone(2000);
+      translator.translate(text, check_translation);
     }
 
-    exports.test_languages = test_languages;
+    exports.test_german = function(test) {
+      test_languages(test, "Eidechse");
+    }
 
-This file exports a single function, `test_languages`, which expects to receive
+    exports.test_italian = function(test) {
+      test_languages(test, "Lucertola");
+    }
+
+    exports.test_finnish = function(test) {
+      test_languages(test, "Lisko");
+    }
+
+This file exports three function, each of which expects to receive
 a single argument which is an instance of [`test`](#module/api-utils/unit-test).
 
 <span class="aside">
 `waitUntilDone()` and `done()` are needed here because the translator is
-asynchronous.
+asynchronous. To test an asynchronous function (a function that completes
+using a callback, rather than a return value), you call `test.waitUntilDone(),`
+supplying a delay time in milliseconds long enough for the function to
+complete. You put the test assertion in the callback, then call `test.done()`
+to signal that the test can finish.
 </span>
+
 `test_languages` calls `translate` and in the callback uses `test` to check that
 the translation is as expected.
 
 Now execute `cfx --verbose test` from under the package root directory.
 You should see something like this:
 
-    Running tests on Firefox 4.0b7/Gecko 2.0b7 under Darwin/x86_64-gcc3.
+    Running tests on Firefox 4.0b7/Gecko 2.0b7 ...
     info: executing 'test-translator.test_languages'
-    info: pass: a == b == (new String("Lizard"))
-    info: pass: a == b == (new String("Lizard"))
-    info: pass: a == b == (new String("Lizard"))
+    info: pass: a == b == "Lizard"
+    info: pass: a == b == "Lizard"
+    info: pass: a == b == "Lizard"
 
     3 of 3 tests passed.
     OK
-    Total time: 2.144092 seconds
-    Program terminated successfully.
 
 What happens here is that `cfx test` looks in the `tests` directory of your
 package, loads any modules that start with the word `test`, and calls all

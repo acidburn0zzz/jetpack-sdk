@@ -4,7 +4,7 @@ menu item to Firefox's context menu that replaces selected text with its
 English translation.
 
 First, create a directory called "translator". This is where we will keep all
-the files for this add-on. 
+the files for this add-on.
 
 You *do not* have to keep your add-ons under the SDK root: once you have called
 `source bin/activate` from the SDK root, `cfx` will remember where the SDK is,
@@ -18,24 +18,32 @@ Before we start it's worth taking a short detour into CommonJS, as this is the
 underlying infrastructure for both the SDK modules and add-ons themselves.
 
 The [CommonJS group](http://wiki.commonjs.org/wiki/CommonJS) defines
-specifications for ***modules*** and ***packages***. 
+specifications for ***modules*** and ***packages***.
 
-A CommonJS **module** is a piece of reusable JavaScript: it exports certain
+### CommonJS Modules ###
+
+A CommonJS ***module*** is a piece of reusable JavaScript: it exports certain
 objects which are thus made available to dependent code. To facilitate this
 CommonJS defines:
 
 * an object called `exports` which contains all the objects which a CommonJS
 module wants to make available to other modules
 
-* a function called `require` which a module can use to import the exports 
+* a function called `require` which a module can use to import the `exports`
 object of another module
 
-A CommonJS **package** is a structure which can wrap a collection of related
+### CommonJS Packages ###
+
+A CommonJS ***package*** is a structure which can wrap a collection of related
 modules: this makes it easier to distribute, install and manage modules.
-Minimally, a package must include a package specification file named
-"package.json". Among other things this file describes the other CommonJS
-packages that this package depends on. Packages must also follow a particular
-directory structure.
+
+Minimally, a package must include a package descriptor file named
+"package.json": this file contains information about the package such as a short
+description, the authors, and the other pakcages it depends on.
+
+Packages must also follow a particular directory structure.
+
+### CommonJS and the Add-on SDK ###
 
 * The JavaScript modules which the SDK provides are CommonJS modules, and they
 are collected into CommonJS packages.
@@ -48,7 +56,7 @@ follows:
 
 ![CommonJS translator](media/commonjs-translator.jpg)
 
-## Package Specification ##
+## Creating the Package Descriptor ##
 
 Since an add-on is a CommonJS package, the first file we will create is the
 package specification file.
@@ -106,8 +114,9 @@ and in that directory add a file called "main.js" with the following content:
             langpair: "|en"
           },
           onComplete: function (response) {
-            console.log("output: " + response.json.responseData.translatedText)
-            selection.text = response.json.responseData.translatedText;
+            translated = response.json.responseData.translatedText;
+            console.log("output: " + translated)
+            selection.text = translated;
           }
         });
         req.get();
@@ -230,5 +239,5 @@ distribution process further.
 
 ## Next: Implementing Reusable Modules ##
 
-Next we'll look at how you can use the SDK to create your own [reusable 
+Next we'll look at how you can use the SDK to create your own [reusable
 modules](implementing-simple-module).
