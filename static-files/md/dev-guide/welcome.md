@@ -1,8 +1,7 @@
 
 # Welcome to the Add-on SDK #
 
-The Add-on SDK is designed to make it easier to develop Firefox and Thunderbird
-add-ons.
+The Add-on SDK is designed to make it easy to develop Firefox add-ons.
 
 It includes:
 
@@ -27,14 +26,15 @@ writing a simple add-on and introduces some of the main APIs.
 * The ***Reference*** section provides some more in-depth documentation for
 various aspects of the SDK.
 
-* The ***Experimental*** section includes documentation of features which we
-expect might change in incompatible ways in future releases.
+* The ***Experimental*** section includes documentation of features which are
+potentially useful to add-on developers but are not yet stabilised.
 
 * The ***Internals*** section includes documentation which is more likely to
 be useful to people extending the SDK itself than to add-on developers. In
 particular, it contains important information for people developing modules
 which require privileged access to browser objects such as the chrome. If you
-are interested in helping to extend the SDK, then this section should be useful.
+are interested in helping to extend the SDK, then this section should be
+useful.
 
 ## Package Reference ##
 
@@ -55,3 +55,17 @@ for people writing their own reusable modules. In particular it contains
 modules that supply basic services, like messaging, for higher-level modules.
 Many of the modules in this package require privileged access to the browser
 chrome.
+
+## Stability and Compatibility ###
+
+The different categories listed above also reflect differences in the stability
+of the different parts of the SDK.
+
+Features and APIs documented in the ***Tutorial*** and ***Reference***
+sections, and the modules in the ***addon-kit*** package, are relatively
+stable. We intend to add new APIs here and extend existing ones, but will
+avoid making incompatible changes to them unless absolutely necessary.
+
+Features and APIs documented in the ***Experimental*** and ***Internals***
+sections, and the modules in the ***api-utils*** package, are less stable and
+we expect to make incompatible changes to them in future releases.
