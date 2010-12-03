@@ -1,7 +1,6 @@
 Welcome to the Add-on SDK.
 
-Prerequisites
--------------
+## Prerequisites ##
 
 To develop with the new Add-on SDK, you'll need:
 
@@ -18,8 +17,7 @@ Verify that Python is in your path.
   [Python]: http://www.python.org/
   [XULRunner SDK]: https://developer.mozilla.org/en/Gecko_SDK
 
-Installation
-------------
+## Installation ##
 
 At the time of this writing, the latest stable version of the Add-on
 SDK is 1.0b2pre. You can obtain it as a [tarball] or a [zip file].
@@ -58,8 +56,7 @@ At any time, you can leave a virtual environment by running
   [zip file]: https://ftp.mozilla.org/pub/mozilla.org/labs/jetpack/jetpack-sdk-latest.zip
   [HG repository]: http://hg.mozilla.org/labs/jetpack-sdk/
 
-Sanity Check
-------------
+## Sanity Check ##
 
 <span class="aside">
 Unit and behavioral [testing] is something that
@@ -85,6 +82,16 @@ This is the `cfx` command-line program.  It's your primary interface to the
 Add-on SDK.  You use it to launch Firefox and test your add-on, package your
 add-on for distribution, view documentation, and run unit tests.
 
-Once you're ready, move on to the next section: [Packaging].
+## cfx docs ##
+
+Before we begin, if the page you're reading right now isn't hosted at
+`127.0.0.1` or `localhost`, you should run `cfx docs`
+immediately. This will run a self-hosted documentation server and open
+it in your web browser.
+
+## Implementing an add-on ##
+
+Next we'll go through the process of [implementing a 
+simple add-on](#guide/implementing-simple-addon).
 
   [Packaging]: #guide/packaging

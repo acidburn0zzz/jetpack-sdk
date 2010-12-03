@@ -8,12 +8,14 @@ the files for this add-on.
 
 You *do not* have to keep your add-ons under the SDK root: once you have called
 `source bin/activate` from the SDK root, `cfx` will remember where the SDK is,
-and you will be able to reference SDK packages from any directory.
+and you will be able to reference SDK packages from any directory. Keeping your
+add-on code outside the SDK is good practice as it makes it easier to update
+the SDK and to manage your code using a revision control system.
 
 ## Packages, Modules, and Add-ons ##
 
 Before we start it's worth taking a short detour into CommonJS, as this is the
-underlying infrastructure for both modules and add-ons.
+underlying infrastructure for both the SDK modules and add-ons themselves.
 
 The [CommonJS group](http://wiki.commonjs.org/wiki/CommonJS) defines
 specifications for ***modules*** and ***packages***. 
@@ -89,23 +91,22 @@ and in that directory add a file called "main.js" with the following content:
       // selected text and current URL.
       contentScript: 'on("click", function () {' +
                      '  var text = window.getSelection().toString();' +
-                     '  postMessage({ text: text, url: document.URL });' +
+                     '  postMessage(text);' +
                      '});',
 
       // When we receive the message, call the Google Translate API with the
       // selected text and replace it with the translation.
-      onMessage: function (selectionInfo) {
+      onMessage: function (text) {
+        console.log("input: " + text)
         var req = request.Request({
           url: "http://ajax.googleapis.com/ajax/services/language/translate",
           content: {
             v: "1.0",
-            q: selectionInfo.text,
+            q: text,
             langpair: "|en"
           },
-          headers: {
-            Referer: selectionInfo.url
-          },
           onComplete: function (response) {
+            console.log("output: " + response.json.responseData.translatedText)
             selection.text = response.json.responseData.translatedText;
           }
         });
@@ -113,8 +114,9 @@ and in that directory add a file called "main.js" with the following content:
       }
     });
 
+
 The first three lines are used to import three SDK modules from the
-addon-kit package:
+addon-kit package using the CommonJS global `require()` function:
 
 * ***[`context-menu`](#module/addon-kit/context-menu)*** enables add-ons to
 add new items to the context menu
@@ -134,12 +136,18 @@ meaning: include this item in the context menu whenever some content on the
 page is selected
 
 * a script to execute when the item is clicked: this script sends the selected
-text and document URL to the function assigned to the `onMessage` property
-* a value for the `onMessage` property: this function will now be called with
-the selected text and document URL, whenever the user clicks the menu. It uses
-Google's AJAX-based translation service to translate the selection to English
-and sets the selection to the translated text.
+text to the function assigned to the `onMessage` property
 
+* a value for the `onMessage` property: this function will now be called with
+the selected text, whenever the user clicks the menu. It uses Google's
+AJAX-based translation service to translate the selection to English and sets
+the selection to the translated text.
+
+Finally, note the two calls to `console.log()` here. `console' is a global
+object accessible by any module and is very useful for debugging.
+`console.log(message)` writes `message` to the console. For more
+information on the globals available to your code see the
+[Globals](#guide/globals) reference section.
 
 ## Running It ##
 
@@ -170,6 +178,11 @@ page containing some text that is not in English. For example:
 Select some text on that page and right-click to activate the context menu.
 You should see a new item labeled "Translate Selection". Select that item and
 the text you selected should be replaced with its English translation.
+
+You will also see output like this appear in the console:
+
+    info: input: Quoi de neuf chez Mozilla?
+    info: output: What's New in Mozilla?
 
 ## Packaging It ##
 

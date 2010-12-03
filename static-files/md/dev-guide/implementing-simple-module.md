@@ -1,180 +1,158 @@
-So far the translator is implemented as a single module, and for such a simple
-add-on that is appropriate. But what if we wanted to support translation of web
-content not only through the context menu but also, say, automatically based on
-the domain name? By factoring out the request code into a separate reusable
-module we can make it available to different parts of the add-on.
+For a very simple add-on it's probably appropriate to keep all the code in a
+single "main.js" module. But for an add-on of any size or complexity you are
+likely to want to factor common code into separate modules so they are usable
+by different parts of your add-on or even by other programs.
 
+In this example we'll start with the translator add-on, and create a separate
+module containing the code that performs the translation.
 
+## Implementing "translate.js" ##
 
-We'll walk through the creation of a simple package to give you
-an idea of how they work.
+In the /lib directory under your translator's root, create a new file called
+"translate.js" with the following contents:
 
-Before we begin, if the page you're reading right now isn't hosted at
-`127.0.0.1` or `localhost`, you should run `cfx docs`
-immediately. This will run a self-hosted documentation server and open
-it in your web browser. The server will dynamically generate the
-documentation of all your packages for you, which makes development
-much easier.
+    // Import the APIs we need.
+    var request = require("request");
 
-### A Tiny Manifest ###
-
-<span class="aside">
-For more information on other `package.json` options, see
-the [Package Specification](#guide/package-spec).
-</span>
-
-The simplest possible package is just a directory that contains a
-JSON file called `package.json`. Go ahead and create a directory
-called `my-first-package` under your SDK's `packages` directory,
-and populate it with a file called `package.json` that contains
-the following:
-
-    {
-      "description": "This is my first package, it's tiny.",
-      "author": "Me (http://me.org)"
+    function translate(text, callback) {
+      var req = request.Request({
+          url: "http://ajax.googleapis.com/ajax/services/language/translate",
+          content: {
+            v: "1.0",
+            q: text,
+            langpair: "|en"
+          },
+          onComplete: function (response) {
+            callback(response.json.responseData.translatedText);
+          }
+      });
+      req.get();
     }
 
-Now reload this page. You should see `my-first-package` listed under
-*Package Reference* on the left side of this page, with its
-description next to it. The Add-on SDK's documentation server has
-automatically detected your new package and has started documenting
-it!
+    exports.translate = translate;
 
-### A Tiny Module ###
 
-<span class="aside">
-Learn more about how modules work at the [CommonJS Specification].
-</span>
+The `translate` function here is essentially the same as the listener function
+assigned to `onMessage` in the original code, except that it calls a callback
+with the translation instead of assigning the result directly to the selection.
 
-Reusable pieces of code are called *modules*. The Add-on SDK uses a
-module standard called CommonJS, which means that it's possible to
-share code between the SDK and other JavaScript-based frameworks like
-node.js.
+We export the function by assigning it to the global `exports` object.
 
-From the root of your new package's directory, create a new directory
-called `lib`.  In it, create a file called `my-module.js` with the
-following contents:
+## Editing "main.js" ##
 
-    exports.add = function add(a, b) {
-      return a + b;
-    };
+Next we edit "main.js" to make it use our new module rather than the `request`
+module:
 
-<span class="aside">
-For information on more globals available to code, see the [Globals] appendix.
-</span>
+    // Import the APIs we need.
+    var contextMenu = require("context-menu");
+    var selection = require("selection");
+    var translator = require("translator");
 
-In the code above, `exports` is a global object--part of the CommonJS
-module standard--provided to all modules by the SDK framework. To
-make data or code visible to other modules for reuse, a module simply
-"attaches" it to the `exports` object.
+    // Create a new context menu item.
+    var menuItem = contextMenu.Item({
+      label: "Translate Selection",
+      // Show this item when a selection exists.
+      context: contextMenu.SelectionContext(),
+      // When this item is clicked, post a message to the item with the
+      // selected text and current URL.
+      contentScript: 'on("click", function () {' +
+                     '  var text = window.getSelection().toString();' +
+                     '  postMessage(text);' +
+                     '});',
 
-### A Tiny Test Suite ###
+      // When we receive the message, call the translator with the
+      // selected text and replace it with the translation.
+      onMessage: function (text) {
+        translator.translate(text, function(translation) {
+                                      selection.text = translation; })
+      }
+    });
 
-To try importing our module, we'll use it in a test suite.
+Next, execute `cfx run` again, and try it out. It should work in exactly the
+same way as the previous version, except that now the core translator function
+has been made available to other parts of your add-on or to *any other program*
+that imports it.
 
-Just as a package's reusable code goes in the `lib` directory, so too
-do its tests go into a directory called `tests`. Create it, create
-a file in it called `test-my-module.js`, and put the following in it:
-
-    var myModule = require("my-module");
-
-    exports.ensureAdditionWorks = function(test) {
-      test.assertEqual(myModule.add(1, 1), 2, "1 + 1 = 2");
-    };
-
-In the code above, `require` is another global object that is
-part of the CommonJS module standard. It essentially finds a module
-with the given name and returns its `exports` object.
+## Testing Your Module ##
 
 <span class="aside">
-For more information on the Test Runner Object API, see the
-documentation for the [unit-test] module.
+Note that for historical reasons the SDK also accepts unit tests which are
+stored under "tests". In fact, right now only "tests" works for integration 
+with cfx, but this will be fixed soon (see bug 
+[614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712))
 </span>
+The SDK provides a framework to help test any modules you develop. According to
+the 
+[CommonJS package specification](http://wiki.commonjs.org/wiki/Packages/1.0)
+unit tests should be kept in a directory called "test" under the package root.
 
-As you can probably guess, the above code also happens to be a
-CommonJS module. Its single export is a *test function*, named
-according to the type of behavior it's testing, and it takes a single
-parameter, `test`, which should ultimately be passed to it by the test
-framework that executes it. This `test` object is called a *Test
-Runner Object*, and has an API that makes it really easy to run tests.
+If you follow this rule you can run tests using `cfx`. To demonstrate this we
+will add some slightly unlikely tests for the translator module.
 
-#### Running The Tests ####
+Create a new directory under the package root called "tests", and in it create
+a file called "test-translator.js" with the following contents:
+
+    var translator = require("translator")
+    var testRunner;
+    var remainingTests;
+
+    function check_translation(translation) {
+      testRunner.assertEqual(this, translation);
+      if (--remainingTests == 0) {
+        testRunner.done();
+      }
+    }
+
+    function test_languages(test) {
+      remainingTests = 3;
+      testRunner= test;
+      testRunner.waitUntilDone(20000);
+      check_lizard = check_translation.bind("Lizard");
+
+      translator.translate("Eidechse", check_lizard);
+      translator.translate("Lucertola", check_lizard);
+      translator.translate("Lisko", check_lizard);
+    }
+
+    exports.test_languages = test_languages;
+
+This file exports a single function, `test_languages`, which expects to receive
+a single argument which is an instance of [`test`](#module/api-utils/unit-test).
 
 <span class="aside">
-Writing and running tests has been designed to be as easy and fast as
-possible in the Add-on SDK.
+`waitUntilDone()` and `done()` are needed here because the translator is
+asynchronous.
 </span>
+`test_languages` calls `translate` and in the callback uses `test` to check that
+the translation is as expected.
 
-Now go to the root directory of your new package and run `cfx test
---verbose`. This command automatically looks in the `tests` directory
-if one exists, loads any modules that start with the word `test`, and
-calls all their exported functions, passing them a Test Runner Object
-implementation as their only argument.
+Now execute `cfx --verbose test` from under the package root directory.
+You should see something like this:
 
-The output should look something like this:
+    Running tests on Firefox 4.0b7/Gecko 2.0b7 under Darwin/x86_64-gcc3.
+    info: executing 'test-translator.test_languages'
+    info: pass: a == b == (new String("Lizard"))
+    info: pass: a == b == (new String("Lizard"))
+    info: pass: a == b == (new String("Lizard"))
 
-    info: executing 'test-my-module.ensureAdditionWorks'
-    info: pass: 1 + 1 = 2
-
-    Malloc bytes allocated (in use by application): 6450720
-    Malloc bytes mapped (not necessarily committed): 14262272
-    Malloc bytes committed (r/w) in default zone: 6460272
-    Malloc bytes allocated (in use) in default zone: 13213696
-    Tracked memory objects in testing sandbox: 2
-
-    1 of 1 tests passed.
+    3 of 3 tests passed.
     OK
-    Total time: 1.612978 seconds
+    Total time: 2.144092 seconds
     Program terminated successfully.
 
-Obviously, you don't have to pass the `--verbose` option to `cfx`
-if you don't want to; doing so just makes the output easier
-to read.
+What happens here is that `cfx test` looks in the `tests` directory of your
+package, loads any modules that start with the word `test`, and calls all
+their exported functions, passing them a `test` object implementation as
+their only argument.
 
-### Some Meager Documentation ###
+Obviously, you don't have to pass the `--verbose` option to `cfx` if you don't
+want to; doing so just makes the output easier to read.
 
-<span class="aside">
-If you ever want to know how to achieve the same kind of effect
-that's used in another page of documentation you've seen, try
-clicking the *view source* link at the bottom-right corner of every
-page.
-</span>
+## Next: Programming With the SDK ##
 
-If you click on your package's name on the left-hand side of this page,
-you'll notice that it says "This package has no documentation."  To
-make some, all you need to do is create a file called `README.md` in
-the root of your package's directory. For starters, fill it with this:
-
-    This is my *first* package. It contains:
-
-    * A tiny module.
-    * A tiny test suite.
-    * Some meager documentation.
-
-Save that file and reload the detail page for your package. The
-documentation should be there now, with nice formatting to boot.
-
-<span class="aside">
-For more information on writing in Markdown, see its [syntax guide].
-</span>
-
-This formatting syntax is called [Markdown], and is a simple, lightweight
-way to write documentation whose source is human-readable, while
-"gracefully upgrading" when presented in richer media like HTML.
-
-You can also document individual modules in your package by creating
-a directory called `docs` in the root of your package directory and
-populating it with Markdown files that have the same name as your
-modules, replacing the `.js` extension with `.md`. For instance,
-you could add documentation for `my-module` at `docs/my-module.md`.
-This will automatically be displayed when you click your module
-on the left-hand side of this page.
-
-Once you're ready, move on to the next section: [Programs].
+Next we'll take a look at some of the programming with the SDK modules,
+starting with its [event handling framework](#guide/events).
 
   [CommonJS Specification]: http://wiki.commonjs.org/wiki/Modules/1.0
-  [syntax guide]: http://daringfireball.net/projects/markdown/syntax
-  [Markdown]: http://daringfireball.net/projects/markdown/
-  [Programs]: #guide/programs
   [Globals]: #guide/globals
   [unit-test]: #module/api-utils/unit-test
