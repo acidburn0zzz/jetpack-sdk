@@ -90,6 +90,6 @@ it in your web browser.
 
 ## Implementing an add-on ##
 
-Next we'll go through the process of [implementing a 
+Next we'll go through the process of [implementing a
 simple add-on](#guide/implementing-simple-addon).
 
