@@ -16,6 +16,9 @@ In the /lib directory under your translator's root, create a new file called
 
     // Define the 'translate' function using Request
     function translate(text, callback) {
+      if (text.length == 0) {
+        throw ("Text to translate must not be empty")
+      }
       var req = request.Request({
           url: "http://ajax.googleapis.com/ajax/services/language/translate",
           content: {
@@ -78,21 +81,16 @@ that imports it.
 ## Testing Your Module ##
 
 <span class="aside">
-Note that for historical reasons the SDK also accepts unit tests which are
-stored under "tests". In fact, right now only "tests" works for integration 
-with cfx, but this will be fixed soon (see bug 
-[614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712))
+Until [614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712)) is fixed
+unit tests must be stored under `tests`, not `test`.
 </span>
-The SDK provides a framework to help test any modules you develop. According to
-the 
-[CommonJS package specification](http://wiki.commonjs.org/wiki/Packages/1.0)
-unit tests should be kept in a directory called "test" under the package root.
 
-If you follow this rule you can run tests using `cfx`. To demonstrate this we
-will add some slightly unlikely tests for the translator module.
+The SDK provides a framework to help test any modules you develop. To
+demonstrate this we will add some slightly unlikely tests for the translator
+module.
 
-Create a new directory under the package root called "tests", and in it create
-a file called "test-translator.js" with the following contents:
+Navigate to the `tests` directory and delete the `test-main.js` file. In its
+place create a file called "test-translator.js" with the following contents:
 
     var translator = require("translator")
     var testRunner;
@@ -121,7 +119,14 @@ a file called "test-translator.js" with the following contents:
       test_languages(test, "Lisko");
     }
 
-This file exports three function, each of which expects to receive
+    exports.test_error = function(test) {
+      test.assertRaises(function() {
+          translator.translate("", check_translation);
+        },
+        "Text to translate must not be empty");
+    };
+
+This file exports four functions, each of which expects to receive
 a single argument which is an instance of [`test`](#module/api-utils/unit-test).
 
 <span class="aside">
@@ -133,25 +138,52 @@ complete. You put the test assertion in the callback, then call `test.done()`
 to signal that the test can finish.
 </span>
 
-`test_languages` calls `translate` and in the callback uses `test` to check that
-the translation is as expected.
+`The first three functions call `translate` and in the callback use
+`test.assertEqual()` to check that the translation is as expected.
+
+The fourth function tests the translator's error-handling code by passing an
+empty string into `translate` and using `test.assertRaises()` to check that the
+expected exception is raised.
+
+At this point your package ought to look like this:
+
+<pre>
+    /translator
+        package.json
+        README.md
+        /docs
+            main.md
+        /lib
+            main.js
+            translate.js
+        /tests
+            test-translator.js
+</pre>
 
 Now execute `cfx --verbose test` from under the package root directory.
 You should see something like this:
 
+<pre>
     Running tests on Firefox 4.0b7/Gecko 2.0b7 ...
     info: executing 'test-translator.test_languages'
     info: pass: a == b == "Lizard"
     info: pass: a == b == "Lizard"
     info: pass: a == b == "Lizard"
+    info: executing 'test-translator.test_error'
+    info: pass: a == b == "Text to translate must not be empty"
 
-    3 of 3 tests passed.
+    4 of 4 tests passed.
     OK
+</pre>
 
-What happens here is that `cfx test` looks in the `tests` directory of your
-package, loads any modules that start with the word `test`, and calls all
-their exported functions, passing them a `test` object implementation as
-their only argument.
+What happens here is that `cfx test`:
+
+* looks in the `tests` directory of your
+package
+
+* loads any modules that start with the word `test`
+*  calls all their exported functions, passing them a `test` object
+implementation as their only argument.
 
 Obviously, you don't have to pass the `--verbose` option to `cfx` if you don't
 want to; doing so just makes the output easier to read.

@@ -3,15 +3,6 @@ running and packaging a simple add-on using the SDK. The add-on will add a
 menu item to Firefox's context menu that replaces selected text with its
 English translation.
 
-First, create a directory called "translator". This is where we will keep all
-the files for this add-on.
-
-You *do not* have to keep your add-ons under the SDK root: once you have called
-`source bin/activate` from the SDK root, `cfx` will remember where the SDK is,
-and you will be able to reference SDK packages from any directory. Keeping your
-add-on code outside the SDK is good practice as it makes it easier to update
-the SDK and to manage your code using a revision control system.
-
 ## Packages, Modules, and Add-ons ##
 
 Before we start it's worth taking a short detour into CommonJS, as this is the
@@ -31,6 +22,8 @@ module wants to make available to other modules
 
 * a function called `require` which a module can use to import the `exports`
 object of another module
+
+![CommonJS modules](media/commonjs-modules.jpg)
 
 ### CommonJS Packages ###
 
@@ -56,31 +49,96 @@ follows:
 
 ![CommonJS translator](media/commonjs-translator.jpg)
 
-## Creating the Package Descriptor ##
+## Getting Started - cfx init ##
 
-Since an add-on is a CommonJS package, the first file we will create is the
-package specification file.
+With that in mind let's get back to the add-on.
+Create a directory called "translator". This is where we will keep all the
+files for this add-on.
 
-In your "translator" directory create a file called "package.json" and give it
-the following contents:
+You *do not* have to create this directory under the SDK root: once you have
+called `source bin/activate` from the SDK root, `cfx` will remember where the
+SDK is, and you will be able to reference SDK packages from any directory.
 
-    {
-      "description": "Translates selected text into English.",
-      "author": "Me (http://me.org)",
-    }
+Keeping your add-on code outside the SDK is good practice as it makes it easier
+for you to update the SDK and to manage your code using a revision control
+system.
+
+<span class="aside">
+`cfx init` behaviour is going to change: see bugs
+[613587](https://bugzilla.mozilla.org/show_bug.cgi?id=613587) and
+[613604](https://bugzilla.mozilla.org/show_bug.cgi?id=613604)
+</span>
+Now navigate to this directory and execute `cfx init`. You should see something
+like this:
+
+<pre>
+    * lib directory created
+    * data directory created
+    * tests directory created
+    * docs directory created
+    * README.md written
+    * package.json written
+    * tests/test-main.js written
+    * lib/main.js written
+    * docs/main.md written
+
+    Your sample add-on is now ready for testing:
+        try "cfx test" and then "cfx run". Have fun!"
+</pre>
+
+`cfx init` creates a skeleton structure for your new add-on.
+
+First, it creates the directory structure defined by the CommonJS Package
+Specification:
+
+* `/data` contains resources such as icons or strings. You can access the
+content of the "data" subdirectory from within your add-on's code using the
+Add-on SDK's [self](#module/api-utils/self) module.
+
+<span class="aside">
+Note that until bug
+[614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712)) is fixed, this
+needs to be `/docs`.
+</span>
+
+* `/doc` contains any documentation for your add-on
+
+* `/lib` contains the JavaScript modules implementing your add-on
+
+<span class="aside">
+Note that until bug
+[614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712)) is fixed, this
+needs to be `/tests`.
+</span>
+
+* `/test` contains unit test code
+
+Next, `cfx init` creates a basic package descriptor. Open the `package.json`
+file in the `translator` directory: it should look something like this:
+
+<pre>
+{
+    "name":"translator",
+    "fullName":"translator",
+    "description":"This is an example of addon description.",
+    "author":"",
+    "license":"MPL",
+    "version":"0.1"
+}
+</pre>
+
+Finally, `cfx init` creates some example files under `docs`, `lib`, `tests`:
+we will replace those.
 
 ## Adding Your Code ##
-
-According to the CommonJS package definition, all JavaScript modules are kept
-in a directory named "lib" under the top level directory.
 
 If a module called "main" exists in a CommonJS package, that module will be
 evaluated as soon as your program is loaded. For an add-on, that means that
 the "main" module will be evaluated as soon as the host application (such as
-Firefox or Thunderbird) has enabled your program as an extension.
+Firefox) has enabled your program as an extension.
 
-So: create a directory called "lib" under the root "translator" directory,
-and in that directory add a file called "main.js" with the following content:
+So in the `lib` directory, open the file called "main.js" and replace its
+contents with the following:
 
     // Import the APIs we need.
     var contextMenu = require("context-menu");
@@ -105,6 +163,9 @@ and in that directory add a file called "main.js" with the following content:
       // When we receive the message, call the Google Translate API with the
       // selected text and replace it with the translation.
       onMessage: function (text) {
+          if (text.length == 0) {
+            throw ("Text to translate must not be empty")
+          }
         console.log("input: " + text)
         var req = request.Request({
           url: "http://ajax.googleapis.com/ajax/services/language/translate",
@@ -240,4 +301,4 @@ distribution process further.
 ## Next: Implementing Reusable Modules ##
 
 Next we'll look at how you can use the SDK to create your own [reusable
-modules](implementing-simple-module).
+modules](#guide/implementing-reusable-module).
