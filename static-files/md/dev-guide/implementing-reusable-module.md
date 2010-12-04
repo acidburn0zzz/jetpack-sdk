@@ -1,5 +1,5 @@
 For a very simple add-on it's probably appropriate to keep all the code in a
-single "main.js" module. But for an add-on of any size or complexity you are
+single `main.js` module. But for an add-on of any size or complexity you are
 likely to want to factor common code into separate modules so they are usable
 by different parts of your add-on or even by other programs.
 
@@ -41,11 +41,11 @@ The `translate` function here is essentially the same as the listener function
 assigned to `onMessage` in the original code, except that it calls a callback
 with the translation instead of assigning the result directly to the selection.
 
-We export the function by assigning it to the global `exports` object.
+We export the function by adding it to the global `exports` object.
 
 ## Editing "main.js" ##
 
-Next we edit "main.js" to make it use our new module rather than the `request`
+Next we edit `main.js` to make it use our new module rather than the `request`
 module:
 
     // Import the APIs we need.
@@ -127,7 +127,9 @@ place create a file called "test-translator.js" with the following contents:
     };
 
 This file exports four functions, each of which expects to receive
-a single argument which is an instance of [`test`](#module/api-utils/unit-test).
+a single argument which is a `test` object. `test` is supplied by the
+[`unit-test`](#module/api-utils/unit-test) module and provides functions to
+simplify unit testing.
 
 <span class="aside">
 `waitUntilDone()` and `done()` are needed here because the translator is
@@ -138,7 +140,7 @@ complete. You put the test assertion in the callback, then call `test.done()`
 to signal that the test can finish.
 </span>
 
-`The first three functions call `translate` and in the callback use
+The first three functions call `translate` and in the callback use
 `test.assertEqual()` to check that the translation is as expected.
 
 The fourth function tests the translator's error-handling code by passing an

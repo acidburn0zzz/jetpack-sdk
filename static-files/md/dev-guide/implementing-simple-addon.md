@@ -32,7 +32,7 @@ modules: this makes it easier to distribute, install and manage modules.
 
 Minimally, a package must include a package descriptor file named
 "package.json": this file contains information about the package such as a short
-description, the authors, and the other pakcages it depends on.
+description, the authors, and the other packages it depends on.
 
 Packages must also follow a particular directory structure.
 
@@ -127,8 +127,8 @@ file in the `translator` directory: it should look something like this:
 }
 </pre>
 
-Finally, `cfx init` creates some example files under `docs`, `lib`, `tests`:
-we will replace those.
+Finally, `cfx init` creates some example files under `docs`, `lib`, and
+`tests`: we will replace those.
 
 ## Adding Your Code ##
 
@@ -213,7 +213,7 @@ the selected text, whenever the user clicks the menu. It uses Google's
 AJAX-based translation service to translate the selection to English and sets
 the selection to the translated text.
 
-Finally, note the two calls to `console.log()` here. `console' is a global
+Finally, note the two calls to `console.log()` here. `console` is a global
 object accessible by any module and is very useful for debugging.
 `console.log(message)` writes `message` to the console. For more
 information on the globals available to your code see the
@@ -242,7 +242,7 @@ To learn more about the Program ID refer to the [Program ID](#guide/program-id)
 document.
 
 Once `cfx run` has launched Firefox you can try out the new add-on. Load a
-page containing some text that is not in English. For example:
+page containing some text that is not in English, for example:
 [http://www.mozilla-europe.org/fr/](http://www.mozilla-europe.org/fr/).
 
 Select some text on that page and right-click to activate the context menu.
@@ -261,14 +261,11 @@ application, as a XPI file. The Add-on SDK simplifies the packaging
 process by generating this file for you.
 
 To package your program as a XPI, navigate to the root of your package
-directory in your shell and run `cfx xpi`. The first time you do this,
-you'll see a message about generating a keypair and modifying your
-`package.json` to add an `id` field, asking you to run `cfx xpi` again.
-When you re-run it, you should see a message:
+directory in your shell and run `cfx xpi`. You should see a message:
 
     Exporting extension to translator.xpi.
 
-The translator.xpi file can be found in the directory in which you ran
+The `translator.xpi` file can be found in the directory in which you ran
 the command.
 
 ## Installing the Package ##
@@ -278,12 +275,16 @@ installation.
 
 You can do this by pressing the Ctrl+O key combination (Cmd+O on Mac) from
 within Firefox. This will bring up a file selection dialog: navigate to the
-my-first-package.xpi file, open it and follow the prompts to install the
+`translator.xpi` file, open it and follow the prompts to install the
 add-on.
 
-Alternatively, open the Firefox Add-ons Manager from within Firefox, either
+Alternatively:
+
+* Open the Firefox Add-ons Manager from within Firefox, either
 from the Add-ons item on the Tools menu, or by typing "about:addons" into the
-address bar. In the Firefox Add-ons Manager there is a gears icon next to the
+address bar.
+
+* In the Firefox Add-ons Manager there is a gears icon next to the
 search bar. Click the icon and select "Install Add-on From File..." from the
 menu that appears. Again, this will bring up a file selection dialog which you
 can use to find and open the XPI file.
@@ -294,7 +295,7 @@ in the "Running It" section above.
 ## Distributing It ##
 
 To distribute your program, you can upload it to
-[Addons.mozilla.org](http://addons.mozilla.org).
+[addons.mozilla.org](http://addons.mozilla.org).
 Eventually, this step may be automated via the SDK, streamlining the
 distribution process further.
 
