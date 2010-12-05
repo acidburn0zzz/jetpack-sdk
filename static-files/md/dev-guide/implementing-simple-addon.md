@@ -60,14 +60,9 @@ called `source bin/activate` from the SDK root, `cfx` will remember where the
 SDK is, and you will be able to reference SDK packages from any directory.
 
 Keeping your add-on code outside the SDK is good practice as it makes it easier
-for you to update the SDK and to manage your code using a revision control
+for you to update the SDK and to manage your code using a version control
 system.
 
-<span class="aside">
-`cfx init` behaviour is going to change: see bugs
-[613587](https://bugzilla.mozilla.org/show_bug.cgi?id=613587) and
-[613604](https://bugzilla.mozilla.org/show_bug.cgi?id=613604)
-</span>
 Now navigate to this directory and execute `cfx init`. You should see something
 like this:
 
@@ -92,26 +87,18 @@ First, it creates the directory structure defined by the CommonJS Package
 Specification:
 
 * `/data` contains resources such as icons or strings. You can access the
-content of the "data" subdirectory from within your add-on's code using the
+content of the `data` subdirectory from within your add-on's code using the
 Add-on SDK's [self](#module/api-utils/self) module.
 
-<span class="aside">
-Note that until bug
-[614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712)) is fixed, this
-needs to be `/docs`.
-</span>
-
-* `/doc` contains any documentation for your add-on
+* `/doc` contains any documentation for your add-on. *Note that until bug
+[614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712) is fixed, cfx
+expects this to be `/docs`.*
 
 * `/lib` contains the JavaScript modules implementing your add-on
 
-<span class="aside">
-Note that until bug
-[614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712)) is fixed, this
-needs to be `/tests`.
-</span>
-
-* `/test` contains unit test code
+* `/test` contains unit test code. *Note that until bug
+[614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712) is fixed, cfx
+expects this to be `/tests`.*
 
 Next, `cfx init` creates a basic package descriptor. Open the `package.json`
 file in the `translator` directory: it should look something like this:

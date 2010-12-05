@@ -8,7 +8,7 @@ module containing the code that performs the translation.
 
 ## Implementing "translate.js" ##
 
-In the /lib directory under your translator's root, create a new file called
+In the `lib` directory under your translator's root, create a new file called
 "translate.js" with the following contents:
 
     // Import the APIs we need.
@@ -73,10 +73,10 @@ module:
       }
     });
 
-Next, execute `cfx run` again, and try it out. It should work in exactly the
-same way as the previous version, except that now the core translator function
-has been made available to other parts of your add-on or to *any other program*
-that imports it.
+Next, execute `cfx run` again, and try out the add-on. It should work in
+exactly the same way as the previous version, except that now the core
+translator function has been made available to other parts of your add-on or
+to *any other program* that imports it.
 
 ## Testing Your Module ##
 
@@ -137,7 +137,7 @@ asynchronous. To test an asynchronous function (a function that completes
 using a callback, rather than a return value), you call `test.waitUntilDone(),`
 supplying a delay time in milliseconds long enough for the function to
 complete. You put the test assertion in the callback, then call `test.done()`
-to signal that the test can finish.
+to signal that the test has finished.
 </span>
 
 The first three functions call `translate` and in the callback use
@@ -192,7 +192,7 @@ want to; doing so just makes the output easier to read.
 
 ## Next: Programming With the SDK ##
 
-Next we'll take a look at some of the programming with the SDK modules,
+Next we'll take a look at some aspects of programming with the SDK,
 starting with its [event handling framework](#guide/events).
 
   [CommonJS Specification]: http://wiki.commonjs.org/wiki/Modules/1.0
