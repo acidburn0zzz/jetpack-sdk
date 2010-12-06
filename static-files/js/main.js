@@ -8,7 +8,7 @@ function startApp(jQuery, window) {
   const DEFAULT_HASH = "guide/welcome";
   const IDLE_PING_DELAY = 500;
   const CHECK_HASH_DELAY = 100;
-  const DOCUMENT_TITLE_ROOT = " - Add-on SDK Documentation";
+  const DOCUMENT_TITLE_ROOT = "Add-on SDK Documentation";
 
   function checkHash() {
     var hash = window.location.hash;
@@ -39,7 +39,9 @@ function startApp(jQuery, window) {
       documentName = $('#' + parts[1]).text();
       break;
     }
-    document.title = documentName + DOCUMENT_TITLE_ROOT;
+    if (documentName.length > 0) {
+      document.title = documentName + " - " + DOCUMENT_TITLE_ROOT;
+    }
   }
 
   function getModules(fileStruct) {
