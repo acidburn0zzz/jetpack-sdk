@@ -42,6 +42,9 @@ function startApp(jQuery, window) {
     if (documentName.length > 0) {
       document.title = documentName + " - " + DOCUMENT_TITLE_ROOT;
     }
+    else {
+      document.title = DOCUMENT_TITLE_ROOT;
+    }
   }
 
   function getModules(fileStruct) {
