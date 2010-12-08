@@ -1,15 +1,22 @@
-For a very simple add-on it's probably appropriate to keep all the code in a
-single `main.js` module. But for an add-on of any size or complexity you are
-likely to want to factor common code into separate modules so they are usable
-by different parts of your add-on or even by other programs.
+So far we've seen how you can use the SDK to build a simple add-on. But you
+can also use the SDK to create reusable CommonJS modules with clearly defined
+APIs. These modules are then usable by any other program which follows the
+CommonJS standard, including other add-ons built using the SDK.
 
-In this example we'll start with the translator add-on, and create a separate
-module containing the code that performs the translation.
+Even if you do not expect to provide reusable modules to other developers, it
+can often make sense to structure a larger or more complex add-on as a
+collection of modules. This makes the design of the add-on easier to understand
+and provides some encapsulation as each module will export only what it chooses
+to, so you can change the internals of the module without breaking its users.
+
+In this example we'll start with the [translator 
+add-on](#guide/implementing-single-addon), and create a separate module
+containing the code that performs the translation.
 
 ## Implementing "translate.js" ##
 
 In the `lib` directory under your translator's root, create a new file called
-"translate.js" with the following contents:
+`translate.js` with the following contents:
 
     // Import the APIs we need.
     var request = require("request");
@@ -90,7 +97,7 @@ demonstrate this we will add some slightly unlikely tests for the translator
 module.
 
 Navigate to the `tests` directory and delete the `test-main.js` file. In its
-place create a file called "test-translator.js" with the following contents:
+place create a file called `test-translator.js` with the following contents:
 
     var translator = require("translator")
     var testRunner;

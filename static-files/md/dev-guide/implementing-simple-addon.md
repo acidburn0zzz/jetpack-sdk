@@ -39,7 +39,7 @@ First, `cfx init` creates the directory structure your add-on needs:
 
 * `/data` contains resources such as icons or strings. You can access the
 content of the `data` subdirectory from within your add-on's code using the
-Add-on SDK's [self](#module/api-utils/self) module.
+Add-on SDK's [`self`](#module/api-utils/self) module.
 
 <span class="aside">*Note that until bug
 [614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712) is fixed, cfx
@@ -47,7 +47,7 @@ expects this to be `/docs`.*</span>
 
 * `/doc` contains any documentation for your add-on. 
 
-* `/lib` contains the JavaScript modules implementing your add-on
+* `/lib` contains the JavaScript modules implementing your add-on.
 
 <span class="aside">*Note that until bug
 [614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712) is fixed, cfx
