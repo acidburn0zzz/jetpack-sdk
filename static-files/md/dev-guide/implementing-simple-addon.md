@@ -3,56 +3,9 @@ running and packaging a simple add-on using the SDK. The add-on will add a
 menu item to Firefox's context menu that replaces selected text with its
 English translation.
 
-## Packages, Modules, and Add-ons ##
+## Initializing Your Add-on ##
 
-Before we start it's worth taking a short detour into CommonJS, as this is the
-underlying infrastructure for both the SDK modules and add-ons themselves.
-
-The [CommonJS group](http://wiki.commonjs.org/wiki/CommonJS) defines
-specifications for ***modules*** and ***packages***.
-
-### CommonJS Modules ###
-
-A CommonJS ***module*** is a piece of reusable JavaScript: it exports certain
-objects which are thus made available to dependent code. To facilitate this
-CommonJS defines:
-
-* an object called `exports` which contains all the objects which a CommonJS
-module wants to make available to other modules
-
-* a function called `require` which a module can use to import the `exports`
-object of another module
-
-![CommonJS modules](media/commonjs-modules.jpg)
-
-### CommonJS Packages ###
-
-A CommonJS ***package*** is a structure which can wrap a collection of related
-modules: this makes it easier to distribute, install and manage modules.
-
-Minimally, a package must include a package descriptor file named
-"package.json": this file contains information about the package such as a short
-description, the authors, and the other packages it depends on.
-
-Packages must also follow a particular directory structure.
-
-### CommonJS and the Add-on SDK ###
-
-* The JavaScript modules which the SDK provides are CommonJS modules, and they
-are collected into CommonJS packages.
-
-* The JavaScript components of an add-on constitute one or more
-CommonJS modules, and a complete add-on is a CommonJS package.
-
-So in terms of CommonJS objects we could depict the translator add-on as
-follows:
-
-![CommonJS translator](media/commonjs-translator.jpg)
-
-## Getting Started - cfx init ##
-
-With that in mind let's get back to the add-on.
-Create a directory called "translator". This is where we will keep all the
+Create a directory called `translator`. This is where we will keep all the
 files for this add-on.
 
 You *do not* have to create this directory under the SDK root: once you have
@@ -63,45 +16,48 @@ Keeping your add-on code outside the SDK is good practice as it makes it easier
 for you to update the SDK and to manage your code using a version control
 system.
 
-Now navigate to this directory and execute `cfx init`. You should see something
-like this:
+Next we'll use `cfx init` to create a skeleton structure for your add-on.
+Navigate to the `translator` directory and execute `cfx init`. You should see
+something like this:
 
 <pre>
-    * lib directory created
-    * data directory created
-    * tests directory created
-    * docs directory created
-    * README.md written
-    * package.json written
-    * tests/test-main.js written
-    * lib/main.js written
-    * docs/main.md written
+  * lib directory created
+  * data directory created
+  * tests directory created
+  * docs directory created
+  * README.md written
+  * package.json written
+  * tests/test-main.js written
+  * lib/main.js written
+  * docs/main.md written
 
-    Your sample add-on is now ready for testing:
-        try "cfx test" and then "cfx run". Have fun!"
+  Your sample add-on is now ready for testing:
+      try "cfx test" and then "cfx run". Have fun!"
 </pre>
 
-`cfx init` creates a skeleton structure for your new add-on.
-
-First, it creates the directory structure defined by the CommonJS Package
-Specification:
+First, `cfx init` creates the directory structure your add-on needs:
 
 * `/data` contains resources such as icons or strings. You can access the
 content of the `data` subdirectory from within your add-on's code using the
 Add-on SDK's [self](#module/api-utils/self) module.
 
-* `/doc` contains any documentation for your add-on. *Note that until bug
+<span class="aside">*Note that until bug
 [614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712) is fixed, cfx
-expects this to be `/docs`.*
+expects this to be `/docs`.*</span>
+
+* `/doc` contains any documentation for your add-on. 
 
 * `/lib` contains the JavaScript modules implementing your add-on
 
-* `/test` contains unit test code. *Note that until bug
+<span class="aside">*Note that until bug
 [614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712) is fixed, cfx
-expects this to be `/tests`.*
+expects this to be `/tests`.*</span>
 
-Next, `cfx init` creates a basic package descriptor. Open the `package.json`
-file in the `translator` directory: it should look something like this:
+* `/test` contains unit test code.
+
+Next, `cfx init` creates a file called `package.json` in the root `translator`
+directory. This contains information about your add-on and should look
+something like this:
 
 <pre>
 {
@@ -119,12 +75,7 @@ Finally, `cfx init` creates some example files under `docs`, `lib`, and
 
 ## Adding Your Code ##
 
-If a module called "main" exists in a CommonJS package, that module will be
-evaluated as soon as your program is loaded. For an add-on, that means that
-the "main" module will be evaluated as soon as the host application (such as
-Firefox) has enabled your program as an extension.
-
-So in the `lib` directory, open the file called "main.js" and replace its
+In the `lib` directory, open the file called `main.js` and replace its
 contents with the following:
 
     // Import the APIs we need.
@@ -173,15 +124,15 @@ contents with the following:
 
 
 The first three lines are used to import three SDK modules from the
-addon-kit package using the CommonJS global `require()` function:
+addon-kit package:
 
-* ***[`context-menu`](#module/addon-kit/context-menu)*** enables add-ons to
+* [`context-menu`](#module/addon-kit/context-menu) enables add-ons to
 add new items to the context menu
 
-* ***[`request`](#module/addon-kit/request)*** enables add-ons to make
+* [`request`](#module/addon-kit/request) enables add-ons to make
 network requests
 
-* ***[`selection`](#module/addon-kit/selection)*** gives add-ons access to
+* [`selection`](#module/addon-kit/selection) gives add-ons access to
 selected text in the active browser window
 
 Next, this code constructs a context menu item. It supplies:
@@ -208,18 +159,21 @@ information on the globals available to your code see the
 
 ## Running It ##
 
-To run your program, navigate to the root of your package directory
-in your shell and type:
+To run your program, navigate to the `translator` directory and type:
 
-    cfx run
+<pre>
+  cfx run
+</pre>
 
 The first time you do this, you'll see a message like this:
 
-    No 'id' in package.json: creating a new keypair for you.
-    package.json modified: please re-run 'cfx run'
+<pre>
+  No 'id' in package.json: creating a new keypair for you.
+  package.json modified: please re-run 'cfx run'
+</pre>
 
-Run it again, and it will run an instance of Firefox (or your default
-application) with your add-on installed.
+Run it again, and it will run an instance of Firefox with your add-on
+installed.
 
 The ID that `cfx` generated the first time you executed `cfx run` is a unique
 identifier for you add-on called the **Program ID** and it is important. It is
@@ -268,7 +222,7 @@ add-on.
 Alternatively:
 
 * Open the Firefox Add-ons Manager from within Firefox, either
-from the Add-ons item on the Tools menu, or by typing "about:addons" into the
+from the Add-ons item on the Tools menu, or by typing `about:addons` into the
 address bar.
 
 * In the Firefox Add-ons Manager there is a gears icon next to the
@@ -286,7 +240,64 @@ To distribute your program, you can upload it to
 Eventually, this step may be automated via the SDK, streamlining the
 distribution process further.
 
-## Next: Implementing Reusable Modules ##
+## CommonJS, Modules, Packages, and the SDK ##
 
-Next we'll look at how you can use the SDK to create your own [reusable
-modules](#guide/implementing-reusable-module).
+CommonJS is the underlying infrastructure for both the SDK modules and add-ons
+themselves.
+
+The [CommonJS group](http://wiki.commonjs.org/wiki/CommonJS) defines
+specifications for **modules** and **packages**.
+
+### CommonJS Modules ###
+
+A CommonJS **module** is a piece of reusable JavaScript: it exports certain
+objects which are thus made available to dependent code. To facilitate this
+CommonJS defines:
+
+* an object called `exports` which contains all the objects which a CommonJS
+module wants to make available to other modules
+
+* a function called `require` which a module can use to import the `exports`
+object of another module. Your translator add-on uses `require` to import the
+SDK modules it uses.
+
+![CommonJS modules](media/commonjs-modules.jpg)
+
+### CommonJS Packages ###
+
+A CommonJS **package** is a structure which can wrap a collection of related
+modules: this makes it easier to distribute, install and manage modules.
+
+Minimally, a package must include a package descriptor file named
+`package.json`: this file contains information about the package such as a short
+description, the authors, and the other packages it depends on. 
+
+Packages must also follow a particular directory structure, which is the
+structure `cfx init` created for your add-on. *Note: this isn't quite true until
+[614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712) is fixed*.
+
+### CommonJS and the Add-on SDK ###
+
+* The JavaScript modules which the SDK provides are CommonJS modules, and they
+are collected into CommonJS packages.
+
+* The JavaScript components of an add-on constitute one or more
+CommonJS modules, and a complete add-on is a CommonJS package. 
+
+According to the CommonJS specification, if a module called `main` exists in a
+CommonJS package, that module will be evaluated as soon as your program is
+loaded. For an add-on, that means that the `main` module will be evaluated as
+soon as the host application (such as Firefox) has enabled your program as an
+extension.
+
+So in terms of CommonJS objects the translator consists of a package that
+contains a single module called `main`, and which imports three SDK modules:
+
+![CommonJS translator](media/commonjs-translator.jpg)
+
+Because an add-on is a CommonJS package it's possible to include more than one
+module in an add-on, and to make your modules available to any code that want
+to use them.
+
+In the next section we'll see how you can use the SDK implement and test your
+own [reusable modules](#guide/implementing-reusable-module).
