@@ -9,7 +9,7 @@ collection of modules. This makes the design of the add-on easier to understand
 and provides some encapsulation as each module will export only what it chooses
 to, so you can change the internals of the module without breaking its users.
 
-In this example we'll start with the [translator 
+In this example we'll start with the [translator
 add-on](#guide/implementing-single-addon), and create a separate module
 containing the code that performs the translation.
 

@@ -45,7 +45,7 @@ Add-on SDK's [`self`](#module/api-utils/self) module.
 [614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712) is fixed, cfx
 expects this to be `/docs`.*</span>
 
-* `/doc` contains any documentation for your add-on. 
+* `/doc` contains any documentation for your add-on.
 
 * `/lib` contains the JavaScript modules implementing your add-on.
 
@@ -270,7 +270,7 @@ modules: this makes it easier to distribute, install and manage modules.
 
 Minimally, a package must include a package descriptor file named
 `package.json`: this file contains information about the package such as a short
-description, the authors, and the other packages it depends on. 
+description, the authors, and the other packages it depends on.
 
 Packages must also follow a particular directory structure, which is the
 structure `cfx init` created for your add-on. *Note: this isn't quite true until
@@ -282,7 +282,7 @@ structure `cfx init` created for your add-on. *Note: this isn't quite true until
 are collected into CommonJS packages.
 
 * The JavaScript components of an add-on constitute one or more
-CommonJS modules, and a complete add-on is a CommonJS package. 
+CommonJS modules, and a complete add-on is a CommonJS package.
 
 According to the CommonJS specification, if a module called `main` exists in a
 CommonJS package, that module will be evaluated as soon as your program is
