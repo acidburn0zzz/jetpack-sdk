@@ -125,7 +125,9 @@ Each function which represents a test case is passed a single argument
   *timeout* milliseconds for `test.done()` to be called.  This
   is intended for use in situations where a test suite schedules a
   callback, calls `test.waitUntilDone()`, and then calls
-  `test.done()` in the callback. *timeout* is an optional parameter: if it
+  `test.done()` in the callback. 
+  
+  *timeout* is an optional parameter: if it
   is omitted, a default value of 10000 ms is used.
 
 @param [timeout] {integer}
