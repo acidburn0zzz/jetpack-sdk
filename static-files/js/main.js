@@ -270,6 +270,8 @@ function startApp(jQuery, window) {
     fixInternalLinkTargets(query);
     showSidenotes(query);
     queuedContent = null;
+    $("pre>code").addClass("prettyprint");
+    prettyPrint();
   }
 
   function showModuleDetail(pkgName, moduleName) {

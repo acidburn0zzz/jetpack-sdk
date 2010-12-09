@@ -5,7 +5,9 @@ development servers as well as testing, running, and building packages.
 
 cfx usage is:
 
+<pre>
     cfx [options] command [command-specific options]
+</pre>
 
 "Options" are global options applicable to the tool itself or to all
 commands (for example `--help`). "Command-specific options" are only
@@ -16,8 +18,10 @@ Global Options
 
 Any of the cfx commands can be run with the following options:
 
+<pre>
     -h, --help        - show a help message and exit
     -v, --verbose     - enable lots of output
+</pre>
 
 Commands
 --------
@@ -36,6 +40,7 @@ Just create a new directory, change into it, and run `cfx init`.
 This command will create an skeleton add-on, as a starting point for your
 own add-on development, with the following file structure:
 
+<pre>
     README.md
     package.json
     data/
@@ -45,6 +50,7 @@ own add-on development, with the following file structure:
         test-main.js
     docs/
         main.md
+</pre>
 
 #### `cfx xpi` ####
 
@@ -58,6 +64,7 @@ it to [addons.mozilla.org][].
 
 **Supported Options:**
 
+<pre>
     --extra-packages=EXTRA_PACKAGES
                                  extra packages to include, comma-separated
 
@@ -78,11 +85,14 @@ it to [addons.mozilla.org][].
 
     --update-url=UPDATE_URL
                                  update URL in install.rdf
+</pre>
 
 **Internal Options**
 
+<pre>
     --keydir=KEYDIR              directory holding private keys; default is
                                  ~/.jetpack/keys
+</pre>
 
 #### `cfx run` ####
 
@@ -90,6 +100,7 @@ This command is used to run the add-on.
 
 **Supported Options:**
 
+<pre>
     -a APP, --app=APP            application to run: firefox (default),
                                  xulrunner, fennec, or thunderbird
 
@@ -112,14 +123,18 @@ This command is used to run the add-on.
 
     --templatedir=TEMPLATEDIR
                                  XULRunner application extension template
+</pre>
 
 **Internal Options**
+
+<pre>
     --addons=ADDONS              paths of add-ons to install, comma-separated
 
     --e10s                       enable out-of-process Jetpacks
 
     --keydir=KEYDIR              directory holding private keys; default is
                                  ~/.jetpack/keys
+</pre>
 
 #### `cfx test` ####
 
@@ -127,6 +142,7 @@ Run available tests for the specified package.
 
 **Supported Options:**
 
+<pre>
     -a APP, --app=APP            application to run: firefox (default), xulrunner,
                                  fennec, or thunderbird
 
@@ -145,13 +161,17 @@ Run available tests for the specified package.
 
     --times=ITERATIONS
                                  number of times to run tests
+</pre>
 
 **Experimental Options**
 
+<pre>
     --use-server                 use development server
+</pre>
 
 **Internal Options**
 
+<pre>
     --addons=ADDONS              paths of add-ons to install, comma-separated
 
     --e10s                       enable out-of-process Jetpacks
@@ -168,6 +188,7 @@ Run available tests for the specified package.
     --test-runner-pkg=TEST_RUNNER_PKG
                                  name of package containing test runner program
                                  (default is test-harness)
+</pre>
 
 ### Experimental Commands ###
 
@@ -181,11 +202,15 @@ detect leaks.
 
 For example, in shell A, type:
 
+<pre>
     cfx develop
+</pre>
 
 In shell B, type:
 
+<pre>
     cfx test --use-server
+</pre>
 
 This will send `cfx test --use-server` output to shell A. If you repeat the
 command in shell B, `cfx test --use-server` output will appear again in shell A
@@ -212,6 +237,7 @@ with, and which binary is used.
 
 **Options:**
 
+<pre>
     -a APP, --app=APP            application to run: firefox (default), xulrunner,
                                  fennec, or thunderbird
 
@@ -247,6 +273,7 @@ with, and which binary is used.
                                  number of times to run tests
 
     --use-server                 use development server
+</pre>
 
 #### `cfx testex` ####
 
@@ -257,6 +284,7 @@ with, and which binary is used.
 
 **Options:**
 
+<pre>
     -a APP, --app=APP            application to run: firefox (default), xulrunner,
                                  fennec, or thunderbird
 
@@ -292,6 +320,7 @@ with, and which binary is used.
                                  number of times to run tests
 
     --use-server                 use development server
+</pre>
 
 #### `cfx testall` ####
 
@@ -300,6 +329,7 @@ and all examples.
 
 **Options:**
 
+<pre>
     -a APP, --app=APP            application to run: firefox (default), xulrunner,
                                  fennec, or thunderbird
 
@@ -335,6 +365,7 @@ and all examples.
                                  number of times to run tests
 
     --use-server                 use development server
+</pre>
 
 Configuring local.json
 ----------------------
@@ -345,19 +376,25 @@ using a key called "configs".
 
 For example:
 
+<pre>
     {
         "configs": {
             "ff35": ["-a", "firefox", "-b", "/home/me/firefox-3.5/firefox-bin"]
         }
     }
+</pre>
 
 Using the above configuration, you can run:
 
+<pre>
     cfx test --use-config=ff35
+</pre>
 
 And it would be equivalent to:
 
+<pre>
     cfx test -a firefox -b /home/me/firefox-3.5/firefox-bin
+</pre>
 
 This method of defining configuration options can be used for all of the run,
 build, and test tools. If "default" is defined in the `local.json` cfx will use
@@ -384,11 +421,15 @@ For example, if your `main.js` looks like this:
 
 And you run cfx like this:
 
+<pre>
     cfx run --static-args="{ \"foo\": \"Hello from the command line\" }"
+</pre>
 
 Then your console should contain this:
 
+<pre>
     info: Hello from the command line
+</pre>
 
 The `--static-args` option is recognized by two of the package-specific
 commands: `run` and `xpi`.  When used with the `xpi` command, the JSON is
