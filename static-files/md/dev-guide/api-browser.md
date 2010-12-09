@@ -7,7 +7,7 @@ clipboard.
 
 `private-browsing` enables your add-on to start and stop private browsing mode,
 and to be notified when the browser starts or stops private browsing
-mode. 
+mode.
 
 You should use these notifications to ensure your add-on respects private
 browsing.
@@ -20,7 +20,7 @@ page, either as text or HTML.
 ## [tabs](#module/addon-kit/tabs) ##
 
 This module enables you to interact with the currently open tabs and to open
-new tabs. 
+new tabs.
 
 You can get the list of open tabs and the current active tab, and get
 notified of tabs opening, closing or becoming active and inactive.
@@ -32,11 +32,11 @@ Note that you can't access the content hosted by the tab using this API.
 ## [windows](#module/addon-kit/windows) ##
 
 Like the `tabs` module but for windows this module enables you to
-interact with currently open windows and to open new windows. 
+interact with currently open windows and to open new windows.
 
-As for the `tabs` module, you can get the list of open windows, the current
+You can get the list of open windows, the current
 active window, and get notified of windows opening and closing, or becoming
-active or inactive. 
+active or inactive.
 
 You can retrieve each window and get certain information about it such as the
 list of tabs it hosts.

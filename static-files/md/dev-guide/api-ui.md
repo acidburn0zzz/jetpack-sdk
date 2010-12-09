@@ -3,7 +3,7 @@ The SDK provides four modules to help you build a UI.
 ## [panel](#module/addon-kit/panel) ##
 
 A panel is the SDK's version of a dialog. Its content is specified as HTML,
-and it can be supplied with [content 
+and it can be supplied with [content
 scripts](#guide/web-content) to interact with
 the panel's content and send messages back to the main add-on code.
 
@@ -16,7 +16,7 @@ A widget is permanently displayed in a dedicated bar in the browser chrome.
 Its content is specified as text or HTML, either passed directly into the
 widget constructor or indirectly via a URL, it and can notify the add-on when
 the user interacts with it by generating `click` and `mouseover`
-[events](#guide/events). 
+[events](#guide/events).
 
 Widgets are generally used in one of two different contexts:
 
@@ -37,7 +37,7 @@ interact with the content it hosts.
 ## [context-menu](#module/addon-kit/panel) ##
 
 The context menu module lets you add items and submenus to the browser's
-context menu. 
+context menu.
 
 You can define the context in which the item is shown using any
 of a number of predefined contexts (for example, when some content on the page

@@ -29,7 +29,7 @@ when they occur.
 
 Several modules need to interact directly with web content, either web content
 they host themselves (such as the [`panel`](#module/addon-kit/panel) module) or
-web content hosted by the browser (such as the 
+web content hosted by the browser (such as the
 [`page-mod`](#module/addon-kit/page-mod)).
 
 These modules follow a common pattern in which the code
