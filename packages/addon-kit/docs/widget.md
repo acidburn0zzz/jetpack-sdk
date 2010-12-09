@@ -144,6 +144,21 @@ create your content scripts in separate files and pass their URLs using the
       myWidget.width += 10;
     }, 1000);
 
+    // A widget communicating bi-directionally with a content script.
+    let widget = widgets.Widget({
+      label: "Bi-directional communication!",
+      content: "<foo>bar</foo>",
+      contentScriptWhen: "ready",
+      contentScript: 'on("message", function(message) {' +
+                     '  alert("Got message: " + message);' +
+                     '});' +
+                     'postMessage("ready");",
+      onMessage: function(message) {
+        if (message == "ready")
+          widget.postMessage("me too");
+      }
+    });
+
 <api-name="Widget">
 @class
 Represents a widget object.
@@ -170,7 +185,7 @@ Represents a widget object.
     content. Widgets must have either the `content` property or the
     `contentURL` property set.
 
-  @prop [panel] {panel}
+  @prop [panel] {Panel}
     An optional [panel](#module/addon-kit/panel) to open when the user clicks on
     the widget. Note: If you also register a "click" listener, it will be called
     instead of the panel being opened.  However, you can show the panel from the
@@ -223,6 +238,13 @@ Represents a widget object.
   Removes the widget from the add-on bar.
 </api>
 
+<api name="postMessage">
+@method
+  Sends a message to the widget's content scripts.
+@param data {value}
+  The message to send.  Must be JSON-able.
+</api>
+
 <api name="on">
 @method
   Registers an event listener with the widget.
@@ -255,16 +277,16 @@ Represents a widget object.
 </api>
 
 <api name="contentURL">
-@property {URL}
-  The [URL](#module/api-utils/url) of content to load into the widget.  This can
-  be [local content](#guide/web-content) or remote content, an image or web
+@property {string}
+  The URL of content to load into the widget.  This can be
+  [local content](#guide/web-content) or remote content, an image or web
   content.  Setting it updates the widget's appearance immediately.  However,
   if the widget was created using `content`, then this property is meaningless,
   and setting it has no effect.
 </api>
 
 <api name="panel">
-@property {string}
+@property {Panel}
   A [panel](#module/addon-kit/panel) to open when the user clicks on the widget.
 </api>
 
