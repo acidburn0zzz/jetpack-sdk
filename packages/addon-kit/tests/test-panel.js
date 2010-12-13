@@ -1,14 +1,14 @@
 let { Cc, Ci } = require("chrome");
 let panels = require('panel');
-let URL = require("url").URL;
 let tests = {}, panels, Panel;
 
 tests.testPanel = function(test) {
   test.waitUntilDone();
-  let panel = panels.add(Panel({
+  let panel = Panel({
     contentURL: "about:buildconfig",
     contentScript: "postMessage(1); on('message', function() postMessage(2));",
     onMessage: function (message) {
+      test.assertEqual(this, panel, "The 'this' object is the panel.");
       switch(message) {
         case 1:
           test.pass("The panel was loaded.");
@@ -16,17 +16,17 @@ tests.testPanel = function(test) {
           break;
         case 2:
           test.pass("The panel posted a message and received a response.");
-          panels.remove(panel);
+          panel.destroy();
           test.done();
           break;
       }
     }
-  }));
+  });
 };
 
 tests.testShowHidePanel = function(test) {
   test.waitUntilDone();
-  let panel = panels.add(Panel({
+  let panel = Panel({
     contentScript: "postMessage('')",
     contentScriptWhen: "ready",
     onMessage: function (message) {
@@ -34,14 +34,16 @@ tests.testShowHidePanel = function(test) {
     },
     onShow: function () {
       test.pass("The panel was shown.");
+      test.assertEqual(this, panel, "The 'this' object is the panel.");
       panel.hide();
     },
     onHide: function () {
-      panels.remove(panel);
       test.pass("The panel was hidden.");
+      test.assertEqual(this, panel, "The 'this' object is the panel.");
+      panel.destroy();
       test.done();
     }
-  }));
+  });
 };
 
 tests.testResizePanel = function(test) {
@@ -65,7 +67,7 @@ tests.testResizePanel = function(test) {
   function onFocus() {
     browserWindow.removeEventListener("focus", onFocus, true);
 
-    let panel = panels.add(Panel({
+    let panel = Panel({
       contentScript: "postMessage('')",
       contentScriptWhen: "ready",
       height: 10,
@@ -83,7 +85,7 @@ tests.testResizePanel = function(test) {
         activeWindow.focus();
         test.done();
       }
-    }));
+    });
   }
 
   if (browserWindow === activeWindow) {
@@ -98,7 +100,7 @@ tests.testResizePanel = function(test) {
 tests.testHideBeforeShow = function(test) {
   test.waitUntilDone();
   let showCalled = false;
-  let panel = panels.add(Panel({
+  let panel = Panel({
     onShow: function () {
       showCalled = true;
     },
@@ -106,7 +108,7 @@ tests.testHideBeforeShow = function(test) {
       test.assert(!showCalled, 'must not emit show if was hidden before');
       test.done();
     }
-  }));
+  });
   panel.show();
   panel.hide();
 };
@@ -114,7 +116,7 @@ tests.testHideBeforeShow = function(test) {
 tests.testSeveralShowHides = function(test) {
   test.waitUntilDone();
   let hideCalled = 0;
-  let panel = panels.add(panels.Panel({
+  let panel = panels.Panel({
     contentURL: "about:buildconfig",
     onShow: function () {
       panel.hide();
@@ -128,12 +130,58 @@ tests.testSeveralShowHides = function(test) {
         test.done();
       }
     }
-  }));
+  });
   panel.on('error', function(e) {
     test.fail('error was emitted:' + e.message + '\n' + e.stack);
   });
   panel.show();
 };
+
+function makeEventOrderTest(options) {
+  let expectedEvents = [];
+
+  return function(test) {
+    let panel = panels.Panel({ contentURL: "about:buildconfig" });
+
+    function expect(event, cb) {
+      expectedEvents.push(event);
+      panel.on(event, function() {
+        test.assertEqual(event, expectedEvents.shift());
+        if (cb)
+          require("timer").setTimeout(cb, 1);
+      });
+      return {then: expect};
+    }
+
+    test.waitUntilDone();
+    options.test(test, expect, panel);
+  }
+}
+
+tests.testWaitForInitThenShowThenDestroy = makeEventOrderTest({
+  test: function(test, expect, panel) {
+    expect('inited', function() { panel.show(); }).
+      then('show', function() { panel.destroy(); }).
+      then('hide', function() { test.done(); });
+  }
+});
+
+tests.testShowThenWaitForInitThenDestroy = makeEventOrderTest({
+  test: function(test, expect, panel) {
+    panel.show();
+    expect('inited').
+      then('show', function() { panel.destroy(); }).
+      then('hide', function() { test.done(); });
+  }
+});
+
+tests.testShowThenHideThenDestroy = makeEventOrderTest({
+  test: function(test, expect, panel) {
+    panel.show();
+    expect('show', function() { panel.hide(); }).
+      then('hide', function() { panel.destroy(); test.done(); });
+  }
+});
 
 tests.testContentURLOption = function(test) {
   const URL_STRING = "about:buildconfig";
@@ -141,33 +189,22 @@ tests.testContentURLOption = function(test) {
 
   let (panel = Panel({ contentURL: URL_STRING })) {
     test.pass("contentURL accepts a string URL.");
-    test.assert(panel.contentURL instanceof URL,
-                "contentURL is a URL object.");
-    test.assertEqual(panel.contentURL.toString(), URL_STRING,
-                "contentURL stringifies to the string to which it was set.");
-  }
-
-  let url = URL(URL_STRING);
-  let (panel = Panel({ contentURL: url })) {
-    test.pass("contentURL accepts a URL object.");
-    test.assert(panel.contentURL instanceof URL,
-                "contentURL is a URL object.");
-    test.assertEqual(panel.contentURL.toString(), url.toString(),
-                "contentURL stringifies to the URL to which it was set.");
+    test.assertEqual(panel.contentURL, URL_STRING,
+                "contentURL is the string to which it was set.");
   }
 
   let dataURL = "data:text/html," + encodeURIComponent(HTML_CONTENT);
   let (panel = Panel({ contentURL: dataURL })) {
     test.pass("contentURL accepts a data: URL.");
   }
-  
+
   let (panel = Panel({})) {
     test.assert(panel.contentURL == null,
                 "contentURL is undefined.");
   }
 
   test.assertRaises(function () Panel({ contentURL: "foo" }),
-                    "The `contentURL` option must be a URL.",
+                    "The `contentURL` option must be a valid URL.",
                     "Panel throws an exception if contentURL is not a URL.");
 };
 

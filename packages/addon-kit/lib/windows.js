@@ -64,7 +64,7 @@ const { Cc, Ci } = require('chrome'),
       BROWSER = 'navigator:browser';
 
 /**
- * Window trait composes safe wrappers for browser window that are I10S
+ * Window trait composes safe wrappers for browser window that are E10S
  * compatible.
  */
 const BrowserWindowTrait = Trait.compose(
@@ -110,12 +110,12 @@ const BrowserWindowTrait = Trait.compose(
       } catch(e) {
         this._emit('error', e)
       }
-      this._emit('open', this._public);
+      this._emitOnObject(browserWindows, 'open', this._public);
     },
     _onUnload: function() {
       // Need to remove all the tabs before window listener are notified.
       this._destroyWindowTabTracker();
-      this._emit('close', this._public);
+      this._emitOnObject(browserWindows, 'close', this._public);
       this._window = null;
       // Removing reference from the windows array.
       windows.splice(windows.indexOf(this), 1);
@@ -195,6 +195,7 @@ const browserWindows = Trait.resolve({ toString: null }).compose(
     },
     open: function open(options) {
       if (typeof options === "string")
+        // `tabs` option is under review and may be removed.
         options = { tabs: [Options(options)] };
       return BrowserWindow(options);
     },

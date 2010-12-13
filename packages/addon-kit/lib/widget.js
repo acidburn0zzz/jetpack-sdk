@@ -50,11 +50,11 @@ const ERR_CONTENT = "No content or contentURL property found. Widgets must "
                          + "have one or the other.",
       ERR_LABEL = "The widget must have a non-empty label property.";
 
-// Supported events
+// Supported events, mapping from DOM event names to our event names
 const EVENTS = {
   "click": "click",
-  "mouseover": "MouseOver",
-  "mouseout": "MouseOut",
+  "mouseover": "mouseover",
+  "mouseout": "mouseout",
 };
 
 if (!require("xul-app").is("Firefox")) {
@@ -115,10 +115,10 @@ const Widget = Trait.compose(Loader, Trait.compose({
 
     if ("onClick" in options)
       this.on("click", options.onClick);
-    if ("onMouseOver" in options)
-      this.on("MouseOver", options.onMouseOver);
-    if ("onMouseOut" in options)
-      this.on("MouseOut", options.onMouseOut);
+    if ("onMouseover" in options)
+      this.on("mouseover", options.onMouseover);
+    if ("onMouseout" in options)
+      this.on("mouseout", options.onMouseout);
     if ("content" in options)
       this._content = options.content;
     if ("contentURL" in options)
@@ -139,7 +139,7 @@ const Widget = Trait.compose(Loader, Trait.compose({
 
     if (!(this._content || this.contentURL))
       throw new Error(ERR_CONTENT);
-    
+
     let self = this;
     this.on('propertyChange', function(change) {
       if ('contentURL' in change)
@@ -156,7 +156,7 @@ const Widget = Trait.compose(Loader, Trait.compose({
 
   _onEvent: function Widget__onEvent(type, target, eventData, domNode) {
     if (target === this._public) {
-      this._emit(type, this._public, eventData);
+      this._emit(type, eventData);
 
       // Special case for click events: if the widget doesn't have a click
       // handler, but it does have a panel, display the panel.
@@ -200,6 +200,10 @@ const Widget = Trait.compose(Loader, Trait.compose({
       this._panel = value;
   },
   _panel: null,
+
+  postMessage: function Widget_postMessage(message) {
+    browserManager.updateItem(this._public, "postMessage", message);
+  },
 
   destroy: function Widget_destroy() {
     browserManager.removeItem(this._public);
@@ -259,8 +263,6 @@ let browserManager = {
       throw new Error("The widget " + item + " has already been added.");
     this.items.push(item);
     this.windows.forEach(function (w) w.addItems([item]));
-    if (item.panel)
-      panels.add(item.panel);
   },
 
   // Updates the content of an item registered with the manager,
@@ -278,7 +280,7 @@ let browserManager = {
     if (idx > -1) {
       this.items.splice(idx, 1);
       if (item.panel)
-        panels.remove(item.panel);
+        item.panel.destroy();
       this.windows.forEach(function (w) w.removeItems([item]));
     }
   },
@@ -407,6 +409,9 @@ BrowserWindow.prototype = {
           break;
         case "tooltip":
           item.node.setAttribute("tooltiptext", value);
+          break;
+        case "postMessage":
+          item.symbiont.postMessage(value);
           break;
       }
     }

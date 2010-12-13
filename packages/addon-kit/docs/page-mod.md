@@ -29,7 +29,7 @@ To create a PageMod the add-on developer supplies:
 
 * a set of rules to select the desired subset of web pages based on their URL.
 Each rule is specified using the
-[match-pattern](#module/jetpack-core/match-pattern) syntax.
+[match-pattern](#module/api-utils/match-pattern) syntax.
 
 * a set of content scripts to execute in the context of the desired pages.
 
@@ -63,8 +63,8 @@ script can interact with the DOM itself:
 ### <a name="pagemod-content-scripts">Communicating With Content Scripts</a>###
 
 When a matching page is loaded the `PageMod` will call the function that the
-add-on code supplied to `onAttach`. The `PageMod` supplies two arguments to
-this function: the `PageMod` itself and a `worker` object.
+add-on code supplied to `onAttach`. The `PageMod` supplies one argument to
+this function: a `worker` object.
 
 The worker can be thought of as the add-on's end of
 a communication channel between the add-on code and the content scripts that
@@ -93,7 +93,7 @@ This is demonstrated in the following example:
       contentScriptWhen: 'ready',
       contentScript: "onMessage = function onMessage(message) {" +
                      "  window.alert(message);};",
-      onAttach: function onAttach(worker, mod) {
+      onAttach: function onAttach(worker) {
         if (workers.push(worker) == 3) {
           workers[0].postMessage("The first worker!");
           workers[1].postMessage("The second worker!");
@@ -137,7 +137,7 @@ attached and registers a listener function that simply logs the message:
                       "document.URL);",
                       "postMessage('Content script 2 is attached to '+ " +
                       "document.URL);"],
-      onAttach: function onAttach(worker, mod) {
+      onAttach: function onAttach(worker) {
         console.log("Attaching content scripts")
         worker.on('message', function(data) {
           console.log(data);
@@ -168,7 +168,7 @@ Creates a PageMod.
     the pages to which the PageMod applies.  See the [match-pattern] module for
     a description of match pattern syntax.
     At least one match pattern must be supplied.
-    [match-pattern]: #module/jetpack-core/match-pattern
+    [match-pattern]: #module/api-utils/match-pattern
   @prop [contentScriptFile] {string,array}
     The local file URLs of content scripts to load.  Content scripts specified
     by this option are loaded *before* those specified by the `contentScript`
@@ -184,13 +184,10 @@ Creates a PageMod.
     them once the DOM content of the page has been loaded.
   @prop [onAttach] {function}
 A function to call when the PageMod attaches content scripts to
-a matching page. The function will be called with two arguments:
-
-* A `worker` object which the add-on script can use to communicate with
-the content scripts attached to the page in question. See "[Communicating with
-content scripts](#pagemod-content-scripts)" for more details.
-
-* The PageMod itself.
+a matching page. The function will be called with one argument, a `worker`
+object which the add-on script can use to communicate with the content scripts
+attached to the page in question. See "[Communicating with content
+scripts](#pagemod-content-scripts)" for more details.
 
 </api>
 
@@ -201,8 +198,8 @@ applies.  See the [match-pattern] module for a description of match patterns.
 Rules can be added to the list by calling its `add` method and removed by
 calling its `remove` method.
 
-[List]: https://jetpack.mozillalabs.com/sdk/latest/docs/#module/jetpack-core/list
-[match-pattern]: #module/jetpack-core/match-pattern
+[List]: https://jetpack.mozillalabs.com/sdk/latest/docs/#module/api-utils/list
+[match-pattern]: #module/api-utils/match-pattern
 </api>
 
 <api name="destroy">
