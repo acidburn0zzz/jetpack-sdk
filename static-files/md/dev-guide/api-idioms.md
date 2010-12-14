@@ -46,3 +46,4 @@ To learn more about content scripts, see the [working with content scripts
 
 <br>
 **Next**: [module overview](#guide/api-modules).
+
