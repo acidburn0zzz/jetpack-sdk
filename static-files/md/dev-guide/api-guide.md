@@ -15,4 +15,3 @@ SDK.
 
 1. [Common Idioms](#guide/api-idioms)
 2. [Module Overview](#guide/api-modules)
-

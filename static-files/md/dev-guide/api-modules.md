@@ -145,4 +145,3 @@ and any data bundled with it such as icons, HTML content to be displayed in
 a user interface component or a content script.
 
 Note that this module is in the [api-utils](#package/api-utils) package.
-
