@@ -20,7 +20,7 @@ You can use a panel anywhere your application needs to display a dialog.
 
 ### [widget](#module/addon-kit/widget) ###
 
-A widget is a small piece of HTML content that is permanently displayed in the
+A widget is a small piece of HTML content which is permanently displayed in the
 Firefox 4 [add-on bar](https://developer.mozilla.org/en/The_add-on_bar).
 
 Widgets are generally used in one of two different contexts:
