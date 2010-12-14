@@ -10,22 +10,23 @@ constructed using the following pattern:
 
     var addOnModule = require("addon-module");
 
-    var myAddOnObject = new sdkModule.AddOnObject({
+    var myAddOnObject = sdkModule.AddonObject({
       property1: value1,
       property2: value2
     });
 
-## [Events](#guide/events) ##
+## Events ##
 
-The SDK supports event-driven programming through its [`Event
-Emitter`](#module/jetpack-core/events) framework.
-Objects which integrate Event Emitter functions can emit events such as pages
-loading, windows opening and user interactions.
+The SDK supports event-driven programming: objects which integrate 'event
+emitter' functions can emit events such as pages loading, windows opening and
+user interactions.
 
 Add-on developers can assign listeners to these events and are then notified
 when they occur.
 
-## [Content Scripting](#guide/web-content) ##
+To learn more about events, see the [working with events](#guide/events) page.
+
+## Content Scripting ##
 
 Several modules need to interact directly with web content, either web content
 they host themselves (such as the [`panel`](#module/addon-kit/panel) module) or
@@ -40,5 +41,8 @@ communicate using an asynchronous message-passing mechanism.
 Objects that implement this scheme include properties that specify which
 content scripts should be run and when.
 
+To learn more about content scripts, see the [working with content scripts
+](#guide/web-content) page.
+
 <br>
-**Next**: [building a UI](#guide/api-ui).
+**Next**: [module overview](#guide/api-modules).
