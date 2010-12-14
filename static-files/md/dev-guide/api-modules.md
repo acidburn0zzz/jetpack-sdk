@@ -2,9 +2,9 @@ This section is a very quick overview of some of the APIs provided in the SDK.
 We've grouped them into four categories according to their function:
 
  1. Building a UI
- 2. Interacting With the Web
- 3. Interacting With the Browser
- 4. Dealing With Data
+ 2. Interacting with the Web
+ 3. Interacting with the Browser
+ 4. Dealing with Data
 
 ## Building a UI ##
 
@@ -49,7 +49,7 @@ is selected) or define your own contexts using scripts.
 
 This module enables an add-on to display transient messages to the user.
 
-## Interacting With the Web ##
+## Interacting with the Web ##
 
 As you might expect, the SDK provides several APIs for interacting with the
 Web. Some of them, like `page-mod` and `selection`, interact with web pages
@@ -87,7 +87,7 @@ involvement.
 This module enables you to make XML HTTP (AJAX) requests from your
 add-on, and process the responses.
 
-## Interacting With the Browser ##
+## Interacting with the Browser ##
 
 These APIs enable your add-on to interact with the browser itself.
 
@@ -131,7 +131,7 @@ list of tabs it hosts.
 
 Again: you can't access the content hosted by the window using this API.
 
-## Dealing With Data ##
+## Dealing with Data ##
 
 ### [simple-storage](#module/addon-kit/simple-storage) ###
 
