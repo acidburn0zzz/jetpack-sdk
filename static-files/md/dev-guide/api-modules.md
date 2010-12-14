@@ -89,7 +89,7 @@ add-on, and process the responses.
 
 ## Interacting With the Browser ##
 
-These APIs enable your add-on to interact with the browser itself. 
+These APIs enable your add-on to interact with the browser itself.
 
 ### [clipboard](#module/addon-kit/clipboard) ###
 
