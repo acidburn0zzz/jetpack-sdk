@@ -20,8 +20,8 @@ You can use a panel anywhere your application needs to display a dialog.
 
 ### [widget](#module/addon-kit/widget) ###
 
-A widget is a small piece of HTML content which is permanently displayed in the
-Firefox 4 [add-on bar](https://developer.mozilla.org/en/The_add-on_bar).
+A widget is a small piece of HTML content which is displayed in the Firefox 4
+[add-on bar](https://developer.mozilla.org/en/The_add-on_bar).
 
 Widgets are generally used in one of two different contexts:
 
@@ -79,13 +79,12 @@ page, either as text or HTML.
 Using a page worker, an add-on can load a page and access its DOM without
 displaying it to the user.
 
-This is the module to use if you want to fetch web content without the user's
-involvement.
+This is the module to use if you want to interact with a page's DOM without
+the user's involvement.
 
 ### [request](#module/addon-kit/request) ###
 
-This module enables you to make XML HTTP (AJAX) requests from your
-add-on, and process the responses.
+This module enables you to make XMLHttpRequests from your add-on.
 
 ## Interacting with the Browser ##
 
@@ -115,7 +114,8 @@ notified of tabs opening and closing, or becoming active and inactive.
 
 You can retrieve each tab and get certain information about it such as its URL.
 
-Note that you can't access the content hosted by the tab using this API.
+Note that you can't access the content hosted by the tab using this API: if you
+want to do this, use the [`page-mod`](#module/addon-kit/page-mod) API.
 
 ### [windows](#module/addon-kit/windows) ###
 
@@ -128,19 +128,28 @@ notified of windows opening and closing, or becoming active and inactive.
 You can retrieve each window and get certain information about it such as the
 list of tabs it hosts.
 
-Again: you can't access the content hosted by the window using this API.
+Again: you can't access the content hosted by the window using this API, and if
+you want to do this use the [`page-mod`](#module/addon-kit/page-mod) API.
 
 ## Dealing with Data ##
 
 ### [simple-storage](#module/addon-kit/simple-storage) ###
 
-This module provides your add-on with persistent storage. Your add-on has a
-limited amount of space and will be notified when it exceeds its quota.
+This module provides your add-on with persistent storage.
 
 ### [self](#module/api-utils/self) ###
 
-This module gives your add-on access to its [Program ID](#guide/program-id)
-and any data bundled with it such as icons, HTML content to be displayed in
-a user interface component or a content script.
+Using this module you can access any files you have included in your add-on's
+`data` directory.
 
-Note that this module is in the [api-utils](#package/api-utils) package.
+For example: if your add-on uses [content
+scripts](#guide/web-content) and you have chosen to supply them as separate
+files, you use `self` to retrieve them. Similarly, if your add-on includes an
+icon or some HTML content to display in a [`panel`](#module/addon-kit/panel)
+you can store the files in your `data` directory and retrieve them using
+`self`.
+
+This module also gives your add-on access to its [Program
+ID](#guide/program-id).
+
+Note that this module is in the [`api-utils`](#package/api-utils) package.

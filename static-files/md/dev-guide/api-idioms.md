@@ -3,28 +3,27 @@
 Many SDK modules export constructors that create object instances for use
 by add-on code.
 
-The constructor takes a single argument: this is an anonymous object called
-`options` which is typically supplied to the constructor as an object literal
-listing values for named object properties. So you will generally see objects
-constructed using the following pattern:
+A constructor takes a single argument, an object typically referred to as
+`options` and supplied as an object literal listing values for named object
+properties. So you will generally see objects constructed using the following
+pattern:
 
-    var addOnModule = require("addon-module");
+    var sdkModule = require("sdk-module");
 
-    var myAddOnObject = sdkModule.AddonObject({
+    var mySdkObject = sdkModule.sdkObject({
       property1: value1,
       property2: value2
     });
 
 ## Events ##
 
-The SDK supports event-driven programming: objects which integrate 'event
-emitter' functions can emit events such as pages loading, windows opening and
-user interactions.
+The SDK supports event-driven programming: objects which are event emitters
+can emit events such as pages loading, windows opening and user interactions.
 
-Add-on developers can assign listeners to these events and are then notified
-when they occur.
+Add-on developers can register listeners with event emitters and are then
+notified when the events occur.
 
-To learn more about events, see the [working with events](#guide/events) page.
+To learn more about events, see the [Working with Events](#guide/events) page.
 
 ## Content Scripting ##
 
@@ -41,7 +40,7 @@ communicate using an asynchronous message-passing mechanism.
 Objects that implement this scheme include properties that specify which
 content scripts should be run and when.
 
-To learn more about content scripts, see the [working with content scripts
+To learn more about content scripts, see the [Working with Content Scripts
 ](#guide/web-content) page.
 
 <br>
