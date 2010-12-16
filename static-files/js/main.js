@@ -409,7 +409,7 @@ function startApp(jQuery, window) {
     var entry = $("#templates .guide-section").clone();
     var url = "md/dev-guide/" + name + ".md";
 
-    entry.find(".name").text($(".dev-guide-toc #" + name).text());
+    entry.find(".name").text($("#" + name).text());
     queueMainContent(entry, function () {
       var options = {
         url: url,

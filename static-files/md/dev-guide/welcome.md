@@ -1,5 +1,6 @@
 
-# Welcome to the Add-on SDK #
+
+Welcome to the Add-on SDK!
 
 The Add-on SDK is designed to make it easy to develop Firefox add-ons.
 
