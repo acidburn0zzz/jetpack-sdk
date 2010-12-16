@@ -380,7 +380,7 @@ function startApp(jQuery, window) {
         var pkg = packages[name];
         var entry = $("#templates .package-entry").clone();
         var hash = "#package/" + pkg.name;
-          entry.find(".name").text(pkg.name).attr("href", hash);
+        entry.find(".name").text(pkg.name).attr("href", hash);
 
         listModules(pkg, entry);
 
