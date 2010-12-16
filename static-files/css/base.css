@@ -157,15 +157,6 @@ code em, code strong {
     display: block;
 }
 
-#dev-guide-header {
-    /* TODO: This is a dumb place to put a margin-top. */
-    margin-top: 0.25em;
-}
-
-#dev-guide-header:hover #hide-dev-guide-toc {
-    visibility: visible;
-}
-
 #hide-dev-guide-toc {
     font-size: 0.6em;
     padding: 0.05em 0.4em;
