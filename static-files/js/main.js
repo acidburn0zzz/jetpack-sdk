@@ -391,10 +391,7 @@ function startApp(jQuery, window) {
           entries.append(entry);
       });
     entries.fadeIn();
-    $("#more-packages").one('click', function() {
-      $(this).hide();
-      lowLevelEntries.slideDown();
-    });
+    lowLevelEntries.fadeIn();
     finalizeSetup();
   }
 
@@ -406,22 +403,13 @@ function startApp(jQuery, window) {
       window.setInterval(checkHash, CHECK_HASH_DELAY);
     }
 
-    $('#hide-dev-guide-toc').click(function() {
-      if ($(this).text() == 'hide') {
-        $(this).text('show');
-        $('#dev-guide-toc').hide('fast');
-      } else {
-        $(this).text('hide');
-        $('#dev-guide-toc').show('fast');
-      }
-    });
   }
 
   function showGuideDetail(name) {
     var entry = $("#templates .guide-section").clone();
     var url = "md/dev-guide/" + name + ".md";
 
-    entry.find(".name").text($("#dev-guide-toc #" + name).text());
+    entry.find(".name").text($(".dev-guide-toc #" + name).text());
     queueMainContent(entry, function () {
       var options = {
         url: url,

@@ -76,9 +76,7 @@ h1 {
     font-weight: bold;
 }
 
-#more-packages {
-    font-size: 8pt;
-    color: gray;
+#low-level-packages {
     cursor: pointer;
 }
   
@@ -114,10 +112,6 @@ h1 {
     white-space: nowrap;
 }
 
-.package-entry .module a:not(:hover) {
-    color: gray;
-}
-
 pre {
     padding-left: 1em;
 }
@@ -139,15 +133,15 @@ code em, code strong {
     text-decoration: none;
 }
 
-#dev-guide-toc ol {
+.guide-toc ol {
     padding-left: 2em;
 }
 
-#dev-guide-toc #tutorials {
+.dev-guide-toc #tutorials {
     list-style: decimal;
 }
 
-#dev-guide-toc #appendices {
+.dev-guide-toc #appendices {
     list-style: upper-alpha;
 }
 
