@@ -371,8 +371,8 @@ function startApp(jQuery, window) {
     sortedPackages.sort();
     var entries = $("<div></div>");
     var lowLevelEntries = $("<div></div>");
-    $("#package-reference").after(entries);
-    $("#more-packages").after(lowLevelEntries);
+    $("#high-level-packages").after(entries);
+    $("#low-level-packages").after(lowLevelEntries);
     entries.hide();
     lowLevelEntries.hide();
     sortedPackages.forEach(
@@ -380,8 +380,7 @@ function startApp(jQuery, window) {
         var pkg = packages[name];
         var entry = $("#templates .package-entry").clone();
         var hash = "#package/" + pkg.name;
-        entry.find(".name").text(pkg.name).attr("href", hash);
-        entry.find(".description").text(pkg.description);
+          entry.find(".name").text(pkg.name).attr("href", hash);
 
         listModules(pkg, entry);
 

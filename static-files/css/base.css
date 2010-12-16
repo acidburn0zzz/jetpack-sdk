@@ -84,6 +84,7 @@ h1 {
   
 .package-entry {
     color: gray;
+    padding-left: 1em;
     padding-bottom: 1em;
 }
 
@@ -99,7 +100,7 @@ h1 {
     font-size: 8pt;
     margin-top: 0.2em;
     margin-bottom: 0.2em;
-    padding-left: 2em;
+    padding-left: 0em;
 }
 
 .package-detail .modules {
@@ -150,7 +151,7 @@ code em, code strong {
     list-style: upper-alpha;
 }
 
-#dev-guide-toc .section {
+.section {
     font-weight: bold;
 }
 

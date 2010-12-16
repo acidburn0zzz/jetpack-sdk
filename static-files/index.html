@@ -17,9 +17,7 @@
   </div>
   <div id="columns">
   <div id="left-column">
-    <h1>Add-on SDK Docs</h1>
-
-    <h2  class="link" "section" id="welcome">Home</h2>
+    <h1 class="link" "section" id="welcome">Add-on SDK Docs</h1>
 
     <h2 id="dev-guide-header">Developer Guide <a id="hide-dev-guide-toc">hide</a></h2>
 
@@ -29,15 +27,18 @@
         <li class="link" id="getting-started">Getting Started</li>
         <li class="link" id="implementing-simple-addon">A Simple Add-on</li>
         <li class="link" id="implementing-reusable-module">Reusable Modules</li>
-        <li class="link" id="api-guide">API Overview</li>
-           <ol>
-             <li class="link" id="api-idioms">Common Idioms</li>
-             <li class="link" id="api-modules">Module Overview</li>
-          </ol>
-        </ol>
+      </ol>
+
+      <div class="section" id="api-guide">API Guide</div>
+      <ol id="apis">
+        <li class="link" id="api-idioms">Common Idioms</li>
+        <li class="link" id="api-modules">Module Overview</li>
+      </ol>
+
+      <div class="section" id="high-level-packages">Package Reference</div>
 
       <div class="section" id="programming-guides">Programming with the SDK</div>
-          <ol>
+          <ol id="programming">
           <li class="link" id="events">Working with Events</li>
           <li class="link" id="web-content">Working with Content Scripts</li>
         </ol>
@@ -52,6 +53,16 @@
           <li class="link" id="troubleshooting">Troubleshooting</li>
         </ol>
 
+      <div class="section" id="appendices-header">Appendices</div>
+      <ol id="appendices">
+        <li><a href="https://wiki.mozilla.org/Labs/Jetpack/Release_Notes">Release Notes</a></li>
+        <li class="link" id="credits">Credits</li>
+      </ol>
+
+    </div>
+
+    <h2>Internals Guide</h2>
+
       <div class="section" id="experimental-header">Experimental</div>
         <ol id="experimental">
           <li class="link" id="xul-extensions">Using the SDK with XUL extensions</li>
@@ -65,16 +76,7 @@
           <li class="link" id="internal-globals">Internal Globals</li>
         </ol>
 
-      <div class="section" id="appendices-header">Appendices</div>
-      <ol id="appendices">
-        <li><a href="https://wiki.mozilla.org/Labs/Jetpack/Release_Notes">Release Notes</a></li>
-        <li class="link" id="credits">Credits</li>
-      </ol>
-
-    </div>
-
-    <h2 id="package-reference">Package Reference</h2>
-    <div id="more-packages">More...</div>
+    <div class="section" id="low-level-packages">Package Reference</div>
   </div>
   <div id="main-content">
     <div id="right-column">
@@ -130,6 +132,7 @@
     <div class="docs"><p>This section does not yet exist.</p></div>
   </div>
   <div class="package-entry">
+    <br>
     <a class="name" target="_self"></a>
     <span class="description"></span>
     <ul class="modules"></ul>
