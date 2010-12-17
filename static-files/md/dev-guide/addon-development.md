@@ -23,4 +23,3 @@ There are some features which are potentially useful to add-on developers,
 but are not yet stabilised, and which we do expect to change in incompatible
 ways in the future. We have documented these features in a separate
 **Experimental** section.
-
