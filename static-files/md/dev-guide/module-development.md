@@ -2,7 +2,7 @@
 The Module Development Guide explains how to use the low-level modules provided
 by the SDK to build your own modules which implement new APIs for add-on code
 to use, thus extending the SDK itself.
-  
+
 * The **Internals** section documents some of the considerations involved in
 using the low-level modules. In particular, it contains important information
 for people developing modules which require privileged access to browser
