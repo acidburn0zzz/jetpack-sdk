@@ -1,9 +1,18 @@
-This section gives you a very quick overview of some of the main APIs supplied
-in the SDK. Once we have introduced these APIs we will go through a more
-complex example that exercises them more fully.
+In the course of working through the
+[translator example](#guide/implementing-simple-addon), we've already
+encountered several of the SDK's APIs: [`request`](#module/addon-kit/request),
+[`selection`](#module/addon-kit/selection), and
+[`context-menu`](#module/addon-kit/context-menu).
+
+In this section we will introduce all the modules provided in the
+[`addon-kit`](#package/addon-kit) package as well as one module,
+[`self`](#module/api-utils/self), which is currently in the
+[`api-utils`](#package/api-utils) package but which is an important module for
+add-on developers to know about.
+
+First, though, we'll introduce some of the common idioms used throughout the
+SDK.
 
 1. [Common Idioms](#guide/api-idioms)
-2. [Building a UI](#guide/api-ui)
-3. [Interacting with the Web](#guide/api-web)
-4. [Interacting with the Browser](#guide/api-browser)
-5. [Managing Your Add-on](#guide/api-managing)
+2. [Module Overview](#guide/api-modules)
+
