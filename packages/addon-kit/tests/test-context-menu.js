@@ -1026,15 +1026,15 @@ exports.testContentCommunication = function (test) {
   let item = new loader.cm.Item({
     label: "item",
     contentScript: 'var potato;' +
-                   'on("context", function (node) {' +
+                   'on("context", function () {' +
                    '  potato = "potato";' +
                    '  return true;' +
                    '});' +
                    'on("click", function () {' +
                    '  postMessage(potato);' +
                    '});',
-    onMessage: function (potato) {
-      test.assertEqual(potato, "potato", "That's a lot of potatoes!");
+    onMessage: function (data) {
+      test.assertEqual(data, "potato", "That's a lot of potatoes!");
       test.done();
     }
   });

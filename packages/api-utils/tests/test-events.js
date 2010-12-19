@@ -4,6 +4,7 @@
 const EventEmitter = require('events').EventEmitter.compose({
   listeners: function(type) this._listeners(type),
   emit: function() this._emit.apply(this, arguments),
+  emitOnObject: function() this._emitOnObject.apply(this, arguments),
   removeAllListeners: function(type) this._removeAllListeners(type)
 });
 
@@ -143,4 +144,19 @@ exports['test:errors are reported if listener throws'] = function(test) {
   e.on('boom', function() { throw new Error('Boom!') });
   e.emit('boom', 3);
   test.assert(reported, 'error should be reported through event');
+};
+
+exports['test:emitOnObject'] = function(test) {
+  let e = new EventEmitter();
+
+  e.on("foo", function() {
+    test.assertEqual(this, e, "`this` should be emitter");
+  });
+  e.emitOnObject(e, "foo");
+
+  e.on("bar", function() {
+    test.assertEqual(this, obj, "`this` should be other object");
+  });
+  let obj = {};
+  e.emitOnObject(obj, "bar");
 };

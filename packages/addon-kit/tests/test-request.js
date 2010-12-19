@@ -69,8 +69,8 @@ exports.testStatus_200 = function (test) {
   test.waitUntilDone();
   var req = Request({
     url: "http://playground.zpao.com/jetpack/request/text.php",
-    onComplete: function (response, request) {
-      test.assertEqual(req, request);
+    onComplete: function (response) {
+      test.assertEqual(this, req, "`this` should be request");
       test.assertEqual(response.status, 200);
       test.assertEqual(response.statusText, "OK");
       test.done();
@@ -97,7 +97,7 @@ exports.testSimpleXML = function (test) {
   Request({
     // File originally available at http://www.w3schools.com/xml/note.xml
     url: "http://playground.zpao.com/jetpack/request/note.xml",
-    onComplete: function (response, request) {
+    onComplete: function (response) {
       // response.xml should be a document, so lets use it
       test.assertRaises(function() { response.xml },
                         "Sorry, the 'xml' property is no longer available. " +
@@ -316,10 +316,10 @@ exports.testGetWithNestedArray = function (test) {
   Request({
     url: "http://playground.zpao.com/jetpack/request/getpost.php",
     content: { foo: [1, 2, [3, 4]], bar: "baz" },
-    onComplete: function (response, request) {
+    onComplete: function (response) {
       let expected = {
         "POST": [],
-        "GET" : request.content
+        "GET" : this.content
       };
       assertDeepEqual(test, response.json, expected);
       test.done();

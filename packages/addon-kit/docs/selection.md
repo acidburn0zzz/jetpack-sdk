@@ -10,17 +10,17 @@ however.
 Registering for Selection Notifications
 ---------------------------------------
 
-To be notified when the user makes a selection, register listener on 'select'
-event. Each listener will be called after a selection is made.
+To be notified when the user makes a selection, register a listener for the
+"select" event. Each listener will be called after a selection is made.
 
-    function myCallback() {
+    function myListener() {
       console.log("A selection has been made.");
     }
     var selection = require("selection");
-    selection.on('select', myCallback);
+    selection.on('select', myListener);
 
-    // removing listeners
-    selection.removeListener('select', myCallback);
+    // You can remove listeners too.
+    selection.removeListener('select', myListener);
 
 Iterating Over Discontiguous Selections
 ---------------------------------------
@@ -51,7 +51,7 @@ Log the current discontiguous selections as HTML:
 Surround HTML selections with delimiters:
 
     var selection = require("selection");
-    selection.on('select', function (selection) {
+    selection.on('select', function () {
       selection.html = "\\\" + selection.html + "///";
     });
 

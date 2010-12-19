@@ -156,7 +156,7 @@ const Widget = Trait.compose(Loader, Trait.compose({
 
   _onEvent: function Widget__onEvent(type, target, eventData, domNode) {
     if (target === this._public) {
-      this._emit(type, this._public, eventData);
+      this._emit(type, eventData);
 
       // Special case for click events: if the widget doesn't have a click
       // handler, but it does have a panel, display the panel.
@@ -200,6 +200,10 @@ const Widget = Trait.compose(Loader, Trait.compose({
       this._panel = value;
   },
   _panel: null,
+
+  postMessage: function Widget_postMessage(message) {
+    browserManager.updateItem(this._public, "postMessage", message);
+  },
 
   destroy: function Widget_destroy() {
     browserManager.removeItem(this._public);
@@ -405,6 +409,9 @@ BrowserWindow.prototype = {
           break;
         case "tooltip":
           item.node.setAttribute("tooltiptext", value);
+          break;
+        case "postMessage":
+          item.symbiont.postMessage(value);
           break;
       }
     }

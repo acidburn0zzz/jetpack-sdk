@@ -20,6 +20,7 @@
  *
  * Contributor(s):
  *   Irakli Gozalishvili <gozala@mozilla.com> (Original Author)
+ *   Drew Willcoxon <adw@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -123,22 +124,46 @@ const EventEmitter = Trait.compose({
    * @returns {Boolean}
    */
   _emit: function _emit(type, event) {
+    let args = Array.slice(arguments);
+    args.unshift(this._public);
+    return this._emitOnObject.apply(this, args);
+  },
+
+  /**
+   * A version of _emit that lets you specify the object on which listeners are
+   * called.  This is a hack that is sometimes necessary when such an object
+   * (exports, for example) cannot be an EventEmitter for some reason, but other
+   * object(s) managing events for the object are EventEmitters.  Once bug
+   * 577782 is fixed, this method shouldn't be necessary.
+   *
+   * @param {object} targetObj
+   *    The object on which listeners will be called.
+   * @param {string} type
+   *    The event name.
+   * @param {value} event
+   *    The first argument to pass to listeners.
+   * @param {value} ...
+   *    More arguments to pass to listeners.
+   * @returns {boolean}
+   */
+  _emitOnObject: function _emitOnObject(targetObj, type, event /* , ... */) {
     let listeners = this._listeners(type).slice(0);
     // If there is no 'error' event listener then throw.
     if (type === ERROR_TYPE && !listeners.length)
       console.exception(event);
     if (!listeners.length)
       return false;
-    let params = Array.slice(arguments, 1);
+    let params = Array.slice(arguments, 2);
     for each (let listener in listeners) {
       try {
-        listener.apply(this._public, params);
+        listener.apply(targetObj, params);
       } catch(e) {
         this._emit('error', e);
       }
     }
     return true;
   },
+
   /**
    * Removes all the event listeners for the specified event `type`.
    * @param {String} type
