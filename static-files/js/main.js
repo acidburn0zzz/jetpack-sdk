@@ -384,11 +384,7 @@ function startApp(jQuery, window) {
         var hash = "#package/" + pkg.name;
         entry.find(".name").text(pkg.name).attr("href", hash);
         if (pkg.readme) {
- //         try {
             entry.find(".docs").html(markdownToHtml(pkg.readme));
- ///         } catch (e) {
- //         text = null;
-  //        }
         }
         listModules(pkg, entry);
         if ('keywords' in pkg && pkg.keywords.indexOf &&
