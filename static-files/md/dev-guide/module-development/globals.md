@@ -1,3 +1,4 @@
+# Globals #
 
 Globals in this section are subject to change in the future and/or are likely
 to be of interest to SDK module developers, rather than add-on developers.

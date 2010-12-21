@@ -1,3 +1,5 @@
+# Implementing a Simple Add-on #
+
 This section of the tutorial takes you through the process of implementing,
 running and packaging a simple add-on using the SDK. The add-on will add a
 menu item to Firefox's context menu that replaces selected text with its
@@ -300,4 +302,4 @@ module in an add-on, and to make your modules available to any code that want
 to use them.
 
 In the next section we'll see how you can use the SDK implement and test your
-own [reusable modules](#guide/implementing-reusable-module).
+own [reusable modules](#guide/addon-development/implementing-reusable-module).

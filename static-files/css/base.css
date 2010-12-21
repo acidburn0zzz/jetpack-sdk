@@ -15,7 +15,7 @@ a:hover {
 
 h1 {
     margin: 0;
-    padding-bottom: 1em;
+    padding-bottom:30px;
 }
 
 .docs ul {
@@ -36,9 +36,21 @@ h1 {
 
 #left-column {
     width: 25em;
-    background: #f0f0f0;
     padding: 1em;
     display: table-cell;
+}
+
+.sidebar-section {
+padding:10px;
+margin:10px;
+-moz-border-radius: 5px;
+border-radius: 5px;
+padding-bottom:30px;
+background-color: #E0EFFD;
+}
+
+.guide h4 {
+padding-left:20px;
 }
 
 #right-column {
@@ -79,17 +91,6 @@ h1 {
 #low-level-packages {
     cursor: pointer;
 }
-  
-.package-entry {
-    color: gray;
-    padding-left: 1em;
-    padding-bottom: 1em;
-}
-
-.package-entry .name {
-    font-weight: bold;
-    color: black;
-}
 
 .package-entry .description {
 }
@@ -128,26 +129,6 @@ code em, code strong {
     display: none;
 }
 
-#left-column a {
-    text-decoration: none;
-}
-
-.guide-toc ol {
-    padding-left: 2em;
-}
-
-.dev-guide-toc #tutorials {
-    list-style: decimal;
-}
-
-.dev-guide-toc #appendices {
-    list-style: upper-alpha;
-}
-
-.section {
-    font-weight: bold;
-}
-
 .aside {
     color: gray;
     border-left: gray 1px solid;
@@ -155,19 +136,6 @@ code em, code strong {
     padding-right: 1em;
     position: absolute;
     display: block;
-}
-
-#hide-dev-guide-toc {
-    font-size: 0.6em;
-    padding: 0.05em 0.4em;
-    visibility: hidden;
-}
-
-#hide-dev-guide-toc:hover {
-    -moz-border-radius: 2em;
-    background: #555;
-    color: #fff;
-    cursor: pointer;
 }
 
 table {

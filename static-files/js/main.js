@@ -2,6 +2,7 @@ function startApp(jQuery, window) {
   var $ = jQuery;
   var document = window.document;
   var packages = null;
+  var packagesJSON = null;;
   var currentHash = "";
   var shouldFadeAndScroll = true;
 
@@ -35,7 +36,8 @@ function startApp(jQuery, window) {
       documentName = moduleName;
       break;
     case "guide":
-      showGuideDetail(parts[1]);
+      var guidePagePath = hash.slice(parts[0].length + 1);
+      showGuideDetail(guidePagePath);
       documentName = $('#' + parts[1]).text();
       break;
     }
@@ -268,6 +270,7 @@ function startApp(jQuery, window) {
       $("#main-content").show();
     shouldFadeAndScroll = false;
     fixInternalLinkTargets(query);
+    processPackages();
     showSidenotes(query);
     queuedContent = null;
   }
@@ -359,10 +362,9 @@ function startApp(jQuery, window) {
       errorDisplay.hide();
       errorDisplay.fadeIn();
     }
-    finalizeSetup();
   }
 
-  function processPackages(packagesJSON) {
+  function processPackages() {
     packages = packagesJSON;
 
     var sortedPackages = [];
@@ -381,9 +383,14 @@ function startApp(jQuery, window) {
         var entry = $("#templates .package-entry").clone();
         var hash = "#package/" + pkg.name;
         entry.find(".name").text(pkg.name).attr("href", hash);
-
+        if (pkg.readme) {
+ //         try {
+            entry.find(".docs").html(markdownToHtml(pkg.readme));
+ ///         } catch (e) {
+ //         text = null;
+  //        }
+        }
         listModules(pkg, entry);
-
         if ('keywords' in pkg && pkg.keywords.indexOf &&
             pkg.keywords.indexOf('jetpack-low-level') != -1)
           lowLevelEntries.append(entry);
@@ -392,10 +399,10 @@ function startApp(jQuery, window) {
       });
     entries.fadeIn();
     lowLevelEntries.fadeIn();
-    finalizeSetup();
   }
 
-  function finalizeSetup() {
+  function finalizeSetup(packages) {
+    packagesJSON = packages;
     checkHash();
     if ("onhashchange" in window) {
       window.addEventListener("hashchange", checkHash, false);
@@ -408,8 +415,6 @@ function startApp(jQuery, window) {
   function showGuideDetail(name) {
     var entry = $("#templates .guide-section").clone();
     var url = "md/dev-guide/" + name + ".md";
-
-    entry.find(".name").text($("#" + name).text());
     queueMainContent(entry, function () {
       var options = {
         url: url,
@@ -487,7 +492,7 @@ function startApp(jQuery, window) {
   linkDeveloperGuide();
   jQuery.ajax({url: "packages/index.json",
                dataType: "json",
-               success: processPackages,
+               success: finalizeSetup,
                error: onPackageError});
 
   $("a[href]").live("click", function () {

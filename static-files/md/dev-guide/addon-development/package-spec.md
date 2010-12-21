@@ -1,7 +1,4 @@
-<span class="aside">
-For a gentle introduction to packaging, see the [Packaging](#guide/packaging)
-tutorial.
-</span>
+# Package Specification #
 
 A *package* is a directory that, at minimum, contains a JSON file
 called `package.json`. This file is also referred to as the

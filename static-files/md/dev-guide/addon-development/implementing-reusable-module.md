@@ -1,3 +1,5 @@
+# Implementing Reusable Modules #
+
 So far we've seen how you can use the SDK to build a simple add-on. But you
 can also use the SDK to create reusable CommonJS modules with clearly defined
 APIs. These modules are then usable by any other program which follows the

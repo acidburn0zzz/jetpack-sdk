@@ -1,0 +1,21 @@
+
+.site-title a,.site-title a:visited,.site-title a:hover,.site-title a:focus
+{
+	font-size: 32px;
+	text-transform: none;
+}
+
+h1 {
+font-family: georgia,serif;
+font-weight: normal;
+}
+
+html
+{
+	background-image: url(/media/bg-header.png);
+}
+
+#footer
+{
+	background: #33559b url(/media/bg-footer.png) 0 0 repeat-x;
+}

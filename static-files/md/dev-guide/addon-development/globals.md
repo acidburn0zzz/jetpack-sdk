@@ -1,4 +1,5 @@
-
+# Globals #
+<br>
 ## JavaScript Globals ##
 
 By default, all code is executed as [JavaScript 1.8.1] and has access

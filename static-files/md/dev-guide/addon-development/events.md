@@ -1,3 +1,5 @@
+# Working with Events #
+
 The Add-on SDK supports event-driven programming through its
 [`EventEmitter`](#module/api-utils/events) framework. Objects emit events
 on state changes that might be of interest to add-on code, such as browser

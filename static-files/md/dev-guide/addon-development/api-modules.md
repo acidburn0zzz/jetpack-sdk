@@ -1,3 +1,5 @@
+# API Overview #
+
 This section is a very quick overview of some of the APIs provided in the SDK.
 We've grouped them into four categories according to their function:
 

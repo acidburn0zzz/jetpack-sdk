@@ -1,3 +1,5 @@
+# Troubleshoooting #
+
 If you're having trouble getting the Add-on SDK up and running, don't panic!
 This page lists some starting points that might help you track down your
 problem.

@@ -1,3 +1,5 @@
+# Common Idioms #
+
 ## Constructors ##
 
 Many SDK modules export constructors that create object instances for use
