@@ -143,6 +143,16 @@ exports.testAdapterOnlyModule = makeConsoleTest({
   ]
 });
 
+exports.testSyncCallReturnValueArrivesAfterAsyncMsgSends = makeConsoleTest({
+  main: "e10s-samples/bug-617499-main",
+  expect: [
+    ["log", "about to send sync message to firefox"],
+    ["log", "i am an async message from firefox"],
+    ["log", "returned from sync message to firefox"],
+    ["quit", "OK"]
+  ]
+});
+
 exports.testCommonJSCompliance = function(test) {
   if (xulApp.is("Firefox") &&
       xulApp.versionInRange(xulApp.version, "4.0b7", "4.0b8pre")) {
@@ -178,6 +188,26 @@ exports.testCommonJSCompliance = function(test) {
     var loader = new sm.Loader({
       rootPath: testDir
     });
+    var interceptingConsole = {
+      log: function(msg, type) {
+        switch (type) {
+        case "fail":
+          test.fail(msg);
+          break;
+        case "pass":
+          test.pass(msg);
+          break;
+        case "info":
+          console.info(msg);
+          if (msg == "DONE") {
+            console.info("Running next test.");
+            process.destroy();
+            runNextComplianceTest();
+          }
+        }
+      },
+      __proto__: console
+    };
     var process = e10s.createProcess({
       loader: loader,
       packaging: {
@@ -187,26 +217,27 @@ exports.testCommonJSCompliance = function(test) {
             needsChrome: false
           };
         }
-      }
+      },
+      console: interceptingConsole
     });
-    process.registerReceiver("sys:print", function(name, msg, type) {
-      switch (type) {
-      case "fail":
-        test.fail(msg);
-        break;
-      case "pass":
-        test.pass(msg);
-        break;
-      case "info":
-        console.info(msg);
-        if (msg == "DONE") {
-          console.info("Running next test.");
-          process.destroy();
-          runNextComplianceTest();
+
+    function injectSysPrint(globalScope) {
+      globalScope.sys = {
+        // The CommonJS compliance tests use this 
+        // to report test pass/fail.
+        print: function(msg, type) {
+          // This ultimately gets intercepted by our
+          // interceptingConsole.
+          console.log(msg, type);
         }
-      }
+      };      
+    }
+
+    process.sendMessage("addInjectedSandboxScript", {
+      filename: "<string>",
+      contents: "(" + uneval(injectSysPrint) + ")(this);"
     });
-    process.sendMessage("enableSysPrint");
+
     process.sendMessage("startMain", "program");
   }
 
