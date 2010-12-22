@@ -40,15 +40,6 @@ h1 {
     display: table-cell;
 }
 
-.sidebar-section {
-padding:10px;
-margin:10px;
--moz-border-radius: 5px;
-border-radius: 5px;
-padding-bottom:30px;
-background-color: #E0EFFD;
-}
-
 .guide h4 {
 padding-left:20px;
 }

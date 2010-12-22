@@ -1,3 +1,5 @@
+# XPI Generation #
+
 <span class="aside">
 Note that some parts of the following text have been simplified to
 allow you get a better idea of what's going on when a XPI is created.

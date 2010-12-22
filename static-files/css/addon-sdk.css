@@ -19,3 +19,12 @@ html
 {
 	background: #33559b url(/media/bg-footer.png) 0 0 repeat-x;
 }
+
+.sidebar-section {
+  padding:10px;
+  margin:10px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  padding-bottom:30px;
+  background-color: #E0EFFD;
+}
