@@ -270,7 +270,7 @@ function startApp(jQuery, window) {
     fixInternalLinkTargets(query);
     showSidenotes(query);
     queuedContent = null;
-    $("pre>code").addClass("prettyprint");
+    $("code").parent("pre").addClass("prettyprint");
     prettyPrint();
   }
 
