@@ -17,41 +17,41 @@ RETURNS = 'returns'
 PARAMETER_SET = 'parameter_set'
 MODULE_DESCRIPTION = 'module_description'
 
-HTML_HEADER = '\
-<!DOCTYPE html>\n\
-<html>\n\
-<head>\n\
-  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n\
-  <base target="_blank"/>\n\
-  <link rel="stylesheet" type="text/css" media="all"\n\
-        href="../../../css/base.css" />\n\
-  <link rel="stylesheet" type="text/css" media="all"\n\
-        href="../../../css/apidocs.css" />\n\
-  <title>Add-on SDK Documentation</title>\n\
-  <style type="text/css">\n\
-    body {\n\
-      border: 50px solid #FFFFFF;\n\
-    }\n\
-  </style>\n\
-\n\
-  <script type="text/javascript">\n\
-    function rewrite_links() {\n\
-      var images = document.getElementsByTagName("img");\n\
-      for (var i = 0; i < images.length; i++) {\n\
-        var before = images[i].src.split("packages/")[0];\n\
-        var after = images[i].src.split("/docs")[1];\n\
-        images[i].src = before + after;\n\
-      }\n\
-    }\n\
-    </script>\n\
-</head>\n\
-\n\
-<body onload = "rewrite_links()">\n'
+HTML_HEADER = '''
+<!DOCTYPE html>\n
+<html>\n
+<head>\n
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n
+  <base target="_blank"/>\n
+  <link rel="stylesheet" type="text/css" media="all"\n
+        href="../../../css/base.css" />\n
+  <link rel="stylesheet" type="text/css" media="all"\n
+        href="../../../css/apidocs.css" />\n
+  <title>Add-on SDK Documentation</title>\n
+  <style type="text/css">\n
+    body {\n
+      border: 50px solid #FFFFFF;\n
+    }\n
+  </style>\n
+\n
+  <script type="text/javascript">\n
+    function rewrite_links() {\n
+      var images = document.getElementsByTagName("img");\n
+      for (var i = 0; i < images.length; i++) {\n
+        var before = images[i].src.split("packages/")[0];\n
+        var after = images[i].src.split("/docs")[1];\n
+        images[i].src = before + after;\n
+      }\n
+    }\n
+    </script>\n
+</head>\n
+\n
+<body onload = "rewrite_links()">\n'''
 
-HTML_FOOTER = '\n\
-</body>\n\
-\n\
-</html>\n'
+HTML_FOOTER = '''
+</body>\n
+\n
+</html>\n'''
 
 def indent(text_in):
     text_out = ''

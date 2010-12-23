@@ -16,7 +16,7 @@ import traceback
 from cuddlefish import packaging
 from cuddlefish import Bunch
 from cuddlefish import apiparser
-from cuddlefish import renderapi
+from cuddlefish import apirenderer
 import simplejson as json
 
 try:
@@ -144,11 +144,11 @@ class Server(object):
     def _respond_with_apidoc_div(self, path):
         docs_md = open(path, 'r').read()
         try:
-            parsed = renderapi.md_to_div(path)
+            parsed = apirenderer.md_to_div(path)
             self.start_response('200 OK',
-                                [('Content-type', "text/plain")])
-            return parsed
-        except renderapi.ParseError, e:
+                                [('Content-type', "text/html")])
+            return [parsed]
+        except apirenderer.ParseError, e:
             self.start_response('500 Parse Error',
                                 [('Content-type', "text/plain")])
             return [str(e)]
@@ -457,10 +457,10 @@ def generate_static_docs(env_root, tgz_filename):
                     docs_json = json.dumps(docs_parsed)
                     open(dest_path + ".json", "w").write(docs_json)
                     # write the HTML div files
-                    docs_div = renderapi.json_to_div(docs_parsed, src_path)
+                    docs_div = apirenderer.json_to_div(docs_parsed, src_path)
                     open(dest_path + ".div.html", "w").write(docs_div)
                     # write the standalone HTML files
-                    docs_html = renderapi.json_to_html(docs_parsed, src_path)
+                    docs_html = apirenderer.json_to_html(docs_parsed, src_path)
                     open(dest_path + ".html", "w").write(docs_html)
 
     # finally, build a tarfile out of everything
