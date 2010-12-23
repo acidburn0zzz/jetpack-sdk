@@ -55,7 +55,7 @@ class APIParser:
         api["type"] = tag
 # if this API element is a property then datatype must be set
         if tag == 'property':
-            api['datatype'] = info['datatype']
+            api['property_type'] = info['type']
         # info is ignored
         currentAccumulator = Accumulator(api, firstline)
         lineno += 1
@@ -166,7 +166,7 @@ class APIParser:
 
     def _validate_info(self, tag, info, line, lineno):
         if tag == 'property':
-            if not 'datatype' in info:
+            if not 'type' in info:
                 raise ParseError("No type found for @property.", lineno)
         elif tag == "param":
             if info.get("required", False) and "default" in info:
@@ -174,7 +174,7 @@ class APIParser:
                     "required parameters should not have defaults: '%s'"
                                      % line, lineno)
         elif tag == "prop":
-            if "datatype" not in info:
+            if "type" not in info:
                 raise ParseError("@prop lines must include {type}: '%s'" %
                                   line, lineno)
             if "name" not in info:
@@ -207,12 +207,6 @@ class APIParser:
         tag = pieces[0][1:]
         skip = 1
 
-        # no abbreviations
-        if tag =="param":
-            info["type"] = "parameter"
-        if tag =="prop":
-            info["type"] = "property"
-
         expect_name = tag in ("param", "prop")
 
         if len(pieces) == 1:
@@ -231,7 +225,7 @@ class APIParser:
                     skip += 1
 
             if len(pieces) > skip and pieces[skip].startswith("{"):
-                info["datatype"] = pieces[skip].strip("{ }")
+                info["type"] = pieces[skip].strip("{ }")
                 skip += 1
 
             # we've got the metadata, now extract the description

@@ -132,14 +132,14 @@ class Function_Doc(API_Renderer):
     def _render_returns(self):
         if not self.returns:
             return ''
-        text = 'Returns: ' + span_wrap(self.returns['datatype'], DATATYPE)
+        text = 'Returns: ' + span_wrap(self.returns['type'], DATATYPE)
         text += self.returns['description']
         return div_wrap(text, RETURNS)
 
 class Parameter_Doc(API_Renderer):
     def __init__(self, json):
         API_Renderer.__init__(self, json)
-        self.datatype = json['datatype']
+        self.datatype = json['type']
         self.properties_json = json.get('props', None)
 
     def render_name(self):
@@ -148,15 +148,35 @@ class Parameter_Doc(API_Renderer):
     def render_subcomponents(self):
         if not self.properties_json:
             return ''
-        text = ''.join([render_component(Property_Doc(property_json)) \
+        text = ''.join([render_component(Internal_Property_Doc(property_json)) \
                        for property_json in self.properties_json])
         return text
+
+# internal_property_doc is a hack to deal with the fact that
+# in the current model properties of parameters are represented
+# differently. This should be fixed, but it's an incompatible change,
+# so deferring it for now.
+class Internal_Property_Doc(API_Renderer):
+    def __init__(self, json, owner = None):
+        API_Renderer.__init__(self, json)
+        self.owner = owner
+        self.datatype = json['type']
+
+    def render_name(self):
+        if self.owner:
+            rendered_name = self.owner + '.' + self.name
+        else:
+            rendered_name = self.name
+        return rendered_name + ' : ' + span_wrap(self.datatype, DATATYPE)
+
+    def render_subcomponents(self):
+        return ''
 
 class Property_Doc(API_Renderer):
     def __init__(self, json, owner = None):
         API_Renderer.__init__(self, json)
         self.owner = owner
-        self.datatype = json['datatype']
+        self.datatype = json['property_type']
 
     def render_name(self):
         if self.owner:
