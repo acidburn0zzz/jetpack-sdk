@@ -25,38 +25,6 @@ This is a function which does nothing in particular.
 
 This text appears between the API blocks.
 
-<api name="browserWindows">
-@property {List}
-A property defined at module level. It has some documentation, which is
-stolen from the windows module:
-
-`browserWindows` provides access to all the currently open browser windows:
-
-    var windows = require("windows");
-    for each (var window in windows.browserWindows) {
-      console.log(window.title);
-    }
-
-    console.log(windows.browserWindows.length);
-
-Object emits all the events listed under "Events" section.
-
-####Examples####
-
-    var windows = require("windows").browserWindows;
-
-    // add a listener to the 'open' event
-    windows.on('open', function(window) {
-      myOpenWindows.push(window);
-    });
-
-    // add a listener to the 'close' event
-    windows.on('close', function(window) {
-      console.log("A window was closed.");
-    });
-
-</api>
-
 <api name="append">
 @function
 This is a list of options to specify modifications to your slideBar instance.

@@ -957,56 +957,6 @@
     </div>
     
     
-    <div class="api_component_group">
-      
-      
-      <h3 class="api_header">
-      
-      Properties
-      </h3>
-      
-      
-      <div class="api_component">
-        
-        
-        <h4 class="api_name">
-        
-        browserWindows : 
-        <span class="datatype">List</span>
-        
-        
-        </h4>
-        
-        <p>A property defined at module level. It has some documentation, which is
-        stolen from the windows module:</p>
-        <p><code>browserWindows</code> provides access to all the currently open browser windows:</p>
-        <pre><code>var windows = require("windows");
-        for each (var window in windows.browserWindows) {
-          console.log(window.title);
-        }
-        
-        console.log(windows.browserWindows.length);
-        </code></pre>
-        <p>Object emits all the events listed under "Events" section.</p>
-        <h4>Examples</h4>
-        <pre><code>var windows = require("windows").browserWindows;
-        
-        // add a listener to the 'open' event
-        windows.on('open', function(window) {
-          myOpenWindows.push(window);
-        });
-        
-        // add a listener to the 'close' event
-        windows.on('close', function(window) {
-          console.log("A window was closed.");
-        });
-        </code></pre>
-      </div>
-      
-      
-    </div>
-    
-    
   </div>
   
   
