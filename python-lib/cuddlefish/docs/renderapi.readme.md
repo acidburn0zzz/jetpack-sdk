@@ -38,7 +38,7 @@ DIV structure
 The top level DIV is marked with the id attribute and the "module_api_docs" class
 attribute:
 
-      <div id='tabs_module_api_docs' class='module_api_docs'> 
+      <div id='tabs_module_api_docs' class='module_api_docs'>
         //module doc contents
       </div>
 
@@ -54,10 +54,10 @@ inside <api></api> tags) are rendered inside a DIV marked with the
 - all <api></api> content is rendered, enclosed in a single tag marked
 with the "api_reference" class attribute:
 
-    <div id='tabs_module_api_docs' class='module_api_docs'> 
+    <div id='tabs_module_api_docs' class='module_api_docs'>
       <div class='module_description'>
         //descriptions
-      </div>  
+      </div>
         <div class='api_reference'>
         //api reference
       </div>
@@ -79,7 +79,7 @@ The first item in API reference is an <h2> heading title marked with the
 
       </div>
 
-After the title come one or more component groups. 
+After the title come one or more component groups.
 
 #### Component Group ####
 
@@ -131,7 +131,7 @@ heading), the "api_header" items are <h3> headings, otherwise they are divs.
 #### Component ####
 
 API components represent actual objects in the API like classes, functions,
-properties and events. 
+properties and events.
 
 Each component starts with a section marked with the
 "api_name" tag, which includes the name of the component in the API: for
@@ -149,7 +149,7 @@ which might be grouped together.
     <div class='api_component'>
 
       <h4 class='api_name'>Panel</h4>
-    
+
       <div class='api_component_group'>
 
         <div class='api_header'>
@@ -179,7 +179,7 @@ All primitive data types, like "string" and "number", are marked with the
 
     <p>A required string description of the widget used for accessibility,
     title bars, and error reporting.</p>
-    
+
     </div>
 
 ### Returns ###
