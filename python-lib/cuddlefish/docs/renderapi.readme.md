@@ -45,13 +45,14 @@ attribute:
 
 Inside this:
 
+- the first item is an <h1> heading containing the name of the module:
+
 - all "markdown" hunks (that is, all descriptive text not occurring
 inside <api></api> tags) are rendered inside a DIV marked with the
 "module-description" class attribute
 
 - all <api></api> content is rendered, enclosed in a single tag marked
 with the "api_reference" class attribute:
-
 
     <div id='tabs_module_api_docs' class='module_api_docs'> 
       <div class='module_description'>
@@ -66,15 +67,14 @@ If there is no <api></api> content, then the "api-reference" section is absent.
 
 ### API Reference structure ###
 
-The first item in API reference is a top level title marked with the
+The first item in API reference is an <h2> heading title marked with the
 "api_header" attribute. This might have the text content "API Reference"
 (but you should not rely on that):
 
       <div class='api_reference'>
 
-        <div class='api_header'>
-          API Reference
-        </div>
+        <h2 class='api_header'>API Reference</h2>
+
         //api contents
 
       </div>
@@ -87,21 +87,19 @@ A component group is marked with the "api_component_group" attribute. The
 component group is a collection of some sort of component: for example, a group
 of classes, a group of functions, or a group of events.
 
-Each component group starts off with a header marked with the "api_header" attribute
-and is followed by one or more sections marked with the "api_component"
-attribute:
+Each component group starts off with a header marked with the
+"api_header" attribute and is followed by one or more sections marked with the
+"api_component" attribute.
+At the top level (that is, when they are directly under the "API Reference"
+heading), the "api_header" items are <h3> headings, otherwise they are divs.
 
     <div class='api_reference'>
 
-      <div class='api_header'>
-        API Reference
-      </div>
+      <h2 class='api_header'>API Reference</h2>
 
       <div class='api_component_group'>
 
-        <div class='api_header'>
-          Classes
-        </div>
+        <h3 class='api_header'>Classes</h3>
 
         <div class='api_component'>
           // the first class
@@ -116,9 +114,7 @@ attribute:
       <div class='api_component_group'>
         //some different components
 
-        <div class='api_header'>
-          Functions
-        </div>
+        <h3 class='api_header'>Functions</h3>
 
         <div class='api_component'>
           the first function
@@ -139,7 +135,10 @@ properties and events.
 
 Each component starts with a section marked with the
 "api_name" tag, which includes the name of the component in the API: for
-example "postMessage(message)". 
+example "postMessage(message)".
+
+Components at the top level (i.e., directly under h3 headings) are <h4>
+headings, otherwise they are divs.
 
 After the name, the component's contents are listed. Different sorts of
 components may have different sorts of contents: for example, a function might
@@ -147,13 +146,9 @@ have parameters. If the component is composite then it may contain its own
 component group. For example, a class may contain methods and properties,
 which might be grouped together.
 
-
-
     <div class='api_component'>
 
-      <div class='api_name'>
-        Panel
-      </div>
+      <h4 class='api_name'>Panel</h4>
     
       <div class='api_component_group'>
 
