@@ -3,7 +3,7 @@
 Some text here
 
 <api name="test">
-@method
+@function
 This is a function which does nothing in particular.
 @returns {object}
   @prop firststring {string} First string
@@ -25,8 +25,40 @@ This is a function which does nothing in particular.
 
 This text appears between the API blocks.
 
+<api name="browserWindows">
+@property {List}
+A property defined at module level. It has some documentation, which is
+stolen from the windows module:
+
+`browserWindows` provides access to all the currently open browser windows:
+
+    var windows = require("windows");
+    for each (var window in windows.browserWindows) {
+      console.log(window.title);
+    }
+
+    console.log(windows.browserWindows.length);
+
+Object emits all the events listed under "Events" section.
+
+####Examples####
+
+    var windows = require("windows").browserWindows;
+
+    // add a listener to the 'open' event
+    windows.on('open', function(window) {
+      myOpenWindows.push(window);
+    });
+
+    // add a listener to the 'close' event
+    windows.on('close', function(window) {
+      console.log("A window was closed.");
+    });
+
+</api>
+
 <api name="append">
-@method
+@function
 This is a list of options to specify modifications to your slideBar instance.
 @param options
        Pass in all of your options here.
@@ -48,7 +80,7 @@ This is a list of options to specify modifications to your slideBar instance.
 Wooo, more text.
 
 <api name="cool-func.dot">
-@constructor
+@function
 @returns {string} A value telling you just how cool you are.
 A boa-constructor!
 This description can go on for a while, and can even contain
@@ -73,7 +105,7 @@ some **realy** fancy things. Like `code`, or even
 </api>
 
 <api name="random">
-@method
+@function
 A function that returns a random integer between 0 and 10.
 @returns {int} The random number.
 </api>
