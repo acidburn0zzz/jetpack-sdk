@@ -1,7 +1,6 @@
 function startApp(jQuery, window) {
   var $ = jQuery;
   var document = window.document;
-  var packages = null;
   var packagesJSON = null;;
   var currentHash = "";
   var shouldFadeAndScroll = true;
@@ -221,7 +220,7 @@ function startApp(jQuery, window) {
   }
 
   function showModuleDetail(pkgName, moduleName) {
-    var pkg = packages[pkgName];
+    var pkg = packagesJSON[pkgName];
     var entry = $("#templates .module-detail").clone();
     var source_filename = "docs/" + moduleName + ".md";
     var json_filename = "docs/" + moduleName + ".md.json";
@@ -264,7 +263,7 @@ function startApp(jQuery, window) {
   }
 
   function showPackageDetail(name) {
-    var pkg = packages[name];
+    var pkg = packagesJSON[name];
     var entry = $("#templates .package-detail").clone();
     var filename = "README.md";
 
@@ -311,10 +310,8 @@ function startApp(jQuery, window) {
   }
 
   function processPackages() {
-    packages = packagesJSON;
-
     var sortedPackages = [];
-    for (name in packages)
+    for (name in packagesJSON)
       sortedPackages.push(name);
     sortedPackages.sort();
     var entries = $("<div></div>");
@@ -325,7 +322,7 @@ function startApp(jQuery, window) {
     lowLevelEntries.hide();
     sortedPackages.forEach(
       function(name) {
-        var pkg = packages[name];
+        var pkg = packagesJSON[name];
         var entry = $("#templates .package-entry").clone();
         var hash = "#package/" + pkg.name;
         entry.find(".name").text(pkg.name).attr("href", hash);
@@ -436,7 +433,6 @@ function startApp(jQuery, window) {
                dataType: "json",
                success: finalizeSetup,
                error: onPackageError});
-
   $("a[href]").live("click", function () {
     var href = $(this).attr("href");
     if (href.length && href[0] == "#")
