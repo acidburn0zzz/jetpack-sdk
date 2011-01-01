@@ -40,12 +40,6 @@ function startApp(jQuery, window) {
       documentName = $('#' + parts[1]).text();
       break;
     }
-    if (documentName.length > 0) {
-      document.title = documentName + " - " + DOCUMENT_TITLE_ROOT;
-    }
-    else {
-      document.title = DOCUMENT_TITLE_ROOT;
-    }
   }
 
   function getModules(fileStruct) {
@@ -217,6 +211,13 @@ function startApp(jQuery, window) {
     processPackages();
     showSidenotes(query);
     queuedContent = null;
+    documentName = $("#main-content h1:first").text();
+    if (documentName.length > 0) {
+      document.title = documentName + " - " + DOCUMENT_TITLE_ROOT;
+    }
+    else {
+      document.title = DOCUMENT_TITLE_ROOT;
+    }
   }
 
   function showModuleDetail(pkgName, moduleName) {
