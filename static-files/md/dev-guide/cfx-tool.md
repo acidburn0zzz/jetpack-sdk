@@ -6,7 +6,7 @@ development servers as well as testing, running, and building packages.
 cfx usage is:
 
 <pre>
-    cfx [options] command [command-specific options]
+  cfx [options] command [command-specific options]
 </pre>
 
 "Options" are global options applicable to the tool itself or to all
@@ -19,8 +19,8 @@ Global Options
 Any of the cfx commands can be run with the following options:
 
 <pre>
-    -h, --help        - show a help message and exit
-    -v, --verbose     - enable lots of output
+  -h, --help        - show a help message and exit
+  -v, --verbose     - enable lots of output
 </pre>
 
 Commands
@@ -41,15 +41,15 @@ This command will create an skeleton add-on, as a starting point for your
 own add-on development, with the following file structure:
 
 <pre>
-    README.md
-    package.json
-    data/
-    lib/
-        main.js
-    tests/
-        test-main.js
-    docs/
-        main.md
+  README.md
+  package.json
+  data/
+  lib/
+      main.js
+  tests/
+      test-main.js
+  docs/
+      main.md
 </pre>
 
 #### `cfx xpi` ####
@@ -65,33 +65,33 @@ it to [addons.mozilla.org][].
 **Supported Options:**
 
 <pre>
-    --extra-packages=EXTRA_PACKAGES
-                                 extra packages to include, comma-separated
+  --extra-packages=EXTRA_PACKAGES
+                               extra packages to include, comma-separated
 
-    -g CONFIG, --use-config=CONFIG
-                                 use named config from local.json
+  -g CONFIG, --use-config=CONFIG
+                               use named config from local.json
 
-    --pkgdir=PKGDIR              package dir containing the package.json;
-                                 default is the current dir
+  --pkgdir=PKGDIR              package dir containing the package.json;
+                               default is the current dir
 
-    --static-args=STATIC_ARGS
-                                 extra harness options as JSON
+  --static-args=STATIC_ARGS
+                               extra harness options as JSON
 
-    --templatedir=TEMPLATEDIR
-                                 XULRunner application extension template
+  --templatedir=TEMPLATEDIR
+                               XULRunner application extension template
 
-    --update-link=UPDATE_LINK
-                                 generate update.rdf
+  --update-link=UPDATE_LINK
+                               generate update.rdf
 
-    --update-url=UPDATE_URL
-                                 update URL in install.rdf
+  --update-url=UPDATE_URL
+                               update URL in install.rdf
 </pre>
 
 **Internal Options**
 
 <pre>
-    --keydir=KEYDIR              directory holding private keys; default is
-                                 ~/.jetpack/keys
+  --keydir=KEYDIR              directory holding private keys; default is
+                               ~/.jetpack/keys
 </pre>
 
 #### `cfx run` ####
@@ -101,39 +101,39 @@ This command is used to run the add-on.
 **Supported Options:**
 
 <pre>
-    -a APP, --app=APP            application to run: firefox (default),
-                                 xulrunner, fennec, or thunderbird
+  -a APP, --app=APP            application to run: firefox (default),
+                               xulrunner, fennec, or thunderbird
 
-    -b BINARY, --binary=BINARY   path to application binary
+  -b BINARY, --binary=BINARY   path to application binary
 
-    --extra-packages=EXTRA_PACKAGES
-                                 extra packages to include, comma-separated
+  --extra-packages=EXTRA_PACKAGES
+                               extra packages to include, comma-separated
 
-    -g CONFIG, --use-config=CONFIG
-                                 use named config from local.json
+  -g CONFIG, --use-config=CONFIG
+                               use named config from local.json
 
-    -p PROFILEDIR, --profiledir=PROFILEDIR
-                                 profile directory to pass to the application
+  -p PROFILEDIR, --profiledir=PROFILEDIR
+                               profile directory to pass to the application
 
-    --pkgdir=PKGDIR              package dir containing the package.json;
-                                 default is the current dir
+  --pkgdir=PKGDIR              package dir containing the package.json;
+                               default is the current dir
 
-    --static-args=STATIC_ARGS
-                                 extra harness options as JSON
+  --static-args=STATIC_ARGS
+                               extra harness options as JSON
 
-    --templatedir=TEMPLATEDIR
-                                 XULRunner application extension template
+  --templatedir=TEMPLATEDIR
+                               XULRunner application extension template
 </pre>
 
 **Internal Options**
 
 <pre>
-    --addons=ADDONS              paths of add-ons to install, comma-separated
+  --addons=ADDONS              paths of add-ons to install, comma-separated
 
-    --e10s                       enable out-of-process Jetpacks
+  --e10s                       enable out-of-process Jetpacks
 
-    --keydir=KEYDIR              directory holding private keys; default is
-                                 ~/.jetpack/keys
+  --keydir=KEYDIR              directory holding private keys; default is
+                               ~/.jetpack/keys
 </pre>
 
 #### `cfx test` ####
@@ -143,51 +143,51 @@ Run available tests for the specified package.
 **Supported Options:**
 
 <pre>
-    -a APP, --app=APP            application to run: firefox (default), xulrunner,
-                                 fennec, or thunderbird
+  -a APP, --app=APP            application to run: firefox (default), xulrunner,
+                               fennec, or thunderbird
 
-    -b BINARY, --binary=BINARY   path to application binary
+  -b BINARY, --binary=BINARY   path to application binary
 
-    --dependencies               include tests for all dependencies
+  --dependencies               include tests for all dependencies
 
-    -f FILTER, --filter=FILTER
-                                 only run tests whose filenames match FILTER, a regexp
+  -f FILTER, --filter=FILTER
+                               only run tests whose filenames match FILTER, a regexp
 
-    -g CONFIG, --use-config=CONFIG
-                                 use named config from local.json
+  -g CONFIG, --use-config=CONFIG
+                               use named config from local.json
 
-    -p PROFILEDIR, --profiledir=PROFILEDIR
-                                 profile directory to pass to the application
+  -p PROFILEDIR, --profiledir=PROFILEDIR
+                               profile directory to pass to the application
 
-    --times=ITERATIONS
-                                 number of times to run tests
+  --times=ITERATIONS
+                               number of times to run tests
 </pre>
 
 **Experimental Options**
 
 <pre>
-    --use-server                 use development server
+  --use-server                 use development server
 </pre>
 
 **Internal Options**
 
 <pre>
-    --addons=ADDONS              paths of add-ons to install, comma-separated
+  --addons=ADDONS              paths of add-ons to install, comma-separated
 
-    --e10s                       enable out-of-process Jetpacks
+  --e10s                       enable out-of-process Jetpacks
 
-    --keydir=KEYDIR              directory holding private keys; default is
-                                 ~/.jetpack/keys
+  --keydir=KEYDIR              directory holding private keys; default is
+                               ~/.jetpack/keys
 
-    --logfile=LOGFILE
-                                 log console output to file
+  --logfile=LOGFILE
+                               log console output to file
 
-    --profile-memory=PROFILEMEMORY
-                                 profile memory usage (default is false)
+  --profile-memory=PROFILEMEMORY
+                               profile memory usage (default is false)
 
-    --test-runner-pkg=TEST_RUNNER_PKG
-                                 name of package containing test runner program
-                                 (default is test-harness)
+  --test-runner-pkg=TEST_RUNNER_PKG
+                               name of package containing test runner program
+                               (default is test-harness)
 </pre>
 
 ### Experimental Commands ###
@@ -203,13 +203,13 @@ detect leaks.
 For example, in shell A, type:
 
 <pre>
-    cfx develop
+  cfx develop
 </pre>
 
 In shell B, type:
 
 <pre>
-    cfx test --use-server
+  cfx test --use-server
 </pre>
 
 This will send `cfx test --use-server` output to shell A. If you repeat the
@@ -238,41 +238,41 @@ with, and which binary is used.
 **Options:**
 
 <pre>
-    -a APP, --app=APP            application to run: firefox (default), xulrunner,
-                                 fennec, or thunderbird
+  -a APP, --app=APP            application to run: firefox (default), xulrunner,
+                               fennec, or thunderbird
 
-    --addons=ADDONS              paths of add-ons to install, comma-separated
+  --addons=ADDONS              paths of add-ons to install, comma-separated
 
-    -b BINARY, --binary=BINARY   path to application binary
+  -b BINARY, --binary=BINARY   path to application binary
 
-    --dependencies               include tests for all dependencies
+  --dependencies               include tests for all dependencies
 
-    -f FILTER, --filter=FILTER
-                                 only run tests whose filenames match FILTER, a regexp
+  -f FILTER, --filter=FILTER
+                               only run tests whose filenames match FILTER, a regexp
 
-    -g CONFIG, --use-config=CONFIG
-                                 use named config from local.json
+  -g CONFIG, --use-config=CONFIG
+                               use named config from local.json
 
-    --keydir=KEYDIR              directory holding private keys; default is
-                                 ~/.jetpack/keys
+  --keydir=KEYDIR              directory holding private keys; default is
+                               ~/.jetpack/keys
 
-    --logfile=LOGFILE
-                                 log console output to file
+  --logfile=LOGFILE
+                               log console output to file
 
-    -p PROFILEDIR, --profiledir=PROFILEDIR
-                                 profile directory to pass to the application
+  -p PROFILEDIR, --profiledir=PROFILEDIR
+                               profile directory to pass to the application
 
-    --profile-memory=PROFILEMEMORY
-                                 profile memory usage (default is false)
+  --profile-memory=PROFILEMEMORY
+                               profile memory usage (default is false)
 
-    --test-runner-pkg=TEST_RUNNER_PKG
-                                 name of package containing test runner program
-                                 (default is test-harness)
+  --test-runner-pkg=TEST_RUNNER_PKG
+                               name of package containing test runner program
+                               (default is test-harness)
 
-    --times=ITERATIONS
-                                 number of times to run tests
+  --times=ITERATIONS
+                               number of times to run tests
 
-    --use-server                 use development server
+  --use-server                 use development server
 </pre>
 
 #### `cfx testex` ####
@@ -285,41 +285,41 @@ with, and which binary is used.
 **Options:**
 
 <pre>
-    -a APP, --app=APP            application to run: firefox (default), xulrunner,
-                                 fennec, or thunderbird
+  -a APP, --app=APP            application to run: firefox (default), xulrunner,
+                               fennec, or thunderbird
 
-    --addons=ADDONS              paths of add-ons to install, comma-separated
+  --addons=ADDONS              paths of add-ons to install, comma-separated
 
-    -b BINARY, --binary=BINARY   path to application binary
+  -b BINARY, --binary=BINARY   path to application binary
 
-    --dependencies               include tests for all dependencies
+  --dependencies               include tests for all dependencies
 
-    -f FILTER, --filter=FILTER
-                                 only run tests whose filenames match FILTER, a regexp
+  -f FILTER, --filter=FILTER
+                               only run tests whose filenames match FILTER, a regexp
 
-    -g CONFIG, --use-config=CONFIG
-                                 use named config from local.json
+  -g CONFIG, --use-config=CONFIG
+                               use named config from local.json
 
-    --keydir=KEYDIR              directory holding private keys; default is
-                                 ~/.jetpack/keys
+  --keydir=KEYDIR              directory holding private keys; default is
+                               ~/.jetpack/keys
 
-    --logfile=LOGFILE
-                                 log console output to file
+  --logfile=LOGFILE
+                               log console output to file
 
-    -p PROFILEDIR, --profiledir=PROFILEDIR
-                                 profile directory to pass to the application
+  -p PROFILEDIR, --profiledir=PROFILEDIR
+                               profile directory to pass to the application
 
-    --profile-memory=PROFILEMEMORY
-                                 profile memory usage (default is false)
+  --profile-memory=PROFILEMEMORY
+                               profile memory usage (default is false)
 
-    --test-runner-pkg=TEST_RUNNER_PKG
-                                 name of package containing test runner program
-                                 (default is test-harness)
+  --test-runner-pkg=TEST_RUNNER_PKG
+                               name of package containing test runner program
+                               (default is test-harness)
 
-    --times=ITERATIONS
-                                 number of times to run tests
+  --times=ITERATIONS
+                               number of times to run tests
 
-    --use-server                 use development server
+  --use-server                 use development server
 </pre>
 
 #### `cfx testall` ####
@@ -330,41 +330,41 @@ and all examples.
 **Options:**
 
 <pre>
-    -a APP, --app=APP            application to run: firefox (default), xulrunner,
+  -a APP, --app=APP            application to run: firefox (default), xulrunner,
                                  fennec, or thunderbird
 
-    --addons=ADDONS              paths of add-ons to install, comma-separated
+  --addons=ADDONS              paths of add-ons to install, comma-separated
 
-    -b BINARY, --binary=BINARY   path to application binary
+  -b BINARY, --binary=BINARY   path to application binary
 
-    --dependencies               include tests for all dependencies
+  --dependencies               include tests for all dependencies
 
-    -f FILTER, --filter=FILTER
-                                 only run tests whose filenames match FILTER, a regexp
+  -f FILTER, --filter=FILTER
+                               only run tests whose filenames match FILTER, a regexp
 
-    -g CONFIG, --use-config=CONFIG
-                                 use named config from local.json
+  -g CONFIG, --use-config=CONFIG
+                               use named config from local.json
 
-    --keydir=KEYDIR              directory holding private keys; default is
-                                 ~/.jetpack/keys
+  --keydir=KEYDIR              directory holding private keys; default is
+                               ~/.jetpack/keys
 
-    --logfile=LOGFILE
-                                 log console output to file
+  --logfile=LOGFILE
+                               log console output to file
 
-    -p PROFILEDIR, --profiledir=PROFILEDIR
-                                 profile directory to pass to the application
+  -p PROFILEDIR, --profiledir=PROFILEDIR
+                               profile directory to pass to the application
 
-    --profile-memory=PROFILEMEMORY
-                                 profile memory usage (default is false)
+  --profile-memory=PROFILEMEMORY
+                               profile memory usage (default is false)
 
-    --test-runner-pkg=TEST_RUNNER_PKG
-                                 name of package containing test runner program
-                                 (default is test-harness)
+  --test-runner-pkg=TEST_RUNNER_PKG
+                               name of package containing test runner program
+                               (default is test-harness)
 
-    --times=ITERATIONS
+  --times=ITERATIONS
                                  number of times to run tests
 
-    --use-server                 use development server
+  --use-server                 use development server
 </pre>
 
 Configuring local.json
@@ -377,23 +377,23 @@ using a key called "configs".
 For example:
 
 <pre>
-    {
-        "configs": {
-            "ff35": ["-a", "firefox", "-b", "/home/me/firefox-3.5/firefox-bin"]
-        }
-    }
+  {
+      "configs": {
+          "ff35": ["-a", "firefox", "-b", "/home/me/firefox-3.5/firefox-bin"]
+      }
+  }
 </pre>
 
 Using the above configuration, you can run:
 
 <pre>
-    cfx test --use-config=ff35
+  cfx test --use-config=ff35
 </pre>
 
 And it would be equivalent to:
 
 <pre>
-    cfx test -a firefox -b /home/me/firefox-3.5/firefox-bin
+  cfx test -a firefox -b /home/me/firefox-3.5/firefox-bin
 </pre>
 
 This method of defining configuration options can be used for all of the run,
@@ -422,13 +422,13 @@ For example, if your `main.js` looks like this:
 And you run cfx like this:
 
 <pre>
-    cfx run --static-args="{ \"foo\": \"Hello from the command line\" }"
+  cfx run --static-args="{ \"foo\": \"Hello from the command line\" }"
 </pre>
 
 Then your console should contain this:
 
 <pre>
-    info: Hello from the command line
+  info: Hello from the command line
 </pre>
 
 The `--static-args` option is recognized by two of the package-specific

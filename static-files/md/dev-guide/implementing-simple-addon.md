@@ -60,14 +60,14 @@ directory. This contains information about your add-on and should look
 something like this:
 
 <pre>
-{
+  {
     "name":"translator",
     "fullName":"translator",
     "description":"This is an example of addon description.",
     "author":"",
     "license":"MPL",
     "version":"0.1"
-}
+  }
 </pre>
 
 Finally, `cfx init` creates some example files under `docs`, `lib`, and

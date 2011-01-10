@@ -47,7 +47,7 @@ by executing the following command from the package folder,
 `addon-sdk/packages/my-extension`:
 
 <pre>
-    cfx run -t extension
+  cfx run -t extension
 </pre>
 
 (The `-t` parameter is actually the path to the folder with the "template"
@@ -71,10 +71,10 @@ your `package.json` (if necessary) provide you with an `id` value. The result
 will look something like this:
 
 <pre>
-    {
-      "id": "jid0-i6WjYzrJ0UFR0pPPM7Znl3BvYbk",
-      // other properties here
-    }
+  {
+    "id": "jid0-i6WjYzrJ0UFR0pPPM7Znl3BvYbk",
+    // other properties here
+  }
 </pre>
 
 Now we can use CommonJS modules from regular extension code using this code:
@@ -97,7 +97,7 @@ Check out [XPI Generation](#guide/xpi) for an overview of how this works.
 As with regular add-ons, you can use `cfx` to create an XPI from your package:
 
 <pre>
-    cfx xpi -t extension
+  cfx xpi -t extension
 </pre>
 
 **Note 1**: `cfx` attempts to update the `install.rdf` with the package metadata, so if
