@@ -107,67 +107,67 @@ auto-generated files:
     };
   harness-options.json:
     {
-     "loader": "resource://guid-api-utils-lib/loader.js", 
-     "main": "main", 
+     "loader": "resource://guid-api-utils-lib/loader.js",
+     "main": "main",
      "manifest": {
       "resource://guid-aardvark-lib/main.js": {
-       "chrome": false, 
-       "e10s-adapter": null, 
-       "hash": "a592cf3cf924f2c77e0728d97131138fcb7495c77f5202ac55c2e0c77ef903c2", 
-       "name": "main", 
-       "packageName": "aardvark", 
+       "chrome": false,
+       "e10s-adapter": null,
+       "hash": "a592cf3cf924f2c77e0728d97131138fcb7495c77f5202ac55c2e0c77ef903c2",
+       "name": "main",
+       "packageName": "aardvark",
        "requires": {
         "bar-module": {
          "url": "resource://guid-barbeque-lib/bar-module.js"
         }
-       }, 
-       "sectionName": "lib", 
+       },
+       "sectionName": "lib",
        "zipname": "resources/guid-aardvark-lib/main.js"
-      }, 
+      },
       "resource://guid-api-utils-lib/loader.js": {
-       "chrome": false, 
-       "e10s-adapter": null, 
-       "hash": "efac9dc700a56e693ac75ab81955c11e6874ddc83d92c11177d643601eaac346", 
-       "name": "loader", 
-       "packageName": "api-utils", 
-       "requires": {}, 
-       "sectionName": "lib", 
+       "chrome": false,
+       "e10s-adapter": null,
+       "hash": "efac9dc700a56e693ac75ab81955c11e6874ddc83d92c11177d643601eaac346",
+       "name": "loader",
+       "packageName": "api-utils",
+       "requires": {},
+       "sectionName": "lib",
        "zipname": "resources/guid-api-utils-lib/loader.js"
-      }, 
+      },
       "resource://guid-barbeque-lib/bar-module.js": {
-       "chrome": false, 
-       "e10s-adapter": null, 
-       "hash": "2515f8623e793571f1dffc4828de14a00a3da9be666147f8cebb3b3f1929e4d6", 
-       "name": "bar-module", 
-       "packageName": "barbeque", 
-       "requires": {}, 
-       "sectionName": "lib", 
+       "chrome": false,
+       "e10s-adapter": null,
+       "hash": "2515f8623e793571f1dffc4828de14a00a3da9be666147f8cebb3b3f1929e4d6",
+       "name": "bar-module",
+       "packageName": "barbeque",
+       "requires": {},
+       "sectionName": "lib",
        "zipname": "resources/guid-barbeque-lib/bar-module.js"
       }
-     }, 
-     "packageData": {}, 
+     },
+     "packageData": {},
      "resourcePackages": {
-      "guid-aardvark-lib": "aardvark", 
-      "guid-api-utils-lib": "api-utils", 
+      "guid-aardvark-lib": "aardvark",
+      "guid-api-utils-lib": "api-utils",
       "guid-barbeque-lib": "barbeque"
-     }, 
+     },
      "resources": {
       "guid-aardvark-lib": [
-       "resources", 
+       "resources",
        "guid-aardvark-lib"
-      ], 
+      ],
       "guid-api-utils-lib": [
-       "resources", 
+       "resources",
        "guid-api-utils-lib"
-      ], 
+      ],
       "guid-barbeque-lib": [
-       "resources", 
+       "resources",
        "guid-barbeque-lib"
       ]
-     }, 
+     },
      "rootPaths": [
-      "resource://guid-api-utils-lib/", 
-      "resource://guid-barbeque-lib/", 
+      "resource://guid-api-utils-lib/",
+      "resource://guid-barbeque-lib/",
       "resource://guid-aardvark-lib/"
      ]
     }
