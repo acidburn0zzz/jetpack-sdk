@@ -72,9 +72,11 @@ maintained as a separate file at all.
 The constructors for content-script-using objects such as panel and page-mod
 define a group of options for loading content scripts:
 
-    contentScript      string, array
-    contentScriptFile  string, array
-    contentScriptWhen  string
+<pre>
+  contentScript      string, array
+  contentScriptFile  string, array
+  contentScriptWhen  string
+</pre>
 
 We have already seen the `contentScript` option, which enables you to pass
 in the text of the script itself as a string literal. This version of the API
