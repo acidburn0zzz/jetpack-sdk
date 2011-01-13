@@ -20,6 +20,16 @@ html
 	background: #33559b url(/media/bg-footer.png) 0 0 repeat-x;
 }
 
+.site-title {
+  padding:5px;
+  margin: 5px;
+}
+
+#left-column .h1 {
+  padding:5px;
+  margin: 5px;
+}
+
 .sidebar-section {
   -moz-border-radius: 5px;
   border-radius: 5px;
