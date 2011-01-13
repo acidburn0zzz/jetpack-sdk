@@ -31,13 +31,12 @@ html
 }
 
 .sidebar-section {
-  -moz-border-radius: 5px;
-  border-radius: 5px;
   background-color: #E0EFFD;
+  margin-bottom: 10px;
 }
 
 .sidebar-section-contents {
-  padding-bottom:15px;
+  margin-bottom:5px;
 }
 
 .sidebar-section ul {
@@ -65,19 +64,18 @@ html
   font-weight: bold;
   font-style: normal;
   font-family: arial,helvetica,sans-serif;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-bottom:0px;
 }
 
 .sidebar-section h3 {
   font-size: 14px;
   font-style: normal;
   font-family: arial,helvetica,sans-serif;
-}
-
-.sidebar-section h3 {
-  margin-top:0px;
-  margin-bottom:10px;
-  padding-top:5px;
-  padding-bottom:5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin:0px;
 }
 
 .sidebar-section h4 {
@@ -90,7 +88,6 @@ html
 
 .sidebar-section h2, 
 .sidebar-section h3 {
-  padding: 10px;
   background: #E0EFFD;
 }
 
