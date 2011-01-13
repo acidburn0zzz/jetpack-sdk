@@ -2,7 +2,8 @@
 <br>
 ## API Reference ##
 
-<div id="high-level-packages"></div>
+<div id="high-level-packages">
+</div>
 
 ### [Globals](#guide/addon-development/globals) ##
 

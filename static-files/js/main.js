@@ -204,6 +204,22 @@ function startApp(jQuery, window) {
     SyntaxHighlighter.highlight();
   }
 
+  function highlightCurrentPage() {
+    $("*").removeClass('current-page');
+    $("*").removeClass('current-section');
+    $('a[href="' + window.location.hash + '"]').parent().addClass('current-page');
+    currentSideBarSection = null;
+    if ( $('.current-page').hasClass('sidebar-section-header') ) {
+      currentSideBarSection = $('.current-page').next();
+    }
+    else {
+      currentSideBarSection = $('.current-page').closest('.sidebar-section-contents');
+    }
+    $('.sidebar-section-contents').hide();
+    $(currentSideBarSection).parent().addClass('current-section');
+    $(currentSideBarSection).show();
+  }
+
   function showMainContent(query, url) {
     if (queuedContent != query)
       return;
@@ -228,7 +244,8 @@ function startApp(jQuery, window) {
     else {
       document.title = DOCUMENT_TITLE_ROOT;
     }
-    highlight();
+    highlightCurrentPage();
+    highlightCode();
   }
 
   function showModuleDetail(pkgName, moduleName) {
@@ -321,35 +338,53 @@ function startApp(jQuery, window) {
     }
   }
 
+  function isLowLevelPackage(pkg) {
+    return ('keywords' in pkg && pkg.keywords.indexOf &&
+        pkg.keywords.indexOf('jetpack-low-level') != -1);
+  }
+
+  function isHighLevelPackage(pkg) {
+    return !isLowLevelPackage(pkg);
+  }
+
   function processPackages() {
+    processPackageList('#high-level-packages', 
+                       'package-entry', isHighLevelPackage);
+    processPackageList('#low-level-packages', 
+                       'package-entry', isLowLevelPackage);
+    processPackageList('#high-level-package-summaries', 
+                       'package-summary', isHighLevelPackage);
+    processPackageList('#low-level-package-summaries', 
+                       'package-summary', isLowLevelPackage);
+  }
+
+  function processPackageList(pkgListLocation, pkgEntryTemplateName, filter) {
+    $(pkgListLocation).empty();
+    var pkgList = $("<div></div>");
+    $(pkgListLocation).append(pkgList);
+    pkgList.hide();
+    getProcessedPackageList(pkgList, pkgEntryTemplateName, filter);
+    pkgList.fadeIn();
+  }
+
+  function getProcessedPackageList(pkgList, pkgEntryTemplateName, filter) {
     var sortedPackages = [];
     for (name in packagesJSON)
       sortedPackages.push(name);
     sortedPackages.sort();
-    var entries = $("<div></div>");
-    var lowLevelEntries = $("<div></div>");
-    $("#high-level-packages").after(entries);
-    $("#low-level-packages").after(lowLevelEntries);
-    entries.hide();
-    lowLevelEntries.hide();
     sortedPackages.forEach(
       function(name) {
         var pkg = packagesJSON[name];
-        var entry = $("#templates .package-entry").clone();
+        var entry = $("#templates ." + pkgEntryTemplateName).clone();
         var hash = "#package/" + pkg.name;
         entry.find(".name").text(pkg.name).attr("href", hash);
-        if (pkg.readme) {
-            entry.find(".docs").html(markdownToHtml(pkg.readme));
-        }
         listModules(pkg, entry);
-        if ('keywords' in pkg && pkg.keywords.indexOf &&
-            pkg.keywords.indexOf('jetpack-low-level') != -1)
-          lowLevelEntries.append(entry);
-        else
-          entries.append(entry);
+        if (pkg.readme)
+          entry.find(".docs").html(markdownToHtml(pkg.readme));
+        if (filter(pkg)) {
+          pkgList.append(entry);
+        }
       });
-    entries.fadeIn();
-    lowLevelEntries.fadeIn();
   }
 
   function finalizeSetup(packages) {
@@ -360,7 +395,6 @@ function startApp(jQuery, window) {
     } else {
       window.setInterval(checkHash, CHECK_HASH_DELAY);
     }
-
   }
 
   function showGuideDetail(name) {

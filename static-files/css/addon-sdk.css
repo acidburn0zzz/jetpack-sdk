@@ -21,10 +21,58 @@ html
 }
 
 .sidebar-section {
-  padding:10px;
-  margin:10px;
   -moz-border-radius: 5px;
   border-radius: 5px;
-  padding-bottom:30px;
+  padding-bottom:15px;
   background-color: #E0EFFD;
+}
+
+.sidebar-section ul {
+  margin-bottom:10px;
+}
+
+
+.sidebar-section li li{
+padding-left:20px;
+}
+
+.sidebar-section .module{
+  padding-left:5px;
+  padding-right:5px;
+}
+
+.sidebar-section .modules
+{
+  padding-left:20px;
+}
+
+.sidebar-section h2, 
+.sidebar-section h3 {
+  padding: 10px;
+  background: #E0EFFD;
+}
+
+.sidebar-section h3 {
+  margin-top:0px;
+  margin-bottom:10px;
+  padding-top:5px;
+  padding-bottom:5px;
+}
+
+.sidebar-section h4 {
+  padding-left: 10px;
+}
+
+.current-section {
+  background: #F0F8FF;
+}
+
+.sidebar-section h2, 
+.sidebar-section h3 {
+  padding: 10px;
+  background: #E0EFFD;
+}
+
+.current-page {
+  background: white;
 }
