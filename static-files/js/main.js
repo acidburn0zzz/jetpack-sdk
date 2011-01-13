@@ -6,6 +6,7 @@ function startApp(jQuery, window) {
   var shouldFadeAndScroll = true;
 
   const DEFAULT_HASH = "guide/welcome";
+  const DEFAULT_SIDEBAR_SECTION = "#guide/addon-development/about";
   const IDLE_PING_DELAY = 500;
   const CHECK_HASH_DELAY = 100;
   const DOCUMENT_TITLE_ROOT = "Add-on SDK Documentation";
@@ -194,7 +195,7 @@ function startApp(jQuery, window) {
     }, 10);
   }
 
-  function highlight() {
+  function highlightCode() {
     $("code").parent("pre").addClass("brush: js");
     //remove the inner <code> tags
     $('pre>code').each(function() {
@@ -207,7 +208,11 @@ function startApp(jQuery, window) {
   function highlightCurrentPage() {
     $("*").removeClass('current-page');
     $("*").removeClass('current-section');
-    $('a[href="' + window.location.hash + '"]').parent().addClass('current-page');
+    currentHash = window.location.hash;
+    if (currentHash.length <= 1) {
+      currentHash = DEFAULT_SIDEBAR_SECTION;
+    }
+    $('a[href="' + currentHash + '"]').parent().addClass('current-page');
     currentSideBarSection = null;
     if ( $('.current-page').hasClass('sidebar-section-header') ) {
       currentSideBarSection = $('.current-page').next();

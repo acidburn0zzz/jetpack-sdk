@@ -37,15 +37,19 @@ html
 
 .sidebar-section-contents {
   margin-bottom:5px;
+  display:none;
 }
 
 .sidebar-section ul {
   margin-bottom:10px;
 }
 
-.sidebar-section .modules,
 .sidebar-section li li{
   padding-left:20px;
+}
+
+.sidebar-section .modules{
+  padding-left:15px;
 }
 
 .sidebar-section .module{
@@ -79,7 +83,7 @@ html
 }
 
 .sidebar-section h4 {
-  padding-left: 10px;
+  padding-left: 20px;
 }
 
 .current-section {

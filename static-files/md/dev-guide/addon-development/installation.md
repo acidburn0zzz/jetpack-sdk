@@ -1,5 +1,5 @@
 # Installation #
-<br>
+
 ## Prerequisites ##
 
 To develop with the new Add-on SDK, you'll need:
