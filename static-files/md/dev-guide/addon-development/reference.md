@@ -1,6 +1,4 @@
 # Reference #
-<br>
-## API Reference ##
 
 <div id="high-level-packages">
 </div>
@@ -8,10 +6,6 @@
 ### [Globals](#guide/addon-development/globals) ##
 
 Documentation for the global objects available to add-on code.
-<br>
-<br>
-
-## Tools Reference ##
 
 ### [cfx](#guide/addon-development/cfx-tool) ###
 

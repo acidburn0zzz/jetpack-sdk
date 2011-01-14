@@ -1,10 +1,8 @@
 <!-- contributed by Drew Willcoxon [adw@mozilla.com]  -->
 
-The `notifications` module allows you to display transient [toaster]()- or
-[Growl]()-style messages to the user.
-
-[toaster]: http://en.wikipedia.org/wiki/Toast_%28computing%29
-[Growl]: http://growl.info/
+The `notifications` module allows you to display transient
+[toaster](http://en.wikipedia.org/wiki/Toast_%28computing%29)- or
+[Growl](http://growl.info/)-style messages to the user.
 
 Examples
 --------

@@ -34,8 +34,8 @@ _content scripts_.
 
 A single add-on may use multiple content scripts, and content scripts loaded
 into the same context can interact directly with each other as well as with
-the web content itself. See the section below on [content script
-access](#content-script-access).
+the web content itself. See the section below on content script
+access.
 
 The add-on script and content script communicate by passing messages across
 the process boundary rather than directly accessing each other's state.
@@ -50,7 +50,7 @@ relationships. The gray fill represents code written by the add-on developer.
 ![Content script overview](media/content-scripting-overview.jpg)
 
 This might sound complicated but it doesn't need to be. The following add-on
-uses the [page-mod](#module/api-utils/page-mod) module to replace the
+uses the [page-mod](#module/addon-kit/page-mod) module to replace the
 content of any web page in the `.co.uk` domain by executing a content script
 in the context of that page:
 

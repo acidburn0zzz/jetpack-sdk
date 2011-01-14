@@ -66,4 +66,4 @@ __Unprivileged Module__: A CommonJS module that may be run
 without unrestricted access to the Mozilla platform, and which may use
 all applicable globals that don't require chrome privileges.
 
-  [Low-Level Module Best Practices]: #guide/best-practices
+  [Low-Level Module Best Practices]: #guide/module-development/best-practices

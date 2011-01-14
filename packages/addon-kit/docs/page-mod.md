@@ -23,7 +23,7 @@ Like all modules that interact with web content, page-mod uses content
 scripts that execute in the content process and defines a messaging API to
 communicate between the content scripts and the main add-on script. For more
 details on content scripting see the tutorial on [interacting with web
-content](#guide/web-content).
+content](#guide/addon-development/web-content).
 
 To create a PageMod the add-on developer supplies:
 
@@ -188,8 +188,7 @@ Creates a PageMod.
 A function to call when the PageMod attaches content scripts to
 a matching page. The function will be called with one argument, a `worker`
 object which the add-on script can use to communicate with the content scripts
-attached to the page in question. See "[Communicating with content
-scripts](#pagemod-content-scripts)" for more details.
+attached to the page in question.
 
 </api>
 

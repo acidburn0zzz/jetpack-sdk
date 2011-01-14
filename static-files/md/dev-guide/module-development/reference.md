@@ -1,6 +1,4 @@
-# Module Development > Reference #
-<br>
-## API Reference ##
+# Internals > Reference #
 
 <div id="low-level-packages"></div>
 

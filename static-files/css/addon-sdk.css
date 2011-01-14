@@ -41,15 +41,15 @@ html
 }
 
 .sidebar-section ul {
-  margin-bottom:10px;
+  margin-bottom: 5px;
 }
 
 .sidebar-section li li{
-  padding-left:20px;
+  padding-left:30px;
 }
 
 .sidebar-section .modules{
-  padding-left:15px;
+  padding-left:25px;
 }
 
 .sidebar-section .module{
@@ -74,7 +74,8 @@ html
 }
 
 .sidebar-section h3 {
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: bold;
   font-style: normal;
   font-family: arial,helvetica,sans-serif;
   padding-top: 5px;
@@ -83,7 +84,8 @@ html
 }
 
 .sidebar-section h4 {
-  padding-left: 20px;
+  font-weight: normal;
+  padding-left:10px;
 }
 
 .current-section {
@@ -95,6 +97,6 @@ html
   background: #E0EFFD;
 }
 
-.current-page {
+.sidebar-section .current-page {
   background: white;
 }

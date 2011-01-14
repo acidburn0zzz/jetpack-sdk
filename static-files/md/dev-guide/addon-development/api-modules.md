@@ -145,13 +145,13 @@ Using this module you can access any files you have included in your add-on's
 `data` directory.
 
 For example: if your add-on uses [content
-scripts](#guide/web-content) and you have chosen to supply them as separate
-files, you use `self` to retrieve them. Similarly, if your add-on includes an
-icon or some HTML content to display in a [`panel`](#module/addon-kit/panel)
-you can store the files in your `data` directory and retrieve them using
-`self`.
+scripts](#guide/addon-development/web-content) and you have chosen to supply
+them as separate files, you use `self` to retrieve them. Similarly, if your
+add-on includes an icon or some HTML content to display in a
+[`panel`](#module/addon-kit/panel) you can store the files in your `data`
+directory and retrieve them using `self`.
 
 This module also gives your add-on access to its [Program
-ID](#guide/program-id).
+ID](#guide/addon-development/program-id).
 
 Note that this module is in the [`api-utils`](#package/api-utils) package.

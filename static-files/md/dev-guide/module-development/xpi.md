@@ -188,4 +188,4 @@ examples is a unique identifier that the SDK prepends to all
 `resource:` URIs to namespace the XPI's resources so they don't
 collide with anything else, including other extensions built by the
 SDK and containing the same packages. This GUID is built from the
-[Program ID](#guide/program-id).
+[Program ID](#guide/addon-development/program-id).

@@ -210,15 +210,17 @@ function startApp(jQuery, window) {
     $("*").removeClass('current-section');
     currentHash = window.location.hash;
     if (currentHash.length <= 1) {
-      currentHash = DEFAULT_SIDEBAR_SECTION;
-    }
-    $('a[href="' + currentHash + '"]').parent().addClass('current-page');
-    currentSideBarSection = null;
-    if ( $('.current-page').hasClass('sidebar-section-header') ) {
-      currentSideBarSection = $('.current-page').next();
+      currentSideBarSection = $('#default-section-contents');
     }
     else {
-      currentSideBarSection = $('.current-page').closest('.sidebar-section-contents');
+      $('a[href="' + currentHash + '"]').parent().addClass('current-page');
+      currentSideBarSection = null;
+      if ( $('.current-page').hasClass('sidebar-section-header') ) {
+        currentSideBarSection = $('.current-page').next();
+      }
+      else {
+        currentSideBarSection = $('.current-page').closest('.sidebar-section-contents');
+      }
     }
     $('.sidebar-section-contents').hide();
     $(currentSideBarSection).parent().addClass('current-section');

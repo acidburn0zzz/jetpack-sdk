@@ -10,7 +10,7 @@ will not be reflected in another module.
 
 <span class="aside">
 For an introduction to CommonJS modules, see the
-[Packaging](#guide/packaging) tutorial.
+[CommonJS](#guide/addon-development/commonjs) page.
 </span>
 
 ## CommonJS Globals ##
@@ -20,9 +20,11 @@ as specified by version 1.0 of the [CommonJS Module Specification].
 
 ## HTML5 Globals ##
 
-At the time of this writing, code does *not* have access to
-any globals defined by the [HTML5] specification, such as `window`,
-`document`, or `localStorage`.
+Add-on code does *not* have access to any globals defined by the
+[HTML5] specification, such as `window`, `document`, or `localStorage`.
+You can access the DOM for a page by executing a
+[content script](#guide/addon-development/web-content) in the context of the
+page.
 
 ## SDK Globals ##
 
@@ -65,8 +67,6 @@ about the exception's stack traceback if one is available.
 Inserts a stack trace into the console at the point this function is called.
 
   [Components object]: https://developer.mozilla.org/en/Components_object
-  [Security Roadmap]: #guide/security-roadmap
   [HTML5]: http://dev.w3.org/html5/spec/Overview.html
   [JavaScript 1.8.1]: https://developer.mozilla.org/En/New_in_JavaScript_1.8.1
   [CommonJS Module Specification]: http://wiki.commonjs.org/wiki/Modules/1.0
-  [Package Specification]: #guide/package-spec
