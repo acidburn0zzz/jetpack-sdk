@@ -5,4 +5,3 @@ standard output.
 For documentation on the `console` global, see the
 [Globals](#guide/addon-development/globals) reference.
 
-  

@@ -355,13 +355,13 @@ function startApp(jQuery, window) {
   }
 
   function processPackages() {
-    processPackageList('#high-level-packages', 
+    processPackageList('#high-level-packages',
                        'package-entry', isHighLevelPackage);
-    processPackageList('#low-level-packages', 
+    processPackageList('#low-level-packages',
                        'package-entry', isLowLevelPackage);
-    processPackageList('#high-level-package-summaries', 
+    processPackageList('#high-level-package-summaries',
                        'package-summary', isHighLevelPackage);
-    processPackageList('#low-level-package-summaries', 
+    processPackageList('#low-level-package-summaries',
                        'package-summary', isLowLevelPackage);
   }
 
