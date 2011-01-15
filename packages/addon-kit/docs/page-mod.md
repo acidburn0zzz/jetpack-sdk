@@ -167,10 +167,11 @@ Creates a PageMod.
   Options for the PageMod, with the following keys:
   @prop include {string,array}
     A match pattern string or an array of match pattern strings.  These define
-    the pages to which the PageMod applies.  See the [match-pattern] module for
+    the pages to which the PageMod applies.  See the
+    [match-pattern](#module/api-utils/match-pattern) module for
     a description of match pattern syntax.
     At least one match pattern must be supplied.
-    [match-pattern]: #module/api-utils/match-pattern
+
   @prop [contentScriptFile] {string,array}
     The local file URLs of content scripts to load.  Content scripts specified
     by this option are loaded *before* those specified by the `contentScript`
@@ -194,13 +195,12 @@ attached to the page in question.
 
 <api name="include">
 @property {List}
-A [List] of match pattern strings.  These define the pages to which the page mod
-applies.  See the [match-pattern] module for a description of match patterns.
-Rules can be added to the list by calling its `add` method and removed by
-calling its `remove` method.
+A [list](#module/api-utils/list) of match pattern strings.  These define the
+pages to which the page mod applies.  See the
+[match-pattern](#module/api-utils/match-pattern) module for a description of
+match patterns. Rules can be added to the list by calling its `add` method and
+removed by calling its `remove` method.
 
-[List]: https://jetpack.mozillalabs.com/sdk/latest/docs/#module/api-utils/list
-[match-pattern]: #module/api-utils/match-pattern
 </api>
 
 <api name="destroy">

@@ -206,8 +206,8 @@ function startApp(jQuery, window) {
   }
 
   function highlightCurrentPage() {
-    $("*").removeClass('current-page');
-    $("*").removeClass('current-section');
+    $(".current-page").removeClass('current-page');
+    $(".current-section").removeClass('current-section');
     currentHash = window.location.hash;
     if (currentHash.length <= 1) {
       currentSideBarSection = $('#default-section-contents');
