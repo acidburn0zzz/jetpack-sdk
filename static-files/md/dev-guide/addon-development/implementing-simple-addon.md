@@ -246,6 +246,6 @@ To distribute your program, you can upload it to
 Eventually, this step may be automated via the SDK, streamlining the
 distribution process further.
 
-In the next section we'll introduce 
+In the next section we'll introduce
 [CommonJS](#guide/addon-development/commonjs), which provides the infrastructure
 for the SDK.

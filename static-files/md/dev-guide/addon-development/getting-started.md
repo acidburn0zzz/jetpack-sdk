@@ -11,6 +11,10 @@ it.
 Takes you through the process of implementing, running, and packaging a simple
 add-on.
 
+### [CommonJS, Packages, Modules and the SDK](#guide/addon-development/commonjs) ###
+A quick introduction to the CommonJS standard and the relationship between
+CommonJS and the SDK.
+
 ### [Reusable Modules](#guide/addon-development/implementing-reusable-module) ###
 Goes through the process of creating your own modules, to help you structure
 your add-on and promote code reuse.

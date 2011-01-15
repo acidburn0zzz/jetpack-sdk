@@ -21,7 +21,7 @@ characteristics:
 
   * **Reloadable**. A SDK-based extension can be asked to unload
     itself at any time, e.g. because the user decides to
-    uninstall or disable the extension. In order to do this, 
+    uninstall or disable the extension. In order to do this,
     to keep track of the resources currently being used by
     the extension's code, and be ready to free them at a moment's
     notice.
