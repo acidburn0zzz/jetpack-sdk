@@ -6,7 +6,7 @@ called `package.json`. This file is also referred to as the
 
 ## The Package Manifest ##
 
-`package.json` may contain the following keys: 
+`package.json` may contain the following keys:
 
 * `name` - the name of the package. The package system will only load
   one package with a given name. This name cannot contain spaces. The

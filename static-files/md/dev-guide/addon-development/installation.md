@@ -101,4 +101,3 @@ it in your web browser.
 
 Next we'll go through the process of [implementing a
 simple add-on](#guide/addon-development/implementing-simple-addon).
-
