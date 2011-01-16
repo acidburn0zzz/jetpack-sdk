@@ -210,6 +210,10 @@ table.meta-table
 {
   background-color: #E0EFFD;
   margin-bottom: 1.0em;
+  border-style:solid;
+  border-color:#E0EFFD;
+border-width:2px;
+  -moz-border-radius: 5px;
 }
 
 .sidebar-section-contents
@@ -259,6 +263,7 @@ table.meta-table
 .sidebar-section h2
 {
   font-size: 1.2em;
+  -moz-border-radius: 5px;
 }
 
 .sidebar-section h3
