@@ -30,10 +30,15 @@ window.addEventListener('unload', function() {
   },
   false);
 
+function escapeQuotes(inputString) {
+  var regx = /['"]/;
+  return inputString.replace(regx, '');
+}
+
 function displayAnnotation(annotation) {
   annotationAnchorAncestor = $('#' + annotation.ancestorId);
   annotationAnchor = $(annotationAnchorAncestor).find(
-                     'p:contains(' + annotation.anchorText + ')').last();
+                     'p:contains(' + escapeQuotes(annotation.anchorText) + ')').last();
   $(annotationAnchor).css('border', 'solid 3px yellow');
   $(annotationAnchor).addClass('annotated');
   $(annotationAnchor).bind('mouseover', function() {

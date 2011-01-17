@@ -27,7 +27,6 @@ function addonIsActive() {
 function detachWorker(worker, workerArray) {
   var index = workerArray.indexOf(worker);
   if(index != -1) {
-    console.log('detach');
     workerArray.splice(index, 1);
   }
 }
@@ -182,7 +181,6 @@ display it.
             annotationEditor.show();
             break;
           case 'detach':
-            console.log('detaching selector');
             detachWorker(this, selectors);
             break;
         }
@@ -227,7 +225,6 @@ see old ones.
             annotation.hide();
             break;
           case 'detach':
-            console.log('detaching annotator');
             detachWorker(this, annotators);
             break;
         }
