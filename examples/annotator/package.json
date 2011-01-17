@@ -1,10 +1,10 @@
 {
     "license": "MPL 1.1/GPL 2.0/LGPL 2.1", 
-    "name": "note", 
+    "name": "annotator", 
     "contributors": [], 
     "author": "Will Bamberg", 
-    "version": "0.10pre", 
+    "version": "0.10b2pre", 
     "keywords": [], 
-    "id": "jid0-6QuDiPJt1mZvXvj8wkYUum6lz0c", 
+    "id": "anonid0-annotator", 
     "description": "Add notes to Web pages"
 }

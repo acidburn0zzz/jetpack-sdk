@@ -24,13 +24,22 @@ function addonIsActive() {
   return (annotatorIsOn && !privateBrowsing.isActive);
 }
 
+function detachWorker(worker, workerArray) {
+  var index = workerArray.indexOf(worker);
+  if(index != -1) {
+    console.log('detach');
+    workerArray.splice(index, 1);
+  }
+}
+
+
 /*
 Function to tell the selector page mod that the add-on has become (in)active
 */
 function activateSelectors() {
   selectors.forEach(
     function (selector) {
-    selector.postMessage(addonIsActive());
+      selector.postMessage(addonIsActive());
   })
 }
 
@@ -167,8 +176,16 @@ display it.
     onAttach: function(worker) {
       worker.postMessage(addonIsActive());
       worker.on('message', function(message) {
-        annotationEditor.anchor = message;
-        annotationEditor.show();
+        switch(message[0]) {
+          case 'show':
+            annotationEditor.anchor = message[1];
+            annotationEditor.show();
+            break;
+          case 'detach':
+            console.log('detaching selector');
+            detachWorker(this, selectors);
+            break;
+        }
       })
       selectors.push(worker);
     }
@@ -200,15 +217,20 @@ see old ones.
         worker.postMessage(storage.array);
       }
       worker.on('message', function(message) {
-        if (message[0] == 'show') {
-          annotation.content = message[1];
-          annotation.show();
+        switch(message[0]) {
+          case 'show':
+            annotation.content = message[1];
+            annotation.show();
+            break;
+          case 'hide':
+            annotation.content = null;
+            annotation.hide();
+            break;
+          case 'detach':
+            console.log('detaching annotator');
+            detachWorker(this, annotators);
+            break;
         }
-        else if (message[0] == 'hide') {
-          annotation.content = null;
-          annotation.hide();
-        }
-
       });
       annotators.push(worker);
     }

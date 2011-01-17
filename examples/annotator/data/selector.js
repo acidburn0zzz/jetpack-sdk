@@ -29,6 +29,15 @@ self.on('message', function onMessage(activation) {
   }
 })
 
+/*
+Since there is no onDetach event for panels, we listen for the window's
+unload event and send the add-on a detach message.
+*/
+window.addEventListener('unload', function() {
+    postMessage(['detach']);
+  },
+  false);
+
 $('p').mouseenter(function() {
   if (!active || $(this).hasClass('annotated')) {
     return;
@@ -41,8 +50,8 @@ $('p').mouseenter(function() {
   $(matchedElement).bind('click.annotator', function(event) {
     event.stopPropagation();
     event.preventDefault();
-    postMessage([document.location.toString(), $(ancestor).attr("id"),
-                $(matchedElement).text()]);
+    postMessage(['show', [document.location.toString(), $(ancestor).attr("id"),
+                $(matchedElement).text()]]);
   });
 })
 

@@ -22,8 +22,21 @@ annotation associated with that element.
 
 To view all annotations in a list, right-click the pencil icon.
 
-It is not possible to delete annotations, or to edit them after creating them.
-
 The add-on is deactivated in private browsing mode, meaning that new annotations
 can't be created although existing ones are still shown. On exiting private
 browsing the add-on returns to its previous activation state.
+
+Known Issues/Limitations
+------------------------
+
+It is not possible to delete annotations, or to edit them after creating them,
+but it would be simple to add this.
+
+When right-clicking the annotator icon the add-on bar's context-menu is shown:
+this is tracked by
+[bug 626326](https://bugzilla.mozilla.org/show_bug.cgi?id=626326).
+
+The list of annotations should be anchored to the widget. The annotation
+editor, and the annotation itself, should be anchored to the element which is
+annotated. The will be done when the implementation of panel-anchoring is
+extended.

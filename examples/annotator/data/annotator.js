@@ -21,6 +21,15 @@ self.on('message', function onMessage(annotations) {
   })
 })
 
+/*
+Since there is no onDetach event for panels, we listen for the window's
+unload event and send the add-on a detach message.
+*/
+window.addEventListener('unload', function() {
+    postMessage(['detach']);
+  },
+  false);
+
 function displayAnnotation(annotation) {
   annotationAnchorAncestor = $('#' + annotation.ancestorId);
   annotationAnchor = $(annotationAnchorAncestor).find(
