@@ -3,7 +3,7 @@ const contextMenu = require('context-menu');
 const panels = require('panel');
 const widgets = require('widget');
 const data = require('self').data;
-const storage = require('simple-storage');
+const storage = require('simple-storage').storage;
 const pageMod = require('page-mod');
 const privateBrowsing = require('private-browsing');
 
@@ -30,7 +30,6 @@ function detachWorker(worker, workerArray) {
     workerArray.splice(index, 1);
   }
 }
-
 
 /*
 Function to tell the selector page mod that the add-on has become (in)active
@@ -104,7 +103,8 @@ and the text the user entered, store it, and hide the panel.
     contentScriptFile: data.url('editor/annotation-editor.js'),
     contentScriptWhen: 'ready',
     onMessage: function(message) {
-      handleNewAnnotation(message, this.anchor);
+      if (message)
+        handleNewAnnotation(message, this.anchor);
       annotationEditor.hide();
     },
     onShow: function() {
