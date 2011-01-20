@@ -3,7 +3,7 @@ const contextMenu = require('context-menu');
 const panels = require('panel');
 const widgets = require('widget');
 const data = require('self').data;
-const storage = require('simple-storage').storage;
+const simpleStorage = require('simple-storage');
 const pageMod = require('page-mod');
 const privateBrowsing = require('private-browsing');
 
@@ -71,17 +71,17 @@ notify all the annotators of the change.
 */
 function handleNewAnnotation(annotationText, anchor) {
   var newAnnotation = new Annotation(annotationText, anchor);
-  storage.array.push(newAnnotation);
+  simpleStorage.storage.array.push(newAnnotation);
   annotators.forEach(
     function (annotators) {
-    annotators.postMessage(storage.array);
+    annotators.postMessage(simpleStorage.storage.array);
   });
 }
 
 exports.main = function(options, callbacks) {
 
-  storage.array = [];
-
+  if (!simpleStorage.storage.array)
+    simpleStorage.storage.array = [];
 /*
 The annotationEditor panel is the UI component used for creating
 new annotations. It contains a text area for the user to
@@ -147,7 +147,7 @@ in the browser.
                         data.url('list/annotation-list.js')],
     contentScriptWhen: 'ready',
     onShow: function() {
-      this.postMessage(storage.array);
+      this.postMessage(simpleStorage.storage.array);
     },
     onMessage: function(message) {
       require('tabs').open(message);
@@ -211,8 +211,8 @@ see old ones.
     contentScriptFile: [data.url('jquery-1.4.2.min.js'),
                         data.url('annotator.js')],
     onAttach: function(worker) {
-      if(storage.array) {
-        worker.postMessage(storage.array);
+      if(simpleStorage.storage.array) {
+        worker.postMessage(simpleStorage.storage.array);
       }
       worker.on('message', function(message) {
         switch(message[0]) {
