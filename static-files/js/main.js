@@ -388,9 +388,8 @@ function startApp(jQuery, window) {
         listModules(pkg, entry);
         if (pkg.readme)
           entry.find(".docs").html(markdownToHtml(pkg.readme));
-        if (filter(pkg)) {
+        if (filter(pkg))
           pkgList.append(entry);
-        }
       });
   }
 

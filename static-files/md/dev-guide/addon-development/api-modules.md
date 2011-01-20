@@ -86,7 +86,7 @@ the user's involvement.
 
 ### [request](#module/addon-kit/request) ###
 
-This module enables you to make XMLHttpRequests from your add-on.
+This module enables you to make network requests from your add-on.
 
 ## Interacting with the Browser ##
 

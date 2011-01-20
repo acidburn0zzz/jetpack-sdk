@@ -1,9 +1,8 @@
 /*
-Generic style, that doesn't depend on any special structure
+The file contains generic style rules, that don't depend on any special structure
 */
 
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td
-{
+* {
   background: transparent;
   border: 0;
   font-size: 100%;
@@ -12,16 +11,14 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
   vertical-align: baseline;
 }
 
-html
-{
+html {
   background-color: #fff;
   background-image: url(/media/bg-header.png);
   background-position: left top;
   background-repeat: repeat-x;
 }
 
-body
-{
+body {
   color: #444;
   font-size: 13px;
   line-height: 1.538em;
@@ -32,13 +29,11 @@ body
   font-style: normal;
 }
 
-strong
-{
+strong {
   font-weight: bold;
 }
 
-h1
-{
+h1 {
   font-size: 2.571em;
   line-height: 1em;
   margin-bottom: .5833em;
@@ -47,8 +42,7 @@ h1
   font-weight: normal;
 }
 
-h2
-{
+h2 {
   color: #C63717;
   font-size: 2.154em;
   font-weight: normal;
@@ -59,8 +53,7 @@ h2
   font-style: italic;
 }
 
-h3
-{
+h3 {
   color: #011234;
   font-size: 1.385em;
   font-weight: normal;
@@ -71,75 +64,62 @@ h3
   font-style: italic;
 }
 
-h4
-{
+h4 {
   color: #235;
   font-size: 1em;
 }
 
-h5,h6
-{
+h5, h6 {
   font-size: 1em;
 }
 
-a:link
-{
+a:link {
   color: #003595;
   text-decoration: none;
 }
 
-a:visited
-{
+a:visited {
   color: #003595;
   text-decoration: none;
 }
 
-a:hover,a:focus,a:active
-{
+a:hover, a:focus, a:active {
   color: #003595;
   text-decoration: underline;
 }
 
-pre,code,kbd,tt,samp,tt
-{
+pre,code, kbd, tt, samp, tt {
   font-family: "andale mono",monospace;
 }
 
-ul
-{
+ul {
   list-style: none;
 }
 
-li
-{
-  margin-left:2em;
+li {
+  margin-left: 2em;
 }
 
-table
-{
+table {
   border-collapse: collapse;
   border-spacing: 0;
 }
 
-ol
-{
+ol {
   list-style-type: decimal;
   margin-left: 2em;
 }
 
-dt
-{
+dt {
   font-weight: bold;
   margin-top: 1.5em;
 }
 
-ul ul,ol ol,ol ul,ul ol
-{
+ul ul, ol ol, ol ul, ul ol {
   margin-bottom: 0;
 }
 
-p,ul,ol,dl,address,table,pre,form,fieldset
-{
+p, ul, ol, dl, address, table, pre, form, fieldset {
   font-size: 1em;
   margin-bottom: 1.5em;
 }
