@@ -6,6 +6,7 @@ const data = require('self').data;
 const simpleStorage = require('simple-storage');
 const pageMod = require('page-mod');
 const privateBrowsing = require('private-browsing');
+const notifications = require("notifications");
 
 /*
 Global variables
@@ -42,6 +43,16 @@ function activateSelectors() {
 }
 
 /*
+Update the annotators: call this whenever the set of annotations changes
+*/
+function updateAnnotators() {
+  annotators.forEach(
+    function (annotators) {
+    annotators.postMessage(simpleStorage.storage.array);
+  });
+}
+
+/*
 Toggle activation: update the on/off state and notify the selectors.
 Toggling activation is disabled when private browsing is on.
 */
@@ -72,10 +83,8 @@ notify all the annotators of the change.
 function handleNewAnnotation(annotationText, anchor) {
   var newAnnotation = new Annotation(annotationText, anchor);
   simpleStorage.storage.array.push(newAnnotation);
-  annotators.forEach(
-    function (annotators) {
-    annotators.postMessage(simpleStorage.storage.array);
-  });
+  console.log(simpleStorage.quotaUsage);
+  updateAnnotators();
 }
 
 exports.main = function(options, callbacks) {
@@ -272,6 +281,15 @@ and to notify the selectors of the change in state.
       widget.contentURL=data.url('widget/pencil-on.jpg');
       activateSelectors();
     }
+  });
+
+  simpleStorage.on("OverQuota", function () {
+    console.log('over');
+    notifications.notify({
+      title: 'Storage space exceeded', 
+      text: 'Removing recent annotations'});
+    while (simpleStorage.quotaUsage > 1)
+      simpleStorage.storage.array.pop();
   });
 
 }
