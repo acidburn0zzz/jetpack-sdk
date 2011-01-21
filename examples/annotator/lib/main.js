@@ -83,7 +83,6 @@ notify all the annotators of the change.
 function handleNewAnnotation(annotationText, anchor) {
   var newAnnotation = new Annotation(annotationText, anchor);
   simpleStorage.storage.array.push(newAnnotation);
-  console.log(simpleStorage.quotaUsage);
   updateAnnotators();
 }
 
@@ -283,8 +282,12 @@ and to notify the selectors of the change in state.
     }
   });
 
+/*
+We listen for the OverQuota event from simple-storage.
+If it fires we just notify the user and delete the most
+recent annotations until we are back in quota.
+*/
   simpleStorage.on("OverQuota", function () {
-    console.log('over');
     notifications.notify({
       title: 'Storage space exceeded', 
       text: 'Removing recent annotations'});
