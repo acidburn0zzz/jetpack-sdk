@@ -38,7 +38,7 @@ window.addEventListener('unload', function() {
   },
   false);
 
-$('p').mouseenter(function() {
+$('*').mouseenter(function() {
   if (!active || $(this).hasClass('annotated')) {
     return;
   }

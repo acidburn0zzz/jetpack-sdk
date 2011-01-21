@@ -8,7 +8,10 @@ For each annotation, if its URL matches this page,
 That's considered a match: then we:
 - highlight the anchor element
 - add an 'annotated' class to tell the selector to skip this element
-- bind 'mouseover' and 'mouseout' events to the element, to send 'show'
+- embed the annottion text as a new attribute
+
+For all annotated elements:
+- bind 'mouseenter' and 'mouseleave' events to the element, to send 'show'
 and 'hide' messages back to the add-on.
 */
 
@@ -16,9 +19,21 @@ self.on('message', function onMessage(annotations) {
   annotations.forEach(
     function(annotation) {
       if(annotation.url == document.location.toString()) {
-        displayAnnotation(annotation);
+        createAnchor(annotation);
       }
   })
+
+  $('.annotated').css('border', 'solid 3px yellow');
+
+  $('.annotated').bind('mouseenter', function(event) {
+    postMessage(['show', $(this).attr('annotation')]);
+    event.stopPropagation();
+    event.preventDefault();
+  });
+
+  $('.annotated').bind('mouseleave', function() {
+    postMessage(['hide']);
+  });
 })
 
 /*
@@ -30,16 +45,10 @@ window.addEventListener('unload', function() {
   },
   false);
 
-function displayAnnotation(annotation) {
+function createAnchor(annotation) {
   annotationAnchorAncestor = $('#' + annotation.ancestorId);
   annotationAnchor = $(annotationAnchorAncestor).parent().find(
-                     'p:contains(' + annotation.anchorText + ')').last();
-  $(annotationAnchor).css('border', 'solid 3px yellow');
+                     ':contains(' + annotation.anchorText + ')').last();
   $(annotationAnchor).addClass('annotated');
-  $(annotationAnchor).bind('mouseover', function() {
-    postMessage(['show', annotation.annotationText]);
-  });
-  $(annotationAnchor).bind('mouseout', function() {
-    postMessage(['hide']);
-  });
+  $(annotationAnchor).attr('annotation', annotation.annotationText);
 }
