@@ -297,7 +297,6 @@ class Server(object):
     def app(self, environ, start_response):
         self.environ = environ
         self.start_response = start_response
-
         parts = environ['PATH_INFO'].split('/')[1:]
         if not parts:
             # Expect some sort of rewrite rule, etc. to always ensure
@@ -307,7 +306,11 @@ class Server(object):
             parts = ['index.html']
         if parts[0] == API_PATH:
             return self._respond_with_api(parts[1:])
-        elif parts[0] == 'packages':
+        print environ['PATH_INFO']
+        if not '.' in parts[-1]:
+            return self._respond_with_file(os.path.join(self.root, 'index.html'))
+        if parts[0] == 'packages':
+            print parts[1:]
             return self._respond_with_pkg_file(parts[1:])
         else:
             fullpath = os.path.join(self.root, *parts)

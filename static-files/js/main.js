@@ -2,10 +2,10 @@ function startApp(jQuery, window) {
   var $ = jQuery;
   var document = window.document;
   var packagesJSON = null;;
-  var currentHash = "";
+  var currentPage = "";
   var shouldFadeAndScroll = true;
 
-  const DEFAULT_HASH = "guide/welcome";
+  const DEFAULT_PAGE = "/guide/welcome";
   const DEFAULT_SIDEBAR_SECTION = "#guide/addon-development/about";
   const IDLE_PING_DELAY = 500;
   const CHECK_HASH_DELAY = 100;
@@ -18,6 +18,17 @@ function startApp(jQuery, window) {
     if (hash != currentHash) {
       currentHash = hash;
       onHash(currentHash.slice(1));
+    }
+  }
+
+  function checkPage() {
+    var page = window.location.pathname;
+    if (page.length <= 1)
+      page = DEFAULT_PAGE;
+//    window.alert(page);
+    if (page != currentPage) {
+      currentPage = page;
+      onHash(currentPage.slice(1));
     }
   }
 
@@ -60,7 +71,7 @@ function startApp(jQuery, window) {
   }
 
   function pkgFileUrl(pkg, filename) {
-    return "packages/" + pkg.name + "/" + filename;
+    return "/packages/" + pkg.name + "/" + filename;
   }
 
   function pkgHasFile(pkg, filename) {
@@ -395,17 +406,12 @@ function startApp(jQuery, window) {
 
   function finalizeSetup(packages) {
     packagesJSON = packages;
-    checkHash();
-    if ("onhashchange" in window) {
-      window.addEventListener("hashchange", checkHash, false);
-    } else {
-      window.setInterval(checkHash, CHECK_HASH_DELAY);
-    }
+    checkPage();
   }
 
   function showGuideDetail(name) {
     var entry = $("#templates .guide-section").clone();
-    var url = "md/dev-guide/" + name + ".md";
+    var url = "/md/dev-guide/" + name + ".md";
     queueMainContent(entry, function () {
       var options = {
         url: url,
@@ -426,7 +432,7 @@ function startApp(jQuery, window) {
     $(".link").each(
       function() {
         if ($(this).children().length == 0) {
-          var hash = "#guide/" + $(this).attr("id");
+          var hash = "/guide/" + $(this).attr("id");
           var hyperlink = $('<a target="_self"></a>');
           hyperlink.attr("href", hash).text($(this).text());
           $(this).text("");
@@ -434,11 +440,11 @@ function startApp(jQuery, window) {
         }
       });
   }
-
+/*
   var isPingWorking = true;
 
   function sendIdlePing() {
-    jQuery.ajax({url:"api/idle",
+    jQuery.ajax({url:"/api/idle",
                  // This success function won't actually get called
                  // for a really long time because it's a long poll.
                  success: scheduleNextIdlePing,
@@ -477,11 +483,11 @@ function startApp(jQuery, window) {
   function scheduleNextIdlePing() {
     window.setTimeout(sendIdlePing, IDLE_PING_DELAY);
   }
-
-  if (window.location.protocol != "file:")
-    scheduleNextIdlePing();
+*/
+//  if (window.location.protocol != "file:")
+//    scheduleNextIdlePing();
   linkDeveloperGuide();
-  jQuery.ajax({url: "packages/index.json",
+  jQuery.ajax({url: "/packages/index.json",
                dataType: "json",
                success: finalizeSetup,
                error: onPackageError});
@@ -492,4 +498,4 @@ function startApp(jQuery, window) {
   });
 }
 
-$(window).ready(function() { startApp(jQuery, window); });
+$(window).ready(function() {startApp(jQuery, window); });
