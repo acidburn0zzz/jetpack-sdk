@@ -289,7 +289,7 @@ recent annotations until we are back in quota.
 */
   simpleStorage.on("OverQuota", function () {
     notifications.notify({
-      title: 'Storage space exceeded', 
+      title: 'Storage space exceeded',
       text: 'Removing recent annotations'});
     while (simpleStorage.quotaUsage > 1)
       simpleStorage.storage.array.pop();
