@@ -25,7 +25,6 @@ function startApp(jQuery, window) {
     var page = window.location.pathname;
     if (page.length <= 1)
       page = DEFAULT_PAGE;
-//    window.alert(page);
     if (page != currentPage) {
       currentPage = page;
       onHash(currentPage.slice(1));
@@ -440,7 +439,7 @@ function startApp(jQuery, window) {
         }
       });
   }
-/*
+
   var isPingWorking = true;
 
   function sendIdlePing() {
@@ -483,9 +482,9 @@ function startApp(jQuery, window) {
   function scheduleNextIdlePing() {
     window.setTimeout(sendIdlePing, IDLE_PING_DELAY);
   }
-*/
-//  if (window.location.protocol != "file:")
-//    scheduleNextIdlePing();
+
+  if (window.location.protocol != "file:")
+    scheduleNextIdlePing();
   linkDeveloperGuide();
   jQuery.ajax({url: "/packages/index.json",
                dataType: "json",

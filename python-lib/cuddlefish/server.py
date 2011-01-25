@@ -12,6 +12,7 @@ import SocketServer
 import shutil
 import tarfile
 import traceback
+import markdown
 
 from cuddlefish import packaging
 from cuddlefish import Bunch
@@ -43,6 +44,8 @@ TASK_QUEUE_GET = 'get'
 TASK_QUEUE_GET_TIMEOUT = 1
 DAEMONIC_IDLE_TIMEOUT = 60.0
 IDLE_WEBPAGE_TIMEOUT = 1.5
+INDEX_PAGE = '/index.html'
+CONTENT_ID = '<div id="right-column">'
 
 _idle_event = threading.Event()
 
@@ -237,6 +240,26 @@ class Server(object):
                     else:
                         return self._respond_with_file(dir_path)
 
+    def _respond_with_guide_page(self, path):
+        print('1')
+        root, ext = os.path.splitext(path)
+        print('1')
+        md_path = root + '.md'
+        print('1')
+        guide_content = markdown.markdown(open(md_path, 'r').read())
+        print('1')
+        print self.root + INDEX_PAGE
+        guide_page = open(self.root + INDEX_PAGE, 'r').read()
+        print('1')
+        insertion_point = guide_page.find(CONTENT_ID) + len(CONTENT_ID)
+        print(insertion_point)
+        guide_page = guide_page[:insertion_point] + guide_content + guide_page[insertion_point:]
+        print('1')
+        self.start_response('200 OK', [('Content-type', "text/html")])
+        f = open('out.txt','w')
+        print >>f, guide_page
+        return [guide_page.encode('utf8')]
+
     def _respond_with_api(self, parts):
         parts = [part for part in parts
                  if part]
@@ -297,6 +320,7 @@ class Server(object):
     def app(self, environ, start_response):
         self.environ = environ
         self.start_response = start_response
+        print environ['PATH_INFO']
         parts = environ['PATH_INFO'].split('/')[1:]
         if not parts:
             # Expect some sort of rewrite rule, etc. to always ensure
@@ -306,11 +330,9 @@ class Server(object):
             parts = ['index.html']
         if parts[0] == API_PATH:
             return self._respond_with_api(parts[1:])
-        print environ['PATH_INFO']
-        if not '.' in parts[-1]:
-            return self._respond_with_file(os.path.join(self.root, 'index.html'))
+        if parts[0] == 'md':
+            return self._respond_with_guide_page(os.path.join(self.root, *parts))
         if parts[0] == 'packages':
-            print parts[1:]
             return self._respond_with_pkg_file(parts[1:])
         else:
             fullpath = os.path.join(self.root, *parts)
