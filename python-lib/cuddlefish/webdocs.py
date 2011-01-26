@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, re
 import markdown
 import simplejson as json
 
@@ -11,6 +11,8 @@ INDEX_PAGE = '/static-files/index.html'
 HIGH_LEVEL_PACKAGE_SUMMARIES = '<li id="high-level-package-summaries">'
 LOW_LEVEL_PACKAGE_SUMMARIES = '<li id="low-level-package-summaries">'
 CONTENT_ID = '<div id="right-column">'
+TITLE_ID = '<title>'
+DEFAULT_TITLE = 'Add-on SDK Documentation'
 
 def get_modules(modules_json):
     modules = []
@@ -50,23 +52,24 @@ class WebDocs(object):
         path, ext = os.path.splitext(path)
         md_path = path + '.md'
         guide_content = markdown.markdown(open(md_path, 'r').read())
-        guide_page = insert_after(self.base_page, CONTENT_ID, guide_content)
-        return guide_page.encode('utf8')
+        return self._create_page(guide_content)
 
     def create_module_page(self, path):
         path, ext = os.path.splitext(path)
         md_path = path + '.md'
         module_content = apirenderer.md_to_div(md_path)
-        module_page = insert_after(self.base_page, CONTENT_ID, module_content)
-        return module_page.encode('utf8')
+        return self._create_page(module_content)
 
     def create_package_page(self, path):
         path, ext = os.path.splitext(path)
         package_name = path.split('/')[-1]
-        print package_name
         package_content = self._create_package_detail(package_name)
-        package_page = insert_after(self.base_page, CONTENT_ID, package_content)
-        return package_page.encode('utf8')
+        return self._create_page(package_content)
+
+    def _create_page(self, page_content):
+        page = self._insert_title(self.base_page, page_content)
+        page = insert_after(page, CONTENT_ID, page_content)
+        return page.encode('utf8')
 
     def _create_module_list(self, package_json):
         package_name = package_json['name']
@@ -119,8 +122,16 @@ class WebDocs(object):
         print 'i'
         package_json = self.packages_json[package_name]
         # pieces of the package detail: 1) title, 2) table, 3) description
-        package_title = tag_wrap(tag_wrap(package_name, 'span', {'class':'name'}), 'h1')
+        package_title = tag_wrap(package_name, 'h1')
         table = self._create_package_detail_table(package_json)
         description = tag_wrap(tag_wrap(markdown.markdown(package_json['readme']), 'p'), 'div', {'class':'docs'})
         return tag_wrap(package_title + table + description, 'div', {'class':'package-detail'})
 
+    def _insert_title(self, target, content):
+        match = re.search('<h1>.*</h1>', content)
+        if match:
+            title = match.group(0)[len('<h1>'):-len('</h1>')] + ' - ' + DEFAULT_TITLE
+        else:
+            title = DEFAULT_TITLE
+        target = insert_after(target, TITLE_ID, title)
+        return target

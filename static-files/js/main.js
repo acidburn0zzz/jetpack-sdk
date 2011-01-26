@@ -86,13 +86,6 @@ function scheduleNextIdlePing() {
 $(window).ready(function() {
   if (window.location.protocol != "file:")
     scheduleNextIdlePing();
-    documentName = $("#main-content h1:first").text();
-  if (documentName.length > 0) {
-    document.title = documentName + " - " + DOCUMENT_TITLE_ROOT;
-  }
-  else {
-    document.title = DOCUMENT_TITLE_ROOT;
-  }
   highlightCurrentPage();
   highlightCode();
 })

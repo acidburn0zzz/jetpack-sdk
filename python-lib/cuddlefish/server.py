@@ -115,14 +115,13 @@ def guess_mime_type(url):
     return mimetype
 
 class Server(object):
-    def __init__(self, env_root, task_queue, expose_privileged_api=True):
+    def __init__(self, env_root, task_queue, webdocs, expose_privileged_api=True):
         self.env_root = env_root
         self.expose_privileged_api = expose_privileged_api
         self.root = os.path.join(self.env_root, 'static-files')
         self.index = os.path.join(self.root, 'index.html')
         self.task_queue = task_queue
-        print 'a'
-        self.web_docs = webdocs.WebDocs(self.env_root)
+        self.web_docs = webdocs
 
     def _respond(self, message):
         self.start_response(message,
@@ -210,6 +209,7 @@ class Server(object):
                         return self._respond_with_file(dir_path)
 
     def _respond_with_guide_page(self, path):
+        print path
         self.start_response('200 OK', [('Content-type', "text/html")])
         return [self.web_docs.create_guide_page(path)]
 
@@ -307,9 +307,9 @@ class Server(object):
             else:
                 return self._respond_with_file(fullpath)
 
-def make_wsgi_app(env_root, task_queue, expose_privileged_api=True):
+def make_wsgi_app(env_root, task_queue, webdocs, expose_privileged_api=True):
     def app(environ, start_response):
-        server = Server(env_root, task_queue, expose_privileged_api)
+        server = Server(env_root, task_queue, webdocs, expose_privileged_api)
         return server.app(environ, start_response)
     return app
 
@@ -324,8 +324,9 @@ def make_httpd(env_root, host=DEFAULT_HOST, port=DEFAULT_PORT,
         handler_class = QuietWSGIRequestHandler
 
     tq = Queue.Queue()
+    web_docs = webdocs.WebDocs(env_root)
     httpd = simple_server.make_server(host, port,
-                                      make_wsgi_app(env_root, tq),
+                                      make_wsgi_app(env_root, tq, web_docs),
                                       ThreadedWSGIServer,
                                       handler_class)
     return httpd
@@ -369,8 +370,8 @@ def start_daemonic(httpd, host=DEFAULT_HOST, port=DEFAULT_PORT):
         if _idle_event.isSet():
             _idle_event.clear()
         else:
-            #print ("Web browser is no longer viewing %s, "
-            #       "shutting down server." % get_url(host, port))
+            print ("Web browser is no longer viewing %s, "
+                   "shutting down server." % get_url(host, port))
             break
 
 def start(env_root=None, host=DEFAULT_HOST, port=DEFAULT_PORT,
