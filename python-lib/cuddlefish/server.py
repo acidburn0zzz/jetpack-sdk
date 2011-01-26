@@ -18,6 +18,7 @@ from cuddlefish import packaging
 from cuddlefish import Bunch
 from cuddlefish import apiparser
 from cuddlefish import apirenderer
+from cuddlefish import webdocs
 import simplejson as json
 
 try:
@@ -241,24 +242,16 @@ class Server(object):
                         return self._respond_with_file(dir_path)
 
     def _respond_with_guide_page(self, path):
-        print('1')
-        root, ext = os.path.splitext(path)
-        print('1')
-        md_path = root + '.md'
-        print('1')
-        guide_content = markdown.markdown(open(md_path, 'r').read())
-        print('1')
-        print self.root + INDEX_PAGE
-        guide_page = open(self.root + INDEX_PAGE, 'r').read()
-        print('1')
-        insertion_point = guide_page.find(CONTENT_ID) + len(CONTENT_ID)
-        print(insertion_point)
-        guide_page = guide_page[:insertion_point] + guide_content + guide_page[insertion_point:]
-        print('1')
         self.start_response('200 OK', [('Content-type', "text/html")])
-        f = open('out.txt','w')
-        print >>f, guide_page
-        return [guide_page.encode('utf8')]
+        return [webdocs.create_guide_page(self.env_root, path)]
+
+    def _respond_with_module_page(self, path):
+        self.start_response('200 OK', [('Content-type', "text/html")])
+        return [webdocs.create_module_page(self.env_root, path)]
+
+    def _respond_with_package_page(self, path):
+        self.start_response('200 OK', [('Content-type', "text/html")])
+        return [webdocs.create_package_page(self.env_root, path)]
 
     def _respond_with_api(self, parts):
         parts = [part for part in parts
@@ -320,8 +313,8 @@ class Server(object):
     def app(self, environ, start_response):
         self.environ = environ
         self.start_response = start_response
-        print environ['PATH_INFO']
         parts = environ['PATH_INFO'].split('/')[1:]
+        print parts
         if not parts:
             # Expect some sort of rewrite rule, etc. to always ensure
             # that we have at least a '/' as our path.
@@ -333,7 +326,10 @@ class Server(object):
         if parts[0] == 'md':
             return self._respond_with_guide_page(os.path.join(self.root, *parts))
         if parts[0] == 'packages':
-            return self._respond_with_pkg_file(parts[1:])
+             if len(parts) < 3:
+                 return self._respond_with_package_page(os.path.join(self.env_root, *parts))
+             else:
+                 return self._respond_with_module_page(os.path.join(self.env_root, *parts))
         else:
             fullpath = os.path.join(self.root, *parts)
             fullpath = os.path.normpath(fullpath)
