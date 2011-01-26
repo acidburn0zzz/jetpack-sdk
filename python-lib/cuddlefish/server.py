@@ -35,6 +35,7 @@ except ImportError:
 DEV_SERVER_PORT = 15832
 DEFAULT_PORT = 8888
 DEFAULT_HOST = '127.0.0.1'
+DEFAULT_PAGE = 'dev-guide/welcome.html'
 
 API_PATH = 'api'
 IDLE_PATH = 'idle'
@@ -120,6 +121,8 @@ class Server(object):
         self.root = os.path.join(self.env_root, 'static-files')
         self.index = os.path.join(self.root, 'index.html')
         self.task_queue = task_queue
+        print 'a'
+        self.web_docs = webdocs.WebDocs(self.env_root)
 
     def _respond(self, message):
         self.start_response(message,
@@ -157,47 +160,12 @@ class Server(object):
                                 [('Content-type', "text/plain")])
             return [str(e)]
 
-    def _get_files_in_dir(self, path):
-        data = {}
-        files = os.listdir(path)
-        for filename in files:
-            fullpath = os.path.join(path, filename)
-            if os.path.isdir(fullpath):
-                data[filename] = self._get_files_in_dir(fullpath)
-            else:
-                try:
-                    info = os.stat(fullpath)
-                    data[filename] = dict(size=info.st_size)
-                except OSError:
-                    pass
-        return data
-
-    def build_pkg_index(self, pkg_cfg):
-        pkg_cfg = copy.deepcopy(pkg_cfg)
-        for pkg in pkg_cfg.packages:
-            root_dir = pkg_cfg.packages[pkg].root_dir
-            files = self._get_files_in_dir(root_dir)
-            pkg_cfg.packages[pkg].files = files
-            try:
-                readme = open(root_dir + '/README.md').read()
-                pkg_cfg.packages[pkg].readme = readme
-            except IOError:
-                pass
-            del pkg_cfg.packages[pkg].root_dir
-        return pkg_cfg.packages
-
-    def build_pkg_cfg(self):
-        pkg_cfg = packaging.build_config(self.env_root,
-                                         Bunch(name='dummy'))
-        del pkg_cfg.packages['dummy']
-        return pkg_cfg
-
     def _respond_with_pkg_file(self, parts):
         if not parts:
             return self._respond('404 Not Found')
 
         try:
-            pkg_cfg = self.build_pkg_cfg()
+            pkg_cfg = packaging.build_pkg_cfg(self.env_root)
         except packaging.Error, e:
             self.start_response('500 Internal Server Error',
                                 [('Content-type', 'text/plain')])
@@ -209,7 +177,7 @@ class Server(object):
             # we'll just return text/plain for now.
             self.start_response('200 OK',
                                 [('Content-type', 'text/plain')])
-            return [json.dumps(self.build_pkg_index(pkg_cfg))]
+            return [json.dumps(packaging.build_pkg_index(pkg_cfg))]
 
         pkg_name = parts[0]
         if pkg_name not in pkg_cfg.packages:
@@ -243,15 +211,15 @@ class Server(object):
 
     def _respond_with_guide_page(self, path):
         self.start_response('200 OK', [('Content-type', "text/html")])
-        return [webdocs.create_guide_page(self.env_root, path)]
+        return [self.web_docs.create_guide_page(path)]
 
     def _respond_with_module_page(self, path):
         self.start_response('200 OK', [('Content-type', "text/html")])
-        return [webdocs.create_module_page(self.env_root, path)]
+        return [self.web_docs.create_module_page(path)]
 
     def _respond_with_package_page(self, path):
         self.start_response('200 OK', [('Content-type', "text/html")])
-        return [webdocs.create_package_page(self.env_root, path)]
+        return [self.web_docs.create_package_page(path)]
 
     def _respond_with_api(self, parts):
         parts = [part for part in parts
@@ -314,17 +282,16 @@ class Server(object):
         self.environ = environ
         self.start_response = start_response
         parts = environ['PATH_INFO'].split('/')[1:]
-        print parts
         if not parts:
             # Expect some sort of rewrite rule, etc. to always ensure
             # that we have at least a '/' as our path.
             return self._respond('404 Not Found')
         if not parts[0]:
-            parts = ['index.html']
+            parts = DEFAULT_PAGE.split('/')
         if parts[0] == API_PATH:
             return self._respond_with_api(parts[1:])
-        if parts[0] == 'md':
-            return self._respond_with_guide_page(os.path.join(self.root, *parts))
+        if parts[0] == 'dev-guide':
+            return self._respond_with_guide_page(os.path.join(self.env_root, 'static-files', 'md', *parts))
         if parts[0] == 'packages':
              if len(parts) < 3:
                  return self._respond_with_package_page(os.path.join(self.env_root, *parts))
@@ -438,10 +405,10 @@ def generate_static_docs(env_root, tgz_filename):
     # then copy docs from each package
     os.mkdir(os.path.join(staging_dir, "packages"))
 
-    pkg_cfg = server.build_pkg_cfg()
+    pkg_cfg = packaging.build_pkg_cfg(server.env_root)
 
     # starting with the (generated) index file
-    index = json.dumps(server.build_pkg_index(pkg_cfg))
+    index = json.dumps(packaging.build_pkg_index(pkg_cfg))
     index_path = os.path.join(staging_dir, "packages", 'index.json')
     open(index_path, 'w').write(index)
 

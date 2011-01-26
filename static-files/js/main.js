@@ -40,45 +40,6 @@ function highlightCurrentPage() {
   $(currentSideBarSection).show();
 }
 
-/*
-  function showPackageDetail(name) {
-    var pkg = packagesJSON[name];
-    var entry = $("#templates .package-detail").clone();
-    var filename = "README.md";
-
-    var authors = [];
-    if (pkg.author)
-      authors.push(pkg.author);
-    if (pkg.contributors)
-      authors = authors.concat(pkg.contributors);
-
-    var dependencies = pkg.dependencies;
-
-    entry.find(".name").text(pkg.name);
-    if (authors.length)
-      entry.find(".authors").text(authors.join("\n"));
-    if (pkg.license)
-      entry.find(".license").text(pkg.license);
-    if (pkg.version)
-      entry.find(".version").text(pkg.version);
-    if (dependencies && dependencies.length)
-      entry.find(".dependencies").text(dependencies.join("\n"));
-    else
-      entry.find(".dependencies").parent().parent().remove();
-
-    listModules(pkg, entry);
-
-    queueMainContent(entry, function () {
-      getPkgFile(pkg, filename, markdownToHtml,
-                 function(html) {
-                   if (html)
-                     entry.find(".docs").html(html);
-                   showMainContent(entry, pkgFileUrl(pkg, filename));
-                 });
-    });
-  }
-*/
-
 var isPingWorking = true;
 
 function sendIdlePing() {
