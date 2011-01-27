@@ -31,7 +31,7 @@ function highlightCurrentPage() {
   $(currentSideBarSection).parent().addClass('current-section');
   $(currentSideBarSection).show();
 }
-/*
+
 var isPingWorking = true;
 
 function sendIdlePing() {
@@ -74,7 +74,7 @@ function sendIdlePing() {
 function scheduleNextIdlePing() {
   window.setTimeout(sendIdlePing, IDLE_PING_DELAY);
 }
-*/
+
 $(window).ready(function() {
 //  if (window.location.protocol != "file:")
 //    scheduleNextIdlePing();

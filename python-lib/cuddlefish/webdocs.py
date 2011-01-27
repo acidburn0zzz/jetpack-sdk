@@ -119,7 +119,6 @@ class WebDocs(object):
         return tag_wrap(tag_wrap(table_contents, 'tbody'), 'table', {'class':'meta-table'})
 
     def _create_package_detail(self, package_name):
-        print 'i'
         package_json = self.packages_json[package_name]
         # pieces of the package detail: 1) title, 2) table, 3) description
         package_title = tag_wrap(package_name, 'h1')

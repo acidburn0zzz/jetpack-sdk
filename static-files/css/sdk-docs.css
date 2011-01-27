@@ -53,10 +53,11 @@
 }
 
 .module {
-  padding-left: 0.5em;
-  padding-right: 0.5em;
   margin-top: 0.2em;
   margin-bottom: 0.2em;
+  padding-left: 0em;
+  padding-right: 0em;
+  margin-right: 1.0em;
 }
 
 .package-summary .module {
@@ -201,11 +202,6 @@ table.meta-table {
 
 .sidebar-section .modules {
   padding-left: 25px;
-}
-
-.sidebar-section .module {
-  padding-left: 0.5em;
-  padding-right: 0.5em;
 }
 
 .sidebar-section h2, .sidebar-section h3 {
