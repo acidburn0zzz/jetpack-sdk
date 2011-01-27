@@ -1,17 +1,12 @@
-
 /*
-Handle click events on the widget. This lets us tell about the event itself.
+Listen for left and right click events and send the corresponding message
+to the content script.
 */
-this.addEventListener('click', function(e) {
-
-  // This is a left click, with no shift key
-  if(e.button == 0 && e.shiftKey == false) {
+this.addEventListener('click', function(event) {
+  if(event.button == 0 && event.shiftKey == false)
     postMessage('left-click');
-  }
 
-  // This is a right click, or a left click with shift key (treat like right)
-  if(e.button == 2 || (e.button == 0 && e.shiftKey == true)) {
+  if(event.button == 2 || (event.button == 0 && event.shiftKey == true))
     postMessage('right-click');
-  }
-  e.preventDefault();
+  event.preventDefault();
 }, true);
