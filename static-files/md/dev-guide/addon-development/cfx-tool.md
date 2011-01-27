@@ -1,4 +1,3 @@
-<!-- contributed by Noelle Murata [fiveinchpixie@gmail.com] -->
 # cfx #
 
 The cfx command-line tool gives you access to the SDK documentation and

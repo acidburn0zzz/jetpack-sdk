@@ -1,12 +1,4 @@
-
-var document = window.document;
-var currentPage = "";
-var shouldFadeAndScroll = true;
-
-const DEFAULT_PAGE = "/guide/welcome";
-const DEFAULT_SIDEBAR_SECTION = "#guide/addon-development/about";
 const IDLE_PING_DELAY = 500;
-const DOCUMENT_TITLE_ROOT = "Add-on SDK Documentation";
 
 function highlightCode() {
   $("code").parent("pre").addClass("brush: js");
@@ -39,7 +31,7 @@ function highlightCurrentPage() {
   $(currentSideBarSection).parent().addClass('current-section');
   $(currentSideBarSection).show();
 }
-
+/*
 var isPingWorking = true;
 
 function sendIdlePing() {
@@ -82,10 +74,10 @@ function sendIdlePing() {
 function scheduleNextIdlePing() {
   window.setTimeout(sendIdlePing, IDLE_PING_DELAY);
 }
-
+*/
 $(window).ready(function() {
-  if (window.location.protocol != "file:")
-    scheduleNextIdlePing();
+//  if (window.location.protocol != "file:")
+//    scheduleNextIdlePing();
   highlightCurrentPage();
   highlightCode();
 })
