@@ -21,6 +21,7 @@ We'd like to thank our many Jetpack project contributors!  They include:
 * Myk Melez
 * Zandr Milewski
 * Noelle Murata
+* Joe R. Nassimian
 * Nick Nguyen
 * Paul O’Shannessy
 * Alexandre Poirot

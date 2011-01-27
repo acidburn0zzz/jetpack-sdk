@@ -1,3 +1,4 @@
+
 const IDLE_PING_DELAY = 500;
 
 function highlightCode() {
@@ -9,6 +10,8 @@ function highlightCode() {
   })
   SyntaxHighlighter.highlight();
 }
+
+>>>>>>> master
 
 function highlightCurrentPage() {
   $(".current-page").removeClass('current-page');
