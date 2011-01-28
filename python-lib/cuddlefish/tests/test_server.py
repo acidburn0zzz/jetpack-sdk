@@ -17,7 +17,7 @@ class ServerTests(unittest.TestCase):
 class UnprivilegedServerTests(unittest.TestCase):
     def request(self, path, method='GET'):
         web_docs = webdocs.WebDocs(env_root)
-        app = server.make_wsgi_app(env_root, web_docs, task_queue=None, 
+        app = server.make_wsgi_app(env_root, web_docs, task_queue=None,
                                    expose_privileged_api=False)
 
         def start_response(code, headers):

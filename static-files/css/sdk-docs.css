@@ -1,11 +1,4 @@
 
-#cannot-ping {
-  padding: 0.5em;
-  background: #aa0000;
-  color: white;
-  display: none;
-}
-
 #columns {
   display: table;
   height: 100%;
@@ -31,11 +24,6 @@
 #footer .actions {
   display: block;
   float: right;
-}
-
-#view-source {
-  color: white;
-  text-decoration: none;
 }
 
 .meta-header {
@@ -77,10 +65,6 @@
   font-family: Monaco, Lucida Console, monospace;
   font-size: 0.8em;
   white-space: pre;
-}
-
-#templates {
-  display: none;
 }
 
 .aside {
@@ -182,6 +166,10 @@ table.meta-table {
   border-color: #E0EFFD;
   border-width: 2px;
   -moz-border-radius: 5px;
+}
+
+.sidebar-section-contents {
+  display: none;
 }
 
 .sidebar-section ul {

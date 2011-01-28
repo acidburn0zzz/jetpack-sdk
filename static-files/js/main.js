@@ -25,7 +25,8 @@ function highlightCurrentPage() {
       currentSideBarSection = $('.current-page').next();
     }
     else {
-      currentSideBarSection = $('.current-page').closest('.sidebar-section-contents');
+      currentSideBarSection =
+        $('.current-page').closest('.sidebar-section-contents');
     }
   }
   $('.sidebar-section-contents').hide();

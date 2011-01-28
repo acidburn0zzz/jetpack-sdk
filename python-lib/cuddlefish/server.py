@@ -116,7 +116,8 @@ def guess_mime_type(url):
     return mimetype
 
 class Server(object):
-    def __init__(self, env_root, webdocs, task_queue, expose_privileged_api=True):
+    def __init__(self, env_root, \
+                 webdocs, task_queue, expose_privileged_api=True):
         self.env_root = env_root
         self.expose_privileged_api = expose_privileged_api
         self.root = os.path.join(self.env_root, 'static-files')
@@ -133,7 +134,8 @@ class Server(object):
         mimetype = 'text/html'
         try:
             if parts[0] == 'dev-guide':
-                path = os.path.join(self.env_root, 'static-files', 'md', *parts)
+                path = os.path.join(self.env_root, \
+                                    'static-files', 'md', *parts)
                 response = self.web_docs.create_guide_page(path)
             elif parts[0] == 'packages':
                  if len(parts) > 1 and parts[1] == 'index.json':
