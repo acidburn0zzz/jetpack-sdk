@@ -19,6 +19,16 @@ packages, structured like so:
 <pre>
   >>> from cuddlefish.tests.test_xpi import document_dir
   >>> document_dir('packages')
+  aardvark/docs/aardvark-feeder.md:
+    The `aardvark-feeder` module simplifies feeding aardvarks.
+  <BLANKLINE>
+    <api name="feed">
+    @function
+      Feed the aardvark.
+    @param food {string}
+      The food.  Aardvarks will eat anything.
+    </api>
+  <BLANKLINE>
   aardvark/lib/main.js:
     exports.main = function(options, callbacks) {
       console.log("1 + 1 =", require("bar-module").add(1, 1));
@@ -26,7 +36,9 @@ packages, structured like so:
     };
   aardvark/package.json:
     {
+      "author": "Jon Smith",
       "description": "A package w/ a main module; can be built into an extension.",
+      "keywords": ["potato"],
       "dependencies": ["api-utils", "barbeque"]
     }
   api-utils/lib/loader.js:
@@ -36,6 +48,7 @@ packages, structured like so:
   api-utils/package.json:
     {
       "description": "A foundational package that provides a CommonJS module loader implementation.",
+      "keywords": ["potato", "jetpack-low-level"],
       "loader": "lib/loader.js"
     }
   barbeque/lib/bar-module.js:
@@ -44,6 +57,7 @@ packages, structured like so:
     };
   barbeque/package.json:
     {
+      "keywords": ["potato", "jetpack-low-level"],
       "description": "A package used by 'aardvark' as a library."
     }
 

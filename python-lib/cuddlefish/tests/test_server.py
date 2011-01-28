@@ -57,7 +57,6 @@ class UnprivilegedServerTests(unittest.TestCase):
         self.assertTrue('API Utils' in readme)
 
     def test_packages_index_json_200(self):
-        print self.request('/packages/index.json')
         info = server.json.loads(self.request('/packages/index.json'))
         self.assertEqual(type(info), dict)
         self.assertTrue('api-utils' in info)

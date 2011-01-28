@@ -136,10 +136,14 @@ class Server(object):
                 path = os.path.join(self.env_root, 'static-files', 'md', *parts)
                 response = self.web_docs.create_guide_page(path)
             elif parts[0] == 'packages':
-                 path = os.path.join(self.env_root, *parts)
-                 if len(parts) < 3:
+                 if len(parts) > 1 and parts[1] == 'index.json':
+                     mimetype = 'text/plain'
+                     response = json.dumps(self.web_docs.packages_json)
+                 elif len(parts) < 3:
+                     path = os.path.join(self.env_root, *parts)
                      response = self.web_docs.create_package_page(path)
                  else:
+                     path = os.path.join(self.env_root, *parts)
                      response = self.web_docs.create_module_page(path)
             else:
                 path = os.path.join(self.root, *parts)
@@ -151,8 +155,9 @@ class Server(object):
                 return self._error('500 Internal Server Error')
         except:
                 return self._error('500 Internal Server Error')
-        self.start_response('200 OK', [('Content-type', mimetype)])
-        return [response]
+        else:
+            self.start_response('200 OK', [('Content-type', mimetype)])
+            return [response]
 
     def _respond_with_file(self, path):
         url = urllib.pathname2url(path)
