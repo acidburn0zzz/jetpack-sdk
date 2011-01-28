@@ -1,4 +1,4 @@
-import sys, os, re
+import sys, os, re, errno
 import markdown
 import simplejson as json
 
@@ -51,7 +51,8 @@ class WebDocs(object):
     def create_guide_page(self, path):
         path, ext = os.path.splitext(path)
         md_path = path + '.md'
-        guide_content = markdown.markdown(open(md_path, 'r').read())
+        md_content = open(md_path, 'r').read()
+        guide_content = markdown.markdown(md_content)
         return self._create_page(guide_content)
 
     def create_module_page(self, path):
@@ -119,7 +120,9 @@ class WebDocs(object):
         return tag_wrap(tag_wrap(table_contents, 'tbody'), 'table', {'class':'meta-table'})
 
     def _create_package_detail(self, package_name):
-        package_json = self.packages_json[package_name]
+        package_json = self.packages_json.get(package_name, None)
+        if not package_json:
+            raise IOError(errno.ENOENT, 'Package not found')
         # pieces of the package detail: 1) title, 2) table, 3) description
         package_title = tag_wrap(package_name, 'h1')
         table = self._create_package_detail_table(package_json)

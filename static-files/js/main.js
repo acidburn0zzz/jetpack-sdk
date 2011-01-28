@@ -11,8 +11,6 @@ function highlightCode() {
   SyntaxHighlighter.highlight();
 }
 
->>>>>>> master
-
 function highlightCurrentPage() {
   $(".current-page").removeClass('current-page');
   $(".current-section").removeClass('current-section');
@@ -79,8 +77,8 @@ function scheduleNextIdlePing() {
 }
 
 $(window).ready(function() {
-//  if (window.location.protocol != "file:")
-//    scheduleNextIdlePing();
+  if (window.location.protocol != "file:")
+    scheduleNextIdlePing();
   highlightCurrentPage();
   highlightCode();
 })

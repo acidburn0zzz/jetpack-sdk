@@ -13,6 +13,7 @@ import shutil
 import tarfile
 import traceback
 import markdown
+import errno
 
 from cuddlefish import packaging
 from cuddlefish import Bunch
@@ -115,7 +116,7 @@ def guess_mime_type(url):
     return mimetype
 
 class Server(object):
-    def __init__(self, env_root, task_queue, webdocs, expose_privileged_api=True):
+    def __init__(self, env_root, webdocs, task_queue, expose_privileged_api=True):
         self.env_root = env_root
         self.expose_privileged_api = expose_privileged_api
         self.root = os.path.join(self.env_root, 'static-files')
@@ -123,29 +124,40 @@ class Server(object):
         self.task_queue = task_queue
         self.web_docs = webdocs
 
-    def _respond(self, message):
-        self.start_response(message,
-                            [('Content-type', 'text/plain')])
+    def _error(self, message):
+        self.start_response(message, [('Content-type', 'text/plain')])
         yield message
+
+    def _respond(self, parts):
+        response = ''
+        mimetype = 'text/html'
+        try:
+            if parts[0] == 'dev-guide':
+                path = os.path.join(self.env_root, 'static-files', 'md', *parts)
+                response = self.web_docs.create_guide_page(path)
+            elif parts[0] == 'packages':
+                 path = os.path.join(self.env_root, *parts)
+                 if len(parts) < 3:
+                     response = self.web_docs.create_package_page(path)
+                 else:
+                     response = self.web_docs.create_module_page(path)
+            else:
+                path = os.path.join(self.root, *parts)
+                response = self._respond_with_file(path)
+        except IOError, e:
+            if e.errno==errno.ENOENT:
+                return self._error('404 Not Found')
+            else:
+                return self._error('500 Internal Server Error')
+        except:
+                return self._error('500 Internal Server Error')
+        self.start_response('200 OK', [('Content-type', mimetype)])
+        return [response]
 
     def _respond_with_file(self, path):
         url = urllib.pathname2url(path)
         mimetype = guess_mime_type(url)
-        self.start_response('200 OK',
-                            [('Content-type', mimetype)])
-        yield open(path, 'r').read()
-
-    def _respond_with_guide_page(self, path):
-        self.start_response('200 OK', [('Content-type', "text/html")])
-        return [self.web_docs.create_guide_page(path)]
-
-    def _respond_with_module_page(self, path):
-        self.start_response('200 OK', [('Content-type', "text/html")])
-        return [self.web_docs.create_module_page(path)]
-
-    def _respond_with_package_page(self, path):
-        self.start_response('200 OK', [('Content-type', "text/html")])
-        return [self.web_docs.create_package_page(path)]
+        return open(path, 'r').read()
 
     def _respond_with_api(self, parts):
         parts = [part for part in parts
@@ -153,18 +165,18 @@ class Server(object):
 
         if parts[0] == TASK_QUEUE_PATH:
             if not self.expose_privileged_api:
-                return self._respond('501 Not Implemented')
+                return self._error('501 Not Implemented')
             if len(parts) == 2:
                 if parts[1] == TASK_QUEUE_SET:
                     if self.environ['REQUEST_METHOD'] != 'POST':
-                        return self._respond('400 Bad Request')
+                        return self._error('400 Bad Request')
                     input = self.environ['wsgi.input']
                     try:
                         clength = int(self.environ['CONTENT_LENGTH'])
                         content = input.read(clength)
                         content = json.loads(content)
                     except ValueError:
-                        return self._respond('400 Bad Request')
+                        return self._error('400 Bad Request')
                     self.task_queue.put(content)
                     self.start_response('200 OK',
                                         [('Content-type', 'text/plain')])
@@ -181,12 +193,12 @@ class Server(object):
                         return ['']
                     return [json.dumps(task)]
                 else:
-                    return self._respond('404 Not Found')
+                    return self._error('404 Not Found')
             else:
-                return self._respond('404 Not Found')
+                return self._error('404 Not Found')
         elif parts[0] == IDLE_PATH:
             if not self.expose_privileged_api:
-                return self._respond('501 Not Implemented')
+                return self._error('501 Not Implemented')
             # TODO: Yuck, we're accessing a protected property; any
             # way to wait for a second w/o doing this?
             sock = self.environ['wsgi.input']._sock
@@ -202,7 +214,7 @@ class Server(object):
                                 [('Content-type', 'text/plain')])
             return ['Idle complete (%s seconds)' % IDLE_TIMEOUT]
         else:
-            return self._respond('404 Not Found')
+            return self._error('404 Not Found')
 
     def app(self, environ, start_response):
         self.environ = environ
@@ -211,31 +223,16 @@ class Server(object):
         if not parts:
             # Expect some sort of rewrite rule, etc. to always ensure
             # that we have at least a '/' as our path.
-            return self._respond('404 Not Found')
+            return self._error('404 Not Found')
         if not parts[0]:
             parts = DEFAULT_PAGE.split('/')
         if parts[0] == API_PATH:
             return self._respond_with_api(parts[1:])
-        if parts[0] == 'dev-guide':
-            return self._respond_with_guide_page(os.path.join(self.env_root, 'static-files', 'md', *parts))
-        if parts[0] == 'packages':
-             if len(parts) < 3:
-                 return self._respond_with_package_page(os.path.join(self.env_root, *parts))
-             else:
-                 return self._respond_with_module_page(os.path.join(self.env_root, *parts))
-        else:
-            fullpath = os.path.join(self.root, *parts)
-            fullpath = os.path.normpath(fullpath)
-            if not (fullpath.startswith(self.root) and
-                    os.path.exists(fullpath) and
-                    os.path.isfile(fullpath)):
-                return self._respond('404 Not Found')
-            else:
-                return self._respond_with_file(fullpath)
+        return self._respond(parts)
 
-def make_wsgi_app(env_root, task_queue, webdocs, expose_privileged_api=True):
+def make_wsgi_app(env_root, webdocs, task_queue, expose_privileged_api=True):
     def app(environ, start_response):
-        server = Server(env_root, task_queue, webdocs, expose_privileged_api)
+        server = Server(env_root, webdocs, task_queue, expose_privileged_api)
         return server.app(environ, start_response)
     return app
 
@@ -252,7 +249,7 @@ def make_httpd(env_root, host=DEFAULT_HOST, port=DEFAULT_PORT,
     tq = Queue.Queue()
     web_docs = webdocs.WebDocs(env_root)
     httpd = simple_server.make_server(host, port,
-                                      make_wsgi_app(env_root, tq, web_docs),
+                                      make_wsgi_app(env_root, web_docs, tq),
                                       ThreadedWSGIServer,
                                       handler_class)
     return httpd
@@ -313,7 +310,8 @@ def start(env_root=None, host=DEFAULT_HOST, port=DEFAULT_PORT,
         print "Ctrl-C received, exiting."
 
 def generate_static_docs(env_root, tgz_filename):
-    server = Server(env_root=env_root,
+    web_docs = webdocs.WebDocs(env_root)
+    server = Server(env_root, web_docs,
                     task_queue=None,
                     expose_privileged_api=False)
     staging_dir = os.path.join(env_root, "addon-sdk-docs")

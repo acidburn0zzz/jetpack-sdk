@@ -184,10 +184,6 @@ table.meta-table {
   -moz-border-radius: 5px;
 }
 
-.sidebar-section-contents {
-  display: none;
-}
-
 .sidebar-section ul {
   margin-bottom: 0.2em;
 }
