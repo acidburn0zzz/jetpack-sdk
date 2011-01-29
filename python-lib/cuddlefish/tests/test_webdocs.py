@@ -11,10 +11,10 @@ class WebDocTests(unittest.TestCase):
         web_docs = webdocs.WebDocs(root)
         aarvark_package = web_docs.create_package_page('packages/aardvark')
         self.assertTrue(\
-            '<a href="/packages/aardvark.html" target="_self">aardvark</a>'\
+            '<a href="/packages/aardvark" target="_self">aardvark</a>'\
             in aarvark_package)
         self.assertTrue(\
-            '<a href="/packages/aardvark/docs/main.html" target="_self">main</a>'\
+            '<a href="/packages/aardvark/docs/main" target="_self">main</a>'\
             in aarvark_package)
         self.assertTrue('<h1>aardvark</h1>'\
             in aarvark_package)
@@ -35,10 +35,10 @@ class WebDocTests(unittest.TestCase):
         guide = web_docs.create_guide_page(os.path.join(\
             root + '/static-files/md/dev-guide/welcome.blah'))
         self.assertTrue(\
-            '<a href="/packages/aardvark.html" target="_self">aardvark</a>'\
+            '<a href="/packages/aardvark" target="_self">aardvark</a>'\
             in guide)
         self.assertTrue(\
-            '<a href="/packages/aardvark/docs/main.html" target="_self">main</a>'\
+            '<a href="/packages/aardvark/docs/main" target="_self">main</a>'\
             in guide)
         self.assertTrue(\
             '<title>An Imposing Title - Add-on SDK Documentation</title>'\
@@ -53,10 +53,10 @@ class WebDocTests(unittest.TestCase):
         guide = web_docs.create_guide_page(os.path.join(\
             root + '/static-files/md/dev-guide/no_h1.blah'))
         self.assertTrue(\
-            '<a href="/packages/aardvark.html" target="_self">aardvark</a>'\
+            '<a href="/packages/aardvark" target="_self">aardvark</a>'\
             in guide)
         self.assertTrue(\
-            '<a href="/packages/aardvark/docs/main.html" target="_self">main</a>'\
+            '<a href="/packages/aardvark/docs/main" target="_self">main</a>'\
             in guide)
         self.assertTrue('<title>Add-on SDK Documentation</title>'\
             in guide)
@@ -70,10 +70,10 @@ class WebDocTests(unittest.TestCase):
         module = web_docs.create_module_page(os.path.join(\
             root + '/packages/aardvark/docs/aardvark-feeder.blah'))
         self.assertTrue(\
-            '<a href="/packages/aardvark.html" target="_self">aardvark</a>'\
+            '<a href="/packages/aardvark" target="_self">aardvark</a>'\
             in module)
         self.assertTrue(\
-            '<a href="/packages/aardvark/docs/main.html" target="_self">main</a>'\
+            '<a href="/packages/aardvark/docs/main" target="_self">main</a>'\
             in module)
         self.assertTrue(\
             '<title>aardvark-feeder - Add-on SDK Documentation</title>'\
