@@ -1,7 +1,7 @@
 # Working with Events #
 
 The Add-on SDK supports event-driven programming through its
-[`EventEmitter`](#module/api-utils/events) framework. Objects emit events
+[`EventEmitter`](/packages/api-utils/docs/events) framework. Objects emit events
 on state changes that might be of interest to add-on code, such as browser
 windows opening, pages loading, network requests completing, and mouse clicks.
 By registering a listener function to an event emitter an add-on can receive
@@ -29,7 +29,7 @@ whenever the event occurs. The arguments that will be passed to the listener
 are specific to an event type and are documented with the event emitter.
 
 For example, the following add-on registers two listeners with the
-[`private-browsing`](#module/addon-kit/private-browsing) module to listen
+[`private-browsing`](/packages/addon-kit/docs/private-browsing) module to listen
 for the `start` and `stop` events, and logs a string to the console reporting
 the change:
 
@@ -60,7 +60,7 @@ with "on": for example, "onOpen", "onReady" and so on. Then in the constructor
 you can assign a listener function to this property as an alternative to
 calling the object's `on()` method.
 
-For example: the [`widget`](#module/addon-kit/widget) object emits an event
+For example: the [`widget`](/packages/addon-kit/docs/widget) object emits an event
 when the widget is clicked.
 
 The following add-on creates a widget and assigns a listener to the
@@ -139,10 +139,10 @@ These two parts communicate using a message-passing mechanism in which the
 message recipient can emit `message` and `error` events. Thus an add-on can
 receive messages from a content script by supplying a `message` listener to the
 event emitter's `on()` method. Most, but not all, of the messaging APIs use
-the [`worker`](#module/api-utils/content/worker) module to implement
+the [`worker`](/packages/api-utils/docs/content/worker) module to implement
 message events.
 
-For example, the [`page-mod`](#module/addon-kit/page-mod) module provides a
+For example, the [`page-mod`](/packages/addon-kit/docs/page-mod) module provides a
 mechanism to execute scripts in the context of selected web pages. These
 scripts are content scripts.
 
@@ -178,4 +178,4 @@ console.
     });
 
 The next section provides much more detail on [interacting with web
-content](#guide/addon-development/web-content) using content scripts.
+content](/dev-guide/addon-development/web-content) using content scripts.

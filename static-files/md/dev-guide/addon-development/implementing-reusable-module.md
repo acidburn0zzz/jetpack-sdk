@@ -12,7 +12,7 @@ and provides some encapsulation as each module will export only what it chooses
 to, so you can change the internals of the module without breaking its users.
 
 In this example we'll start with the [translator
-add-on](#guide/addon-development/implementing-simple-addon), and create a
+add-on](/dev-guide/addon-development/implementing-simple-addon), and create a
 separate module containing the code that performs the translation.
 
 ## Implementing "translate.js" ##
@@ -137,7 +137,7 @@ place create a file called `test-translator.js` with the following contents:
 
 This file exports four functions, each of which expects to receive
 a single argument which is a `test` object. `test` is supplied by the
-[`unit-test`](#module/api-utils/unit-test) module and provides functions to
+[`unit-test`](/packages/api-utils/docs/unit-test) module and provides functions to
 simplify unit testing.
 
 <span class="aside">
@@ -202,7 +202,7 @@ want to; doing so just makes the output easier to read.
 ## Next: Introducing the SDK's APIs ##
 
 Next we'll summarize the
-[APIs provided by the SDK](#guide/addon-development/api-intro).
+[APIs provided by the SDK](/dev-guide/addon-development/api-intro).
 
   [CommonJS Specification]: http://wiki.commonjs.org/wiki/Modules/1.0
   [Globals]: #guide/addon-development/globals

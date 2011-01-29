@@ -57,7 +57,7 @@ widget when it finishes loading.
 
 ## Events ##
 
-Widgets emit the following types of [events](#guide/addon-development/events).
+Widgets emit the following types of [events](/dev-guide/addon-development/events).
 
 ### click ###
 
@@ -82,7 +82,7 @@ For conciseness, these examples create their content scripts as strings and use
 the `contentScript` property.  In your own add-ons, you will probably want to
 create your content scripts in separate files and pass their URLs using the
 `contentScriptFile` property.  See
-[Working with Content Scripts](#guide/addon-development/web-content) for more
+[Working with Content Scripts](/dev-guide/addon-development/web-content) for more
 information.
 
     const widgets = require("widget");
@@ -182,12 +182,12 @@ Represents a widget object.
 
   @prop [contentURL] {string}
     An optional string URL to content to load into the widget. This can be
-    [local content](#guide/addon-development/web-content) or remote content, an
+    [local content](/dev-guide/addon-development/web-content) or remote content, an
     image or web content. Widgets must have either the `content` property or the
     `contentURL` property set.
 
   @prop [panel] {Panel}
-    An optional [panel](#module/addon-kit/panel) to open when the user clicks on
+    An optional [panel](/packages/addon-kit/docs/panel) to open when the user clicks on
     the widget. Note: If you also register a "click" listener, it will be called
     instead of the panel being opened.  However, you can show the panel from the
     listener by calling `this.panel.show()`.
@@ -280,7 +280,7 @@ Represents a widget object.
 <api name="contentURL">
 @property {string}
   The URL of content to load into the widget.  This can be
-  [local content](#guide/addon-development/web-content) or remote content, an
+  [local content](/dev-guide/addon-development/web-content) or remote content, an
   image or web content.  Setting it updates the widget's appearance
   immediately.  However, if the widget was created using `content`, then this
   property is meaningless, and setting it has no effect.
@@ -288,7 +288,7 @@ Represents a widget object.
 
 <api name="panel">
 @property {Panel}
-  A [panel](#module/addon-kit/panel) to open when the user clicks on the widget.
+  A [panel](/packages/addon-kit/docs/panel) to open when the user clicks on the widget.
 </api>
 
 <api name="width">

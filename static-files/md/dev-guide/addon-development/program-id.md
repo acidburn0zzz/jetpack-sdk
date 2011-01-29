@@ -3,7 +3,7 @@
 The Program ID is a unique identifier for your add-on and is used for a variety
 of purposes. For example: [addons.mozilla.org](http://addons.mozilla.org) uses
 it to distinguish between new add-ons and updates to existing add-ons, and the
-[`simple-storage`](#module/addon-kit/simple-storage) module uses it to figure
+[`simple-storage`](/packages/addon-kit/docs/simple-storage) module uses it to figure
 out which stored data belongs to which add-on.
 
 <span class="aside">

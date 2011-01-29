@@ -80,7 +80,7 @@ class WebDocs(object):
         for module in modules:
             module_link = tag_wrap(module, 'a', \
                 {'href':'/packages/' + package_name + \
-                 '/docs/' + module + '.html', \
+                 '/docs/' + module, \
                  'target':'_self'})
             module_items += tag_wrap(module_link, 'li', {'class':'module'})
         return tag_wrap(module_items, 'ul', {'class':'modules'})
@@ -92,7 +92,7 @@ class WebDocs(object):
             if not include(package_json):
                 continue
             package_link = tag_wrap(package_name, 'a', {'href':'/packages/'+ \
-                                    package_name + '.html', 'target':'_self'})
+                                    package_name, 'target':'_self'})
             text = tag_wrap(package_link, 'h4')
             text += self._create_module_list(package_json)
             packages += tag_wrap(text, 'div', {'class':'package-summary', \

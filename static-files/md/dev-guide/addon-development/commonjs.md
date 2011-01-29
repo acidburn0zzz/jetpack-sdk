@@ -58,4 +58,4 @@ module in an add-on, and to make your modules available to any code that want
 to use them.
 
 In the next section we'll see how you can use the SDK implement and test your
-own [reusable modules](#guide/addon-development/implementing-reusable-module).
+own [reusable modules](/dev-guide/addon-development/implementing-reusable-module).

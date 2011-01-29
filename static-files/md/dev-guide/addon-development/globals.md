@@ -10,7 +10,7 @@ will not be reflected in another module.
 
 <span class="aside">
 For an introduction to CommonJS modules, see the
-[CommonJS](#guide/addon-development/commonjs) page.
+[CommonJS](/dev-guide/addon-development/commonjs) page.
 </span>
 
 ## CommonJS Globals ##
@@ -25,7 +25,7 @@ is available.
 Add-on code does *not* have access to any globals defined by the
 [HTML5] specification, such as `window`, `document`, or `localStorage`.
 You can access the DOM for a page by executing a
-[content script](#guide/addon-development/web-content) in the context of the
+[content script](/dev-guide/addon-development/web-content) in the context of the
 page.
 
 ## SDK Globals ##

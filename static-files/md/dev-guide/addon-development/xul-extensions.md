@@ -7,12 +7,12 @@ or if you'd like to gradually migrate an existing extension over to the SDK.
 
 Running an SDK-based add-on in Firefox
 ------------------
-We assume you have already completed the [Getting Started](#guide/getting-started),
-[Packaging](#guide/packaging), and [Programs](#guide/programs) steps of the
+We assume you have already completed the [Getting Started](/dev-guide/getting-started),
+[Packaging](/dev-guide/packaging), and [Programs](/dev-guide/programs) steps of the
 main tutorial. You should have a package called "my-first-package" (including a
 `package.json` manifest) and modules named "my-module" and "main".
 You have used `cfx run` to run the program, which creates a
-[keypair](#guide/xpi) for you.
+[keypair](/dev-guide/xpi) for you.
 
 Let's now use `cfx` to run Firefox with your extension.
 
@@ -94,7 +94,7 @@ instance that appears when you use `cfx run -t extension`.
 Packaging the extension into an XPI
 ------------------
 <span class="aside">
-Check out [XPI Generation](#guide/xpi) for an overview of how this works.
+Check out [XPI Generation](/dev-guide/xpi) for an overview of how this works.
 </span>
 As with regular add-ons, you can use `cfx` to create an XPI from your package:
 
