@@ -47,8 +47,6 @@ TASK_QUEUE_GET = 'get'
 TASK_QUEUE_GET_TIMEOUT = 1
 DAEMONIC_IDLE_TIMEOUT = 60.0
 IDLE_WEBPAGE_TIMEOUT = 1.5
-INDEX_PAGE = '/index.html'
-CONTENT_ID = '<div id="right-column">'
 
 _idle_event = threading.Event()
 
