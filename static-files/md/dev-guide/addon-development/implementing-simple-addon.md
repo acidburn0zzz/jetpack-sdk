@@ -189,14 +189,20 @@ page containing some text that is not in English, for example:
 [http://www.mozilla-europe.org/fr/](http://www.mozilla-europe.org/fr/).
 
 Select some text on that page and right-click to activate the context menu.
-You should see a new item labeled "Translate Selection". Select that item and
-the text you selected should be replaced with its English translation.
+You should see a new item labeled "Translate Selection":
+
+![translator context-menu](media/screenshots/translator/context-menu-osx.jpg)
+
+Select that item and the text you selected should be replaced with its English
+translation:
+
+![translator context-menu](media/screenshots/translator/translated-osx.jpg)
 
 You will also see output like this appear in the console:
 
 <pre>
-  info: input: Quoi de neuf chez Mozilla?
-  info: output: What's New in Mozilla?
+  info: input: Passez à la vitesse supérieure
+  info: output: Go to top gear
 </pre>
 
 ## Packaging It ##
