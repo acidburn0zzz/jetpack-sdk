@@ -15,15 +15,16 @@ The SDK provides four modules to help you build a UI.
 ### [panel](#module/addon-kit/panel) ###
 
 A panel is a dialog. Its content is specified as HTML and you can execute
-scripts in it: so the appearance and behaviour of the panel is limited only
+scripts in it, so the appearance and behaviour of the panel is limited only
 by what you can do using HTML, CSS and JavaScript.
 
-You can build the content locally or load it from a remote server. The
-screenshot below shows a panel whose content is built from the list of
+You can build or load the content locally or load it from a remote server.
+The screenshot below shows a panel whose content is built from the list of
 currently open tabs:
 
-<div align='center'>
-<img src='media/screenshots/modules/panel-tabs-osx.jpg' alt='List open tabs panel'>
+<div align="center">
+<img src="media/screenshots/modules/panel-tabs-osx.png"
+alt="List open tabs panel">
 </div>
 <br>
 
@@ -42,7 +43,8 @@ the time in a selected time zone or the weather. The screenshot below shows a
 widget that displays the time in the selected city:
 
 <div align="center">
-<img src='media/screenshots/modules/widget-content-osx.jpg' alt='Mozilla widget content'>
+<img src='media/screenshots/modules/widget-content-osx.png'
+alt="Mozilla widget content">
 </div>
 <br>
 
@@ -52,7 +54,8 @@ settings dialog when the user clicks it. The widget below displays only the
 Mozilla icon:
 
 <div align="center">
-<img src='media/screenshots/modules/widget-icon-osx.jpg' alt='Mozilla widget icon'>
+<img src="media/screenshots/modules/widget-icon-osx.png"
+alt="Mozilla widget icon">
 </div>
 <br>
 
@@ -61,7 +64,7 @@ your widget. Then when the user clicks the widget, the widget will display
 the panel anchored to the widget. The `reddit-panel` example demonstrates this:
 
 <div align="center">
-<img src='media/screenshots/modules/reddit-panel-osx.jpg' alt='Reddit panel'>
+<img src="media/screenshots/modules/reddit-panel-osx.png" alt="Reddit panel">
 </div>
 <br>
 
@@ -79,7 +82,8 @@ In the screenshot below an add-on has added a new submenu to the context menu
 associated with `img` elements:
 
 <div align="center">
-<img src='media/screenshots/modules/context-menu-image-osx.jpg' alt='Context-menu'>
+<img src="media/screenshots/modules/context-menu-image-osx.png"
+alt="Context-menu">
 </div>
 <br>
 
@@ -94,7 +98,8 @@ different on different platforms. On Mac OS X a notification will look
 something like this:
 
 <div align="center">
-<img src='media/screenshots/modules/notification-growl-osx.jpg' alt='Growl notification'>
+<img src="media/screenshots/modules/notification-growl-osx.png" alt="Growl
+notification">
 </div>
 <br>
 
