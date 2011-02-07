@@ -191,18 +191,27 @@ page containing some text that is not in English, for example:
 Select some text on that page and right-click to activate the context menu.
 You should see a new item labeled "Translate Selection":
 
-![translator context-menu](media/screenshots/translator/context-menu-osx.jpg)
+![translator context-menu](media/screenshots/translator/context-menu-osx.png)
 
 Select that item and the text you selected should be replaced with its English
 translation:
 
-![translator context-menu](media/screenshots/translator/translated-osx.jpg)
+![translator context-menu](media/screenshots/translator/translated-osx.png)
 
 You will also see output like this appear in the console:
 
 <pre>
-  info: input: Passez à la vitesse supérieure
-  info: output: Go to top gear
+  info: input: Le projet Mozilla est une communauté mondiale de personnes
+  qui pensent que l'ouverture, l'innovation et la saisie des chances qui nous
+  sont offertes sont les clés de la vitalité d'Internet. Nous travaillons
+  ensemble depuis 1998 pour nous assurer qu'Internet se développe d'une manière
+  qui bénéficie à tout le monde. On nous connaît surtout pour la création du
+  navigateur Web Mozilla Firefox.
+  info: output: The Mozilla project is a global community of people who believe
+  that openness, innovation and seizing opportunities offered to us are the
+  keys to the vitality of the Internet. We have been working together since
+  1998 to ensure that the Internet develops in a way that benefits everyone.
+  We are best known for creating the Mozilla Firefox Web browser.
 </pre>
 
 ## Packaging It ##
