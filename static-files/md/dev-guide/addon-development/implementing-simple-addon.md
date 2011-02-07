@@ -186,7 +186,7 @@ To learn more about the Program ID refer to the
 
 Once `cfx run` has launched Firefox you can try out the new add-on. Load a
 page containing some text that is not in English, for example:
-[http://www.mozilla-europe.org/fr/](http://www.mozilla-europe.org/fr/).
+[http://www.mozilla.org/about/manifesto.fr.html](http://www.mozilla.org/about/manifesto.fr.html)
 
 Select some text on that page and right-click to activate the context menu.
 You should see a new item labeled "Translate Selection":
