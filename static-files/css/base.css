@@ -22,9 +22,6 @@ body {
   color: #444;
   font-size: 13px;
   line-height: 1.538em;
-  margin: 0 auto;
-  min-width: 780px;
-  position: relative;
   font-family: "helvetica neue",arial,helvetica,sans-serif;
   font-style: normal;
 }

@@ -1,39 +1,28 @@
-#cannot-ping {
-  padding: 0.5em;
-  background: #aa0000;
-  color: white;
-  display: none;
-}
 
 #columns {
-  display: table;
   height: 100%;
 }
 
-#main-content {
-  width: 60em;
-}
-
 #left-column {
-  width: 25em;
+  float: left;
+  width: 25%;
   padding: 1em;
-  display: table-cell;
 }
 
 #right-column {
-  width: 50em;
-  margin: 0 auto;
+  float: left;
+  width: 55%;
   padding: 1em;
-  display: table-cell;
+  padding-top: 3em;
 }
 
 .aside {
   color: gray;
   float: right;
-  margin-left: 1em;
   padding-left: 1em;
-  margin-right: -10em;
-  width: 15em;
+  margin-left: 1em;
+  margin-right: -10%;
+  width: 25%;
   border-left: 1px solid gray;
 }
 
