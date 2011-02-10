@@ -10,6 +10,10 @@
   height: 100%;
 }
 
+#main-content {
+  width: 60em;
+}
+
 #left-column {
   width: 25em;
   padding: 1em;
@@ -17,14 +21,20 @@
 }
 
 #right-column {
-  width: 40em;
+  width: 50em;
+  margin: 0 auto;
   padding: 1em;
   display: table-cell;
 }
 
-#sidenotes {
+.aside {
+  color: gray;
+  float: right;
+  margin-left: 1em;
+  padding-left: 1em;
+  margin-right: -10em;
   width: 15em;
-  display: table-cell;
+  border-left: 1px solid gray;
 }
 
 #footer .actions {
@@ -71,11 +81,6 @@
   font-family: Monaco, Lucida Console, monospace;
   font-size: 0.8em;
   white-space: pre;
-}
-
-.aside {
-  color: gray;
-  font-style:italic;
 }
 
 table {

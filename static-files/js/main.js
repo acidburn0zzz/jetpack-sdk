@@ -47,31 +47,9 @@ function sendIdlePing() {
                    // we're being served from static files; just bail
                    // and stop pinging this API endpoint.
                    return;
-                 if (id) {
-                   window.clearTimeout(id);
-                   id = null;
-                   if (isPingWorking) {
-                     isPingWorking = false;
-                     $("#cannot-ping").slideDown();
-                   }
-                 }
                  scheduleNextIdlePing();
                }});
-  var id = window.setTimeout(
-    function() {
-      // This is our "real" success function: basically, if we
-      // haven't received an error in IDLE_PING_DELAY ms, then
-      // we should assume success and hide the #cannot-ping
-      // element.
-      if (id) {
-        id = null;
-        if (!isPingWorking) {
-          isPingWorking = true;
-          $("#cannot-ping").slideUp();
-        }
-      }
-    }, IDLE_PING_DELAY);
-}
+  }
 
 function scheduleNextIdlePing() {
   window.setTimeout(sendIdlePing, IDLE_PING_DELAY);

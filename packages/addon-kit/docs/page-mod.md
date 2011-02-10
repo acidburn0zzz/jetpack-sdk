@@ -29,7 +29,7 @@ To create a PageMod the add-on developer supplies:
 
 * a set of rules to select the desired subset of web pages based on their URL.
 Each rule is specified using the
-[match-pattern](/packages/api-utils/docsmatch-pattern) syntax.
+[match-pattern](/packages/api-utils/docs/match-pattern) syntax.
 
 * a set of content scripts to execute in the context of the desired pages.
 
@@ -79,7 +79,7 @@ is loaded into its own execution context with its own copy of the content
 scripts. In this case `onAttach` is called once for each loaded page, and the
 add-on code will have a separate worker for each page:
 
-![Multiple workers](media/multiple-workers.jpg)
+![Multiple workers](/media/multiple-workers.jpg)
 
 This is demonstrated in the following example:
 
@@ -168,7 +168,7 @@ Creates a PageMod.
   @prop include {string,array}
     A match pattern string or an array of match pattern strings.  These define
     the pages to which the PageMod applies.  See the
-    [match-pattern](/packages/api-utils/docsmatch-pattern) module for
+    [match-pattern](/packages/api-utils/docs/match-pattern) module for
     a description of match pattern syntax.
     At least one match pattern must be supplied.
 
@@ -195,9 +195,9 @@ attached to the page in question.
 
 <api name="include">
 @property {List}
-A [list](/packages/api-utils/docslist) of match pattern strings.  These define the
+A [list](/packages/api-utils/docs/list) of match pattern strings.  These define the
 pages to which the page mod applies.  See the
-[match-pattern](/packages/api-utils/docsmatch-pattern) module for a description of
+[match-pattern](/packages/api-utils/docs/match-pattern) module for a description of
 match patterns. Rules can be added to the list by calling its `add` method and
 removed by calling its `remove` method.
 

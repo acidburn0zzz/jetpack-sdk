@@ -204,20 +204,9 @@ class Server(object):
         elif parts[0] == IDLE_PATH:
             if not self.expose_privileged_api:
                 return self._error('501 Not Implemented')
-            # TODO: Yuck, we're accessing a protected property; any
-            # way to wait for a second w/o doing this?
-            sock = self.environ['wsgi.input']._sock
-            sock.settimeout(1.0)
-            for i in range(IDLE_TIMEOUT):
-                try:
-                    sock.recv(1)
-                except socket.timeout:
-                    pass
-                if not _idle_event.isSet():
-                    _idle_event.set()
-            self.start_response('200 OK',
-                                [('Content-type', 'text/plain')])
-            return ['Idle complete (%s seconds)' % IDLE_TIMEOUT]
+            if not _idle_event.isSet():
+                _idle_event.set()
+            return
         else:
             return self._error('404 Not Found')
 

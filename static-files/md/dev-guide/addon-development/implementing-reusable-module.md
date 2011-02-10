@@ -89,15 +89,14 @@ to *any other program* that imports it.
 
 ## Testing Your Module ##
 
-<span class="aside">
-Until [614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712)) is fixed
-unit tests must be stored under `tests`, not `test`.
-</span>
-
 The SDK provides a framework to help test any modules you develop. To
 demonstrate this we will add some slightly unlikely tests for the translator
 module.
 
+<span class="aside">
+Until [bug 614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712) is fixed
+unit tests must be stored under `tests`, not `test`.
+</span>
 Navigate to the `tests` directory and delete the `test-main.js` file. In its
 place create a file called `test-translator.js` with the following contents:
 

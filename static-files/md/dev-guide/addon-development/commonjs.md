@@ -19,7 +19,7 @@ module wants to make available to other modules
 object of another module. Your translator add-on uses `require` to import the
 SDK modules it uses.
 
-![CommonJS modules](media/commonjs-modules.jpg)
+![CommonJS modules](/media/commonjs-modules.jpg)
 
 ## CommonJS Packages ##
 
@@ -30,9 +30,10 @@ Minimally, a package must include a package descriptor file named
 `package.json`: this file contains information about the package such as a short
 description, the authors, and the other packages it depends on.
 
+<span class="aside">This isn't quite true until
+[bug 614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712) is fixed.</span>
 Packages must also follow a particular directory structure, which is the
-structure `cfx init` created for your add-on. *Note: this isn't quite true until
-[614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712) is fixed*.
+structure `cfx init` created for your add-on.
 
 ## CommonJS and the Add-on SDK ##
 
@@ -51,7 +52,7 @@ extension.
 So in terms of CommonJS objects the translator consists of a package that
 contains a single module called `main`, and which imports three SDK modules:
 
-![CommonJS translator](media/commonjs-translator.jpg)
+![CommonJS translator](/media/commonjs-translator.jpg)
 
 Because an add-on is a CommonJS package it's possible to include more than one
 module in an add-on, and to make your modules available to any code that want

@@ -47,7 +47,7 @@ tutorial provides a basic guide to these APIs.
 The diagram below shows an overview of the main components and their
 relationships. The gray fill represents code written by the add-on developer.
 
-![Content script overview](media/content-scripting-overview.jpg)
+![Content script overview](/media/content-scripting-overview.jpg)
 
 This might sound complicated but it doesn't need to be. The following add-on
 uses the [page-mod](/packages/addon-kit/docs/page-mod) module to replace the
