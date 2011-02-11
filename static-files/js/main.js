@@ -12,23 +12,25 @@ function highlightCode() {
 }
 
 function highlightCurrentPage() {
+  var base_url = $("base").attr("href");
   $(".current-page").removeClass('current-page');
   $(".current-section").removeClass('current-section');
+
   currentPage = window.location.pathname;
-  if (currentPage.length <= 1) {
-    currentSideBarSection = $('#default-section-contents');
+  currentPage = currentPage.slice(base_url.length);
+  $('a[href="' + currentPage + '"]').parent().addClass('current-page');
+
+  currentSideBarSection = null;
+  if ( $('.current-page').hasClass('sidebar-section-header') ) {
+    currentSideBarSection = $('.current-page').next();
   }
   else {
-    $('a[href="' + currentPage + '"]').parent().addClass('current-page');
-    currentSideBarSection = null;
-    if ( $('.current-page').hasClass('sidebar-section-header') ) {
-      currentSideBarSection = $('.current-page').next();
-    }
-    else {
-      currentSideBarSection =
-        $('.current-page').closest('.sidebar-section-contents');
-    }
+    currentSideBarSection =
+      $('.current-page').closest('.sidebar-section-contents');
   }
+  if ($(currentSideBarSection).length == 0)
+    currentSideBarSection = $('#default-section-contents');
+
   $('.sidebar-section-contents').hide();
   $(currentSideBarSection).parent().addClass('current-section');
   $(currentSideBarSection).show();

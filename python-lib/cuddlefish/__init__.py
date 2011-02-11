@@ -455,7 +455,10 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
 
         # TODO: Allow user to change this filename via cmd line.
         filename = 'addon-sdk-docs.tgz'
-        cuddlefish.server.generate_static_docs(env_root, filename)
+        base_url = ''
+        if len(arguments) > 1:
+            base_url = arguments[1]
+        cuddlefish.server.generate_static_docs(env_root, filename, base_url)
         print "Wrote %s." % filename
         return
 

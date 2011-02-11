@@ -6,19 +6,19 @@ content of web pages or be notified when the user clicks a link.
 
 The SDK provides several core modules to support this:
 
-**[panel](/packages/addon-kit/docs/panel)**<br>
+**[panel](packages/addon-kit/docs/panel.html)**<br>
 Create a dialog that can host web content.
 
-**[page-worker](/packages/addon-kit/docs/page-worker)**<br>
+**[page-worker](packages/addon-kit/docs/page-worker.html)**<br>
 Retrieve a page and access its content, without displaying it to the user.
 
-**[page-mod](/packages/addon-kit/docs/page-mod)**<br>
+**[page-mod](packages/addon-kit/docs/page-mod.html)**<br>
 Execute scripts in the context of selected web pages.
 
-**[widget](/packages/addon-kit/docs/widget)**<br>
+**[widget](packages/addon-kit/docs/widget.html)**<br>
 Host an add-on's user interface, including web content.
 
-**[context-menu](/packages/addon-kit/docs/context-menu)**<br>
+**[context-menu](packages/addon-kit/docs/context-menu.html)**<br>
 Add items to the browser's context menu.
 
 The Mozilla platform is moving towards a model in which it uses separate
@@ -47,10 +47,10 @@ tutorial provides a basic guide to these APIs.
 The diagram below shows an overview of the main components and their
 relationships. The gray fill represents code written by the add-on developer.
 
-![Content script overview](/media/content-scripting-overview.jpg)
+![Content script overview](media/content-scripting-overview.jpg)
 
 This might sound complicated but it doesn't need to be. The following add-on
-uses the [page-mod](/packages/addon-kit/docs/page-mod) module to replace the
+uses the [page-mod](packages/addon-kit/docs/page-mod.html) module to replace the
 content of any web page in the `.co.uk` domain by executing a content script
 in the context of that page:
 
@@ -115,7 +115,7 @@ page is inserted into the DOM.
 * "ready" loads the scripts after the DOM for the page has been loaded. If
 your scripts need to access the DOM content you must specify "ready" here.
 
-### <a name="content-script-access">Content script access </a>
+### Content script access ###
 
 Content scripts loaded into the same global execution context can interact
 with each other directly as well as with the web content itself. However,
@@ -269,8 +269,8 @@ link clicks.
 
 It also supplies a function to the `onMessage` option which in turn passes the
 `message` argument (the story URL) into the `open` function of the
-[tabs](/packages/addon-kit/docs/tabs) module. This is the target for messages from all
-content scripts associated with the panel.
+[tabs](packages/addon-kit/docs/tabs.html) module. This is the target for messages
+from all content scripts associated with the panel.
 
 This is the `panel.js` content script that intercepts link clicks:
 

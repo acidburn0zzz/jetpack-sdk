@@ -7,7 +7,8 @@ from cuddlefish import Bunch
 from cuddlefish import apiparser
 from cuddlefish import apirenderer
 
-INDEX_PAGE = '/static-files/index.html'
+INDEX_PAGE = '/static-files/base.html'
+BASE_URL_INSERTION_POINT = '<base '
 HIGH_LEVEL_PACKAGE_SUMMARIES = '<li id="high-level-package-summaries">'
 LOW_LEVEL_PACKAGE_SUMMARIES = '<li id="low-level-package-summaries">'
 CONTENT_ID = '<div id="right-column">'
@@ -24,6 +25,19 @@ def get_modules(modules_json):
             for sub_module in sub_modules:
                 modules.append(module + '/' + sub_module)
     return modules
+
+def get_documented_modules(root, package_name, modules_json):
+    modules = get_modules(modules_json)
+    module_md_root = os.path.join(root, 'packages', package_name, 'docs')
+    documented_modules = []
+    for module in modules:
+        if module_md_exists(module_md_root, module):
+            documented_modules.append(module)
+    return documented_modules
+
+def module_md_exists(root, module_name):
+    module_md_path = os.path.join(root, module_name + '.md')
+    return os.path.exists(module_md_path)
 
 def tag_wrap(text, tag, attributes={}):
     result = '\n<' + tag
@@ -43,15 +57,15 @@ def insert_after(target, insertion_point_id, text_to_insert):
     return target[:insertion_point] + text_to_insert + target[insertion_point:]
 
 class WebDocs(object):
-    def __init__(self, root):
+    def __init__(self, root, base_url = '/'):
         self.root = root
         self.packages_json = self._create_packages_json(root)
-        self.base_page = self._create_base_page(root)
+        self.base_page = self._create_base_page(root, base_url)
 
     def create_guide_page(self, path):
         path, ext = os.path.splitext(path)
         md_path = path + '.md'
-        md_content = open(md_path, 'r').read().decode('utf8')
+        md_content = unicode(open(md_path, 'r').read(), 'utf8')
         guide_content = markdown.markdown(md_content)
         return self._create_page(guide_content)
 
@@ -74,14 +88,14 @@ class WebDocs(object):
 
     def _create_module_list(self, package_json):
         package_name = package_json['name']
-        modules = get_modules(package_json['files']['lib'])
+        modules = get_documented_modules(self.root, package_name, \
+                              package_json['files']['lib'])
         modules.sort()
         module_items = ''
         for module in modules:
             module_link = tag_wrap(module, 'a', \
-                {'href':'/packages/' + package_name + \
-                 '/docs/' + module, \
-                 'target':'_self'})
+                {'href':'packages/' + package_name + \
+                 '/docs/' + module + '.html'})
             module_items += tag_wrap(module_link, 'li', {'class':'module'})
         return tag_wrap(module_items, 'ul', {'class':'modules'})
 
@@ -91,8 +105,9 @@ class WebDocs(object):
             package_json = packages_json[package_name]
             if not include(package_json):
                 continue
-            package_link = tag_wrap(package_name, 'a', {'href':'/packages/'+ \
-                                    package_name, 'target':'_self'})
+            package_link = tag_wrap(package_name, 'a', {'href':'packages/' \
+                                    + package_name + "/" \
+                                    + package_name + '.html'})
             text = tag_wrap(package_link, 'h4')
             text += self._create_module_list(package_json)
             packages += tag_wrap(text, 'div', {'class':'package-summary', \
@@ -103,8 +118,10 @@ class WebDocs(object):
         pkg_cfg = packaging.build_pkg_cfg(root)
         return packaging.build_pkg_index(pkg_cfg)
 
-    def _create_base_page(self, root):
-        base_page = open(root + INDEX_PAGE, 'r').read()
+    def _create_base_page(self, root, base_url):
+        base_page = unicode(open(root + INDEX_PAGE, 'r').read(), 'utf8')
+        base_tag = 'href="' + base_url + '"'
+        base_page = insert_after(base_page, BASE_URL_INSERTION_POINT, base_tag)
         high_level_summaries = \
             self._create_package_summaries(self.packages_json, is_high_level)
         base_page = insert_after(base_page, \

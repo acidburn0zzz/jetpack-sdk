@@ -58,7 +58,7 @@ documentation], the [xhr module source code], and the [xhr module test
 suite].
 
   [Security Roadmap]: #guide/security-roadmap
-  [xhr module documentation]: #module/api-utils/xhr
+  [xhr module documentation]: packages/api-utils/docs/xhr.html
   [xhr module source code]: packages/api-utils/lib/xhr.js
   [xhr module test suite]: packages/api-utils/tests/test-xhr.js
   [Chrome Object Wrappers]: https://wiki.mozilla.org/XPConnect_Chrome_Object_Wrapper

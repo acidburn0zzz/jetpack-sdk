@@ -19,7 +19,7 @@ module wants to make available to other modules
 object of another module. Your translator add-on uses `require` to import the
 SDK modules it uses.
 
-![CommonJS modules](/media/commonjs-modules.jpg)
+![CommonJS modules](media/commonjs-modules.jpg)
 
 ## CommonJS Packages ##
 
@@ -52,11 +52,11 @@ extension.
 So in terms of CommonJS objects the translator consists of a package that
 contains a single module called `main`, and which imports three SDK modules:
 
-![CommonJS translator](/media/commonjs-translator.jpg)
+![CommonJS translator](media/commonjs-translator.jpg)
 
 Because an add-on is a CommonJS package it's possible to include more than one
 module in an add-on, and to make your modules available to any code that want
 to use them.
 
 In the next section we'll see how you can use the SDK implement and test your
-own [reusable modules](/dev-guide/addon-development/implementing-reusable-module).
+own [reusable modules](dev-guide/addon-development/implementing-reusable-module.html).

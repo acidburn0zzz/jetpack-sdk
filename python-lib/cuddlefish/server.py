@@ -139,7 +139,7 @@ class Server(object):
                  if len(parts) > 1 and parts[1] == 'index.json':
                      mimetype = 'text/plain'
                      response = json.dumps(self.web_docs.packages_json)
-                 elif len(parts) < 3:
+                 elif self._is_package_file_request(parts):
                      path = os.path.join(self.env_root, *parts)
                      response = self.web_docs.create_package_page(path)
                  else:
@@ -158,6 +158,13 @@ class Server(object):
         else:
             self.start_response('200 OK', [('Content-type', mimetype)])
             return [response]
+
+    def _is_package_file_request(self, parts):
+        # format of a package file request is always:
+        # "packages/<package_name>/<package_name>.html"
+        if len(parts) != 3:
+            return False
+        return (parts[0] == 'packages') and ((parts[1] + '.html') == parts[2])
 
     def _respond_with_file(self, path):
         url = urllib.pathname2url(path)
@@ -303,8 +310,8 @@ def start(env_root=None, host=DEFAULT_HOST, port=DEFAULT_PORT,
     except KeyboardInterrupt:
         print "Ctrl-C received, exiting."
 
-def generate_static_docs(env_root, tgz_filename):
-    web_docs = webdocs.WebDocs(env_root)
+def generate_static_docs(env_root, tgz_filename, base_url = ''):
+    web_docs = webdocs.WebDocs(env_root, base_url)
     server = Server(env_root, web_docs,
                     task_queue=None,
                     expose_privileged_api=False)
@@ -345,6 +352,11 @@ def generate_static_docs(env_root, tgz_filename):
             shutil.copyfile(src_readme,
                             os.path.join(dest_dir, "README.md"))
 
+        # create the package page
+        package_doc_html = web_docs.create_package_page(src_dir)
+        open(os.path.join(dest_dir, pkg_name + ".html"), "w")\
+            .write(package_doc_html)
+
         docs_src_dir = os.path.join(src_dir, "docs")
         docs_dest_dir = os.path.join(dest_dir, "docs")
         if not os.path.exists(docs_dest_dir):
@@ -372,8 +384,34 @@ def generate_static_docs(env_root, tgz_filename):
                     docs_div = apirenderer.json_to_div(docs_parsed, src_path)
                     open(dest_path + ".div", "w").write(docs_div)
                     # write the standalone HTML files
-                    docs_html = apirenderer.json_to_html(docs_parsed, src_path)
-                    open(dest_path + ".html", "w").write(docs_html)
+                    docs_html = web_docs.create_module_page(src_path)
+                    open(dest_path[:-3] + ".html", "w").write(docs_html)
+
+    dev_guide_src = os.path.join(server.root, 'md/dev-guide')
+    dev_guide_dest = os.path.join(staging_dir, 'dev-guide')
+    if not os.path.exists(dev_guide_dest):
+        os.mkdir(dev_guide_dest)
+    for (dirpath, dirnames, filenames) in os.walk(dev_guide_src):
+        assert dirpath.startswith(dev_guide_src)
+        relpath = dirpath[len(dev_guide_src)+1:]
+        for dirname in dirnames:
+            dest_path = os.path.join(dev_guide_dest, relpath, dirname)
+            if not os.path.exists(dest_path):
+                os.mkdir(dest_path)
+        for filename in filenames:
+            if filename.endswith("~"):
+                continue
+            src_path = os.path.join(dirpath, filename)
+            dest_path = os.path.join(dev_guide_dest, relpath, filename)
+            if filename.endswith(".md"):
+                # write the standalone HTML files
+                docs_html = web_docs.create_guide_page(src_path)
+                open(dest_path[:-3] + ".html", "w").write(docs_html)
+
+    # make /md/dev-guide/welcome.html the top level index file
+    shutil.copy(os.path.join(dev_guide_dest, 'welcome.html'), \
+                os.path.join(staging_dir, 'index.html'))
+
 
     # finally, build a tarfile out of everything
     tgz = tarfile.open(tgz_filename, 'w:gz')

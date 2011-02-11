@@ -116,7 +116,7 @@ table.meta-table {
 }
 
 #footer {
-  background: #33559b url(/media/bg-footer.png) 0 0 repeat-x;
+  background: #33559b url(../media/bg-footer.png) 0 0 repeat-x;
   clear: both;
   color: #476FBE;
   display: block;

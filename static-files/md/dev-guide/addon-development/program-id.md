@@ -3,8 +3,8 @@
 The Program ID is a unique identifier for your add-on and is used for a variety
 of purposes. For example: [addons.mozilla.org](http://addons.mozilla.org) uses
 it to distinguish between new add-ons and updates to existing add-ons, and the
-[`simple-storage`](/packages/addon-kit/docs/simple-storage) module uses it to
-figure out which stored data belongs to which add-on.
+[`simple-storage`](packages/addon-kit/docs/simple-storage.html) module uses it
+to figure out which stored data belongs to which add-on.
 
 The program ID is the public part of a cryptographic key pair. When `cfx`
 generates a program ID it actually generates a pair of related keys: one key

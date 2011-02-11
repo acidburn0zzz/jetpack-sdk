@@ -94,4 +94,4 @@ it in your web browser.
 ## Implementing an add-on ##
 
 Next we'll go through the process of [implementing a
-simple add-on](/dev-guide/addon-development/implementing-simple-addon).
+simple add-on](dev-guide/addon-development/implementing-simple-addon.html).

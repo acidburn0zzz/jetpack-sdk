@@ -13,7 +13,7 @@ The file contains generic style rules, that don't depend on any special structur
 
 html {
   background-color: #fff;
-  background-image: url(/media/bg-header.png);
+  background-image: url(../media/bg-header.png);
   background-position: left top;
   background-repeat: repeat-x;
 }
