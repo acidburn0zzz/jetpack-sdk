@@ -85,79 +85,121 @@ contents with the following:
     var request = require("request");
     var selection = require("selection");
 
-    // Create a new context menu item.
-    var menuItem = contextMenu.Item({
+    exports.main = function(options, callbacks) {
+      console.log(options.loadReason);
 
-      label: "Translate Selection",
+      // Create a new context menu item.
+      var menuItem = contextMenu.Item({
 
-      // Show this item when a selection exists.
-      context: contextMenu.SelectionContext(),
+        label: "Translate Selection",
 
-      // When this item is clicked, post a message to the item with the
-      // selected text and current URL.
-      contentScript: 'on("click", function () {' +
-                     '  var text = window.getSelection().toString();' +
-                     '  postMessage(text);' +
-                     '});',
+        // Show this item when a selection exists.
 
-      // When we receive the message, call the Google Translate API with the
-      // selected text and replace it with the translation.
-      onMessage: function (text) {
-        if (text.length == 0) {
-          throw ("Text to translate must not be empty");
-        }
-        console.log("input: " + text)
-        var req = request.Request({
-          url: "http://ajax.googleapis.com/ajax/services/language/translate",
-          content: {
-            v: "1.0",
-            q: text,
-            langpair: "|en"
-          },
-          onComplete: function (response) {
-            translated = response.json.responseData.translatedText;
-            console.log("output: " + translated)
-            selection.text = translated;
+        context: contextMenu.SelectionContext(),
+
+        // When this item is clicked, post a message to the item with the
+        // selected text and current URL.
+        contentScript: 'on("click", function () {' +
+                       '  var text = window.getSelection().toString();' +
+                       '  postMessage(text);' +
+                       '});',
+
+        // When we receive the message, call the Google Translate API with the
+        // selected text and replace it with the translation.
+        onMessage: function (text) {
+          if (text.length == 0) {
+            throw ("Text to translate must not be empty");
           }
-        });
-        req.get();
-      }
-    });
+          console.log("input: " + text)
+          var req = request.Request({
+            url: "http://ajax.googleapis.com/ajax/services/language/translate",
+            content: {
+              v: "1.0",
+              q: text,
+              langpair: "|en"
+            },
+            onComplete: function (response) {
+              translated = response.json.responseData.translatedText;
+              console.log("output: " + translated)
+              selection.text = translated;
+            }
+          });
+          req.get();
+        }
+      });
+    };
 
+    exports.onUnload = function (reason) {
+      console.log(reason);
+    };
+
+
+### Importing Modules ###
 
 The first three lines are used to import three SDK modules from the
 addon-kit package:
 
 * [`context-menu`](#module/addon-kit/context-menu) enables add-ons to
 add new items to the context menu
-
 * [`request`](#module/addon-kit/request) enables add-ons to make
 network requests
-
 * [`selection`](#module/addon-kit/selection) gives add-ons access to
 selected text in the active browser window
+
+### Creating a Context Menu Item ###
 
 Next, this code constructs a context menu item. It supplies:
 
 * the name of the item to display: "Translate Selection"
-
 * a context in which the item should be displayed: `SelectionContext()`,
 meaning: include this item in the context menu whenever some content on the
 page is selected
-
 * a script to execute when the item is clicked: this script sends the selected
 text to the function assigned to the `onMessage` property
-
 * a value for the `onMessage` property: this function will now be called with
 the selected text, whenever the user clicks the menu. It uses Google's
 AJAX-based translation service to translate the selection to English and sets
 the selection to the translated text.
 
-Finally, note the two calls to `console.log()` here. `console` is a global
-object accessible by any module and is very useful for debugging.
-`console.log(message)` writes `message` to the console. For more
-information on the globals available to your code see the
-[Globals](#guide/addon-development/globals) reference section.
+### Logging ###
+
+Note the calls to `console.log()` here. `console` is a global object accessible
+by any module and is very useful for debugging. `console.log(message)` writes
+`message` to the console. For more information on the globals available to your
+code see the [Globals](#guide/addon-development/globals) reference section.
+
+
+### Listening for Load and Unload ###
+
+The code which creates the context menu is wrapped in a function which we have
+assigned to the  `main` property of the global `exports` object.
+
+If your program exports a function called `main`, that function will be called
+when your program is loaded.
+
+    exports.main = function (options, callbacks) {};
+
+`options` is an object describing the parameters with which your program was
+loaded. In particular, `options.loadReason` is one of the following strings
+describing the reason your program was loaded: `install`, `enable`, `startup`,
+`upgrade`, or `downgrade`.
+
+Conversely, if your program exports a function called `onUnload`, that function
+will be called when your program is unloaded.
+
+    exports.onUnload = function (reason) {};
+
+`reason` is one of the following strings describing the reason your program was
+unloaded: `uninstall`, `disable`, `shutdown`, `upgrade`, or `downgrade`.
+
+Note that if your program is unloaded with reason `disable`, it will not be
+notified about `uninstall` while it is disabled. (A solution to this issue is
+being investigated; see
+bug [571049](https://bugzilla.mozilla.org/show_bug.cgi?id=571049).)
+
+This particular add-on doesn't use the `onUnload` notification for anything,
+so it's only included to illustrate its use, and simply logs the `reason`
+string.
 
 ## Running It ##
 
