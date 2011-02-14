@@ -225,3 +225,9 @@ table.meta-table {
 .sidebar-section .current-page {
   background: white;
 }
+
+.image-center {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
