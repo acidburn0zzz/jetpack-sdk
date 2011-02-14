@@ -7,25 +7,30 @@
 }
 
 #columns {
-  display: table;
   height: 100%;
 }
 
 #left-column {
-  width: 25em;
+  float: left;
+  width: 25%;
   padding: 1em;
-  display: table-cell;
 }
 
 #right-column {
-  width: 40em;
+  float: left;
+  width: 55%;
   padding: 1em;
-  display: table-cell;
+  padding-top: 3em;
 }
 
-#sidenotes {
-  width: 15em;
-  display: table-cell;
+.aside {
+  color: gray;
+  float: right;
+  padding-left: 1em;
+  margin-left: 1em;
+  margin-right: -10%;
+  width: 25%;
+  border-left: 1px solid gray;
 }
 
 #footer .actions {
@@ -80,15 +85,6 @@
 
 #templates {
   display: none;
-}
-
-.aside {
-  color: gray;
-  border-left: gray 1px solid;
-  padding-left: 1em;
-  padding-right: 1em;
-  position: absolute;
-  display: block;
 }
 
 table {

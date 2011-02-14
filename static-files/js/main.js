@@ -143,27 +143,6 @@ function startApp(jQuery, window) {
     }
   }
 
-  function showSidenotes(query) {
-    var width = $("#sidenotes").innerWidth();
-    var asides = query.find(".aside");
-    var newAsides = $("<div></div>");
-    $("#sidenotes").empty();
-    asides.each(
-      function() {
-        var pos = $(this).position();
-        $(this).remove();
-        newAsides.append(this);
-        $(this).css({top: pos.top});
-      });
-    $("#sidenotes").append(newAsides);
-    newAsides.children().each(
-      function() {
-        $(this).width(width);
-        var margin = $(this).outerWidth() - width;
-        $(this).width(width - margin);
-      });
-  }
-
   var queuedContent = null;
 
   function queueMainContent(query, onDone) {
@@ -242,7 +221,6 @@ function startApp(jQuery, window) {
     shouldFadeAndScroll = false;
     fixInternalLinkTargets(query);
     processPackages();
-    showSidenotes(query);
     queuedContent = null;
     documentName = $("#main-content h1:first").text();
     if (documentName.length > 0) {
