@@ -22,10 +22,8 @@ You can build or load the content locally or load it from a remote server.
 The screenshot below shows a panel whose content is built from the list of
 currently open tabs:
 
-<div align="center">
-<img src="media/screenshots/modules/panel-tabs-osx.png"
+<img class="image-center" src="media/screenshots/modules/panel-tabs-osx.png"
 alt="List open tabs panel">
-</div>
 <br>
 
 Scripts executing in the panel's context can exchange messages with the main
@@ -42,10 +40,8 @@ Widgets are generally used in one of two different contexts:
 the time in a selected time zone or the weather. The screenshot below shows a
 widget that displays the time in the selected city:
 
-<div align="center">
-<img src='media/screenshots/modules/widget-content-osx.png'
+<img class="image-center" src="media/screenshots/modules/widget-content-osx.png"
 alt="Mozilla widget content">
-</div>
 <br>
 
 * to provide a way for the user to access other parts of an add-on's user
@@ -53,21 +49,17 @@ interface. For example, a widget might display only an icon, but open a
 settings dialog when the user clicks it. The widget below displays only the
 Mozilla icon:
 
-<div align="center">
-<img src="media/screenshots/modules/widget-icon-osx.png"
+<img class="image-center" src="media/screenshots/modules/widget-icon-osx.png"
 alt="Mozilla widget icon">
-</div>
 <br>
 
 To simplify your code in the latter case, you can assign a panel object to
 your widget. Then when the user clicks the widget, the widget will display
 the panel anchored to the widget. The `reddit-panel` example demonstrates this:
 
-<div align="center">
-<img src="media/screenshots/modules/reddit-panel-osx.png" alt="Reddit panel">
-</div>
+<img class="image-center" src="media/screenshots/modules/reddit-panel-osx.png"
+alt="Reddit panel">
 <br>
-
 
 ### [context-menu](packages/addon-kit/docs/context-menu.html) ###
 
@@ -81,10 +73,8 @@ is selected) or define your own contexts using scripts.
 In the screenshot below an add-on has added a new submenu to the context menu
 associated with `img` elements:
 
-<div align="center">
-<img src="media/screenshots/modules/context-menu-image-osx.png"
+<img class="image-center" src="media/screenshots/modules/context-menu-image-osx.png"
 alt="Context-menu">
-</div>
 <br>
 
 ### [notifications](packages/addon-kit/docs/notifications.html) ###
@@ -96,10 +86,8 @@ OS X and Windows, libnotify on Linux), so the notification will look slightly
 different on different platforms. On Mac OS X a notification will look
 something like this:
 
-<div align="center">
-<img src="media/screenshots/modules/notification-growl-osx.png" alt="Growl
-notification">
-</div>
+<img class="image-center" src="media/screenshots/modules/notification-growl-osx.png"
+alt="Growl notification">
 <br>
 
 ## Interacting with the Web ##
