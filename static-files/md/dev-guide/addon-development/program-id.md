@@ -23,15 +23,15 @@ according to the OS and your local settings, but default locations for the
 	</tr>
 	<tr>
 		<td>Linux</td>
-		<td><code>/home/&ltusername&gt/.jetpack/keys</code></td>
+		<td><code>/home/&lt;username&gt;/.jetpack/keys</code></td>
 	</tr>
 	<tr>
 		<td>OS X</td>
-		<td><code>/Users/&ltusername&gt/.jetpack/keys</code></td>
+		<td><code>/Users/&lt;username&gt;/.jetpack/keys</code></td>
 	</tr>
 	<tr>
 		<td>Windows Vista/7</td>
-		<td><code>C:\Users\&ltusername&gt\.jetpack\keys</code></td>
+		<td><code>C:\Users\&lt;username&gt;\.jetpack\keys</code></td>
 	</tr>
 </table>
 

@@ -114,8 +114,6 @@ A callback function that is called when the window will be called.
 This is an optional property.
 </api>
 
-</api>
-
 <api name="BrowserWindow">
 @class
 A `BrowserWindow` instance represents a single open window. They can be

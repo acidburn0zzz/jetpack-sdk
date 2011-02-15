@@ -102,7 +102,9 @@ def guess_mime_type(url):
     MIME_TYPES = dict(json="text/plain",
                       cpp="text/plain",
                       c="text/plain",
-                      h="text/plain")
+                      h="text/plain",
+                      css="text/css",
+                      js="text/javascript")
 
     ext = url.split(".")[-1]
     if ext in MIME_TYPES:
@@ -147,7 +149,9 @@ class Server(object):
                      response = self.web_docs.create_module_page(path)
             else:
                 path = os.path.join(self.root, *parts)
-                response = self._respond_with_file(path)
+                url = urllib.pathname2url(path)
+                mimetype = guess_mime_type(url)
+                response = open(path, 'r').read()
         except IOError, e:
             if e.errno==errno.ENOENT:
                 return self._error('404 Not Found')
@@ -165,11 +169,6 @@ class Server(object):
         if len(parts) != 3:
             return False
         return (parts[0] == 'packages') and ((parts[1] + '.html') == parts[2])
-
-    def _respond_with_file(self, path):
-        url = urllib.pathname2url(path)
-        mimetype = guess_mime_type(url)
-        return open(path, 'r').read()
 
     def _respond_with_api(self, parts):
         parts = [part for part in parts
@@ -294,8 +293,8 @@ def start_daemonic(httpd, host=DEFAULT_HOST, port=DEFAULT_PORT):
         if _idle_event.isSet():
             _idle_event.clear()
         else:
-            print ("Web browser is no longer viewing %s, "
-                   "shutting down server." % get_url(host, port))
+#            print ("Web browser is no longer viewing %s, "
+#                   "shutting down server." % get_url(host, port))
             break
 
 def start(env_root=None, host=DEFAULT_HOST, port=DEFAULT_PORT,
