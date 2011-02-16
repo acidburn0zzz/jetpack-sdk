@@ -41,7 +41,7 @@ First, `cfx init` creates the directory structure your add-on needs:
 
 * `/data` contains resources such as icons or strings. You can access the
 content of the `data` subdirectory from within your add-on's code using the
-Add-on SDK's [`self`](#module/api-utils/self) module.
+Add-on SDK's [`self`](packages/api-utils/docs/self.html) module.
 
 <span class="aside">*Note that until bug
 [614712](https://bugzilla.mozilla.org/show_bug.cgi?id=614712) is fixed, cfx
@@ -139,12 +139,12 @@ contents with the following:
 The first three lines are used to import three SDK modules from the
 addon-kit package:
 
-* [`context-menu`](#module/addon-kit/context-menu) enables add-ons to
-add new items to the context menu
-* [`request`](#module/addon-kit/request) enables add-ons to make
+* [`context-menu`](packages/addon-kit/docs/context-menu.html) enables add-ons
+to add new items to the context menu
+* [`request`](packages/addon-kit/docs/request.html) enables add-ons to make
 network requests
-* [`selection`](#module/addon-kit/selection) gives add-ons access to
-selected text in the active browser window
+* [`selection`](packages/addon-kit/docs/selection.html) gives add-ons access
+to selected text in the active browser window
 
 ### Creating a Context Menu Item ###
 
@@ -160,14 +160,6 @@ text to the function assigned to the `onMessage` property
 the selected text, whenever the user clicks the menu. It uses Google's
 AJAX-based translation service to translate the selection to English and sets
 the selection to the translated text.
-
-### Logging ###
-
-Note the calls to `console.log()` here. `console` is a global object accessible
-by any module and is very useful for debugging. `console.log(message)` writes
-`message` to the console. For more information on the globals available to your
-code see the [Globals](#guide/addon-development/globals) reference section.
-
 
 ### Listening for Load and Unload ###
 
@@ -201,6 +193,14 @@ This particular add-on doesn't use the `onUnload` notification for anything,
 so it's only included to illustrate its use, and simply logs the `reason`
 string.
 
+### Logging ###
+
+Note the calls to `console.log()` here. `console` is a global object accessible
+by any module and is very useful for debugging. `console.log(message)` writes
+`message` to the console. For more information on the globals available to your
+code see the [Globals](dev-guide/addon-development/globals.html) reference
+section.
+
 ## Running It ##
 
 To run your program, navigate to the `translator` directory and type:
@@ -224,7 +224,7 @@ identifier for you add-on called the **Program ID** and it is important. It is
 used by various tools and services to distinguish this add-on from any other.
 
 To learn more about the Program ID refer to the
-[Program ID](#guide/addon-development/program-id) document.
+[Program ID](dev-guide/addon-development/program-id.html) document.
 
 Once `cfx run` has launched Firefox you can try out the new add-on. Load a
 page containing some text that is not in English, for example:
@@ -304,5 +304,5 @@ Eventually, this step may be automated via the SDK, streamlining the
 distribution process further.
 
 In the next section we'll introduce
-[CommonJS](#guide/addon-development/commonjs), which provides the infrastructure
-for the SDK.
+[CommonJS](dev-guide/addon-development/commonjs.html), which provides the
+infrastructure for the SDK.
