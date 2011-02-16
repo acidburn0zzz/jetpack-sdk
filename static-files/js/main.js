@@ -16,7 +16,11 @@ function highlightCurrentPage() {
   $(".current-page").removeClass('current-page');
   $(".current-section").removeClass('current-section');
 
-  currentPage = window.location.pathname;
+  if (base_url == '/')
+    currentPage = window.location.pathname;
+  else
+    currentPage = window.location.toString();
+
   currentPage = currentPage.slice(base_url.length);
   $('a[href="' + currentPage + '"]').parent().addClass('current-page');
 
