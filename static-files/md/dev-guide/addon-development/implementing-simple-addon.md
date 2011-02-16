@@ -311,3 +311,4 @@ distribution process further.
 In the next section we'll introduce
 [CommonJS](dev-guide/addon-development/commonjs.html), which provides the
 infrastructure for the SDK.
+
