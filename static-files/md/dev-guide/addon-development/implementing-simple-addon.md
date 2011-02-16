@@ -166,32 +166,37 @@ the selection to the translated text.
 The code which creates the context menu is wrapped in a function which we have
 assigned to the  `main` property of the global `exports` object.
 
-If your program exports a function called `main`, that function will be called
-when your program is loaded.
+If your add-on exports a function called `main`, that function will be called
+when the add-on is loaded.
 
     exports.main = function (options, callbacks) {};
 
-`options` is an object describing the parameters with which your program was
+`options` is an object describing the parameters with which your add-on was
 loaded. In particular, `options.loadReason` is one of the following strings
-describing the reason your program was loaded: `install`, `enable`, `startup`,
+describing the reason your add-on was loaded: `install`, `enable`, `startup`,
 `upgrade`, or `downgrade`.
 
-Conversely, if your program exports a function called `onUnload`, that function
-will be called when your program is unloaded.
+Conversely, if your add-on exports a function called `onUnload`, that function
+will be called when the add-on is unloaded.
 
     exports.onUnload = function (reason) {};
 
-`reason` is one of the following strings describing the reason your program was
+<span class="aside">
+Note that if your add-on is unloaded with reason `disable`, it will not be
+notified about `uninstall` while it is disabled: see
+bug [571049](https://bugzilla.mozilla.org/show_bug.cgi?id=571049).
+</span>
+
+`reason` is one of the following strings describing the reason your add-on was
 unloaded: `uninstall`, `disable`, `shutdown`, `upgrade`, or `downgrade`.
 
-Note that if your program is unloaded with reason `disable`, it will not be
-notified about `uninstall` while it is disabled. (A solution to this issue is
-being investigated; see
-bug [571049](https://bugzilla.mozilla.org/show_bug.cgi?id=571049).)
+You don't have to use `exports.main` or `exports.onUnload`. You can just place
+your add-on's code at the top level instead of wrapping it in a function
+assigned to `exports.main`: it will be loaded in the same circumstances, but
+you won't get access to the `options` or `callbacks` arguments.
 
-This particular add-on doesn't use the `onUnload` notification for anything,
-so it's only included to illustrate its use, and simply logs the `reason`
-string.
+This particular add-on doesn't need to use `exports.main` or `exports.onUnload`
+for anything, and only includes them to illustrate their use.
 
 ### Logging ###
 
