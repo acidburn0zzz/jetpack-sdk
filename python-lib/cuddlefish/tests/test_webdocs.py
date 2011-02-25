@@ -52,8 +52,7 @@ class WebDocTests(unittest.TestCase):
         root = os.path.join(os.getcwd() + \
             '/python-lib/cuddlefish/tests/static-files')
         web_docs = webdocs.WebDocs(root)
-        module = web_docs.create_module_page(os.path.join(\
-            root + '/packages/aardvark/docs/aardvark-feeder.blah'))
+        module = web_docs.create_module_page('/packages/aardvark/docs/aardvark-feeder.blah'.split('/'))
         self._test_common_contents(module)
         self.assertTrue(\
             '<title>aardvark-feeder - Add-on SDK Documentation</title>'\

@@ -2,6 +2,11 @@
 
 Some text here
 
+<api name="test_property">
+@property {string}
+It's a string.
+</api>
+
 <api name="test">
 @function
 This is a function which does nothing in particular.
@@ -88,21 +93,6 @@ This class contains nothing.
 This class contains only one constructor.
 <api name="one-constructor">
 @constructor
-@param [options] An object-bag of goodies.
-</api>
-</api>
-
-<api name="two-ctors">
-@class
-This class contains two constructors.
-<api name="one-constructor">
-@constructor
-The first constructor.
-@param [options] An object-bag of goodies.
-</api>
-<api name="another-constructor">
-@constructor
-The second constructor.
 @param [options] An object-bag of goodies.
 </api>
 </api>

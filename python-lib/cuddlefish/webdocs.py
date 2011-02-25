@@ -70,10 +70,17 @@ class WebDocs(object):
         guide_content = markdown.markdown(md_content)
         return self._create_page(guide_content)
 
-    def create_module_page(self, path):
-        path, ext = os.path.splitext(path)
-        md_path = path + '.md'
-        module_content = apirenderer.md_to_div(md_path)
+    def create_module_page(self, parts):
+        # we expect the parts parameter to be a list containinghave the following format:
+        # ['packages', <package_name>, 'docs', <module_name>'.html']
+        # module_name may consist of multiple parts, e.g.
+        # ['packages', 'api-utils', 'docs', 'content', 'symbiont.html']
+        root = os.path.join(self.root, parts[0], parts[1])
+        module_name_and_ext = os.path.join(*parts[3:])
+        module_name, ext = os.path.splitext(module_name_and_ext)
+
+        module_json = apiparser.get_api_json(root, module_name)
+        module_content = apirenderer.json_to_div(module_json, module_name)
         return self._create_page(module_content)
 
     def create_package_page(self, path):

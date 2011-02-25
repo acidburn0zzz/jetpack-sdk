@@ -145,8 +145,7 @@ class Server(object):
                      path = os.path.join(self.env_root, *parts)
                      response = self.web_docs.create_package_page(path)
                  else:
-                     path = os.path.join(self.env_root, *parts)
-                     response = self.web_docs.create_module_page(path)
+                     response = self.web_docs.create_module_page(parts)
             else:
                 path = os.path.join(self.root, *parts)
                 url = urllib.pathname2url(path)

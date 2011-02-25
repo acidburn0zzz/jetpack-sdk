@@ -1,0 +1,332 @@
+{
+  "classes": [
+    {
+      "line_number": 86, 
+      "name": "empty-class", 
+      "desc": "This class contains nothing."
+    }, 
+    {
+      "line_number": 91, 
+      "constructor": {
+        "line_number": 94, 
+        "signature": "one-constructor([options])", 
+        "params": [
+          {
+            "line_number": 96, 
+            "name": "[options]", 
+            "desc": "An object-bag of goodies."
+          }
+        ], 
+        "name": "one-constructor", 
+        "desc": ""
+      }, 
+      "name": "only-one-ctor", 
+      "desc": "This class contains only one constructor."
+    }, 
+    {
+      "line_number": 100, 
+      "functions": [
+        {
+          "line_number": 108, 
+          "signature": "a-method([options])", 
+          "params": [
+            {
+              "line_number": 111, 
+              "name": "[options]", 
+              "desc": "An argument."
+            }
+          ], 
+          "name": "a-method", 
+          "desc": "Does things."
+        }
+      ], 
+      "constructor": {
+        "line_number": 103, 
+        "signature": "one-constructor([options])", 
+        "params": [
+          {
+            "line_number": 106, 
+            "name": "[options]", 
+            "desc": "An object-bag of goodies."
+          }
+        ], 
+        "name": "one-constructor", 
+        "desc": "The first constructor."
+      }, 
+      "name": "ctor-and-method", 
+      "desc": "This class contains one constructor and one method."
+    }, 
+    {
+      "line_number": 115, 
+      "functions": [
+        {
+          "line_number": 123, 
+          "signature": "a-method([options])", 
+          "params": [
+            {
+              "line_number": 126, 
+              "name": "[options]", 
+              "desc": "An argument."
+            }
+          ], 
+          "name": "a-method", 
+          "desc": "Does things."
+        }
+      ], 
+      "name": "ctor-and-method-and-prop", 
+      "constructor": {
+        "line_number": 118, 
+        "signature": "one-constructor([options])", 
+        "params": [
+          {
+            "line_number": 121, 
+            "name": "[options]", 
+            "desc": "An object-bag of goodies."
+          }
+        ], 
+        "name": "one-constructor", 
+        "desc": "The first constructor."
+      }, 
+      "properties": [
+        {
+          "line_number": 128, 
+          "type": "bool", 
+          "name": "a-property", 
+          "desc": "Represents stuff."
+        }
+      ], 
+      "desc": "This class contains one constructor, one method, and one property."
+    }
+  ], 
+  "functions": [
+    {
+      "line_number": 10, 
+      "name": "test", 
+      "returns": {
+        "line_number": 13, 
+        "type": "object", 
+        "properties": [
+          {
+            "line_number": 14, 
+            "type": "string", 
+            "name": "firststring", 
+            "desc": "First string"
+          }, 
+          {
+            "line_number": 15, 
+            "type": "url", 
+            "name": "firsturl", 
+            "desc": "First URL"
+          }
+        ], 
+        "desc": ""
+      }, 
+      "params": [
+        {
+          "line_number": 16, 
+          "type": "string", 
+          "name": "argOne", 
+          "desc": "This is the first argument."
+        }, 
+        {
+          "line_number": 17, 
+          "type": "bool", 
+          "name": "[argTwo]", 
+          "desc": "This is the second argument."
+        }, 
+        {
+          "line_number": 18, 
+          "type": "uri", 
+          "name": "[argThree=default]", 
+          "desc": "This is the third and final argument. And this is\na test of the ability to do multiple lines of\ntext."
+        }, 
+        {
+          "line_number": 22, 
+          "properties": [
+            {
+              "line_number": 23, 
+              "type": "string", 
+              "name": "[style]", 
+              "desc": "Some style information."
+            }, 
+            {
+              "line_number": 24, 
+              "type": "bool", 
+              "name": "[secondToLastOption=True]", 
+              "desc": "The last property."
+            }, 
+            {
+              "line_number": 25, 
+              "type": "uri", 
+              "name": "[lastOption]", 
+              "desc": "And this time we have\nA multiline description\nWritten as haiku"
+            }
+          ], 
+          "name": "[options]", 
+          "desc": "Options Bag"
+        }
+      ], 
+      "signature": "test(argOne, [argTwo], [argThree=default], [options])", 
+      "desc": "This is a function which does nothing in particular."
+    }, 
+    {
+      "line_number": 33, 
+      "signature": "append(options)", 
+      "params": [
+        {
+          "line_number": 36, 
+          "properties": [
+            {
+              "line_number": 38, 
+              "type": "uri", 
+              "name": "[icon]", 
+              "desc": "The HREF of an icon to show as the method of accessing your features slideBar"
+            }, 
+            {
+              "line_number": 39, 
+              "type": "string/xml", 
+              "name": "[html]", 
+              "desc": "The content of the feature, either as an HTML string,\nor an E4X document fragment (e.g., <><h1>Hi!</h1></>)"
+            }, 
+            {
+              "line_number": 42, 
+              "type": "uri", 
+              "name": "[url]", 
+              "desc": "The url to load into the content area of the feature"
+            }, 
+            {
+              "line_number": 43, 
+              "type": "int", 
+              "name": "[width]", 
+              "desc": "Width of the content area and the selected slide size"
+            }, 
+            {
+              "line_number": 44, 
+              "type": "bool", 
+              "name": "[persist]", 
+              "desc": "Default slide behavior when being selected as follows:\nIf true: blah; If false: double blah."
+            }, 
+            {
+              "line_number": 47, 
+              "type": "bool", 
+              "name": "[autoReload]", 
+              "desc": "Automatically reload content on select"
+            }, 
+            {
+              "line_number": 48, 
+              "type": "function", 
+              "name": "[onClick]", 
+              "desc": "Callback when the icon is clicked"
+            }, 
+            {
+              "line_number": 49, 
+              "type": "function", 
+              "name": "[onSelect]", 
+              "desc": "Callback when the feature is selected"
+            }, 
+            {
+              "line_number": 50, 
+              "type": "function", 
+              "name": "[onReady]", 
+              "desc": "Callback when featured is loaded"
+            }
+          ], 
+          "name": "options", 
+          "desc": "Pass in all of your options here."
+        }
+      ], 
+      "name": "append", 
+      "desc": "This is a list of options to specify modifications to your slideBar instance."
+    }, 
+    {
+      "line_number": 55, 
+      "name": "cool-func.dot", 
+      "returns": {
+        "line_number": 57, 
+        "type": "string", 
+        "desc": "A value telling you just how cool you are.\nA boa-constructor!\nThis description can go on for a while, and can even contain\nsome **realy** fancy things. Like `code`, or even\n~~~~{.javascript}\n// Some code!\n~~~~"
+      }, 
+      "params": [
+        {
+          "line_number": 64, 
+          "type": "string", 
+          "name": "howMuch", 
+          "desc": "How much cool it is."
+        }, 
+        {
+          "line_number": 65, 
+          "type": "bool", 
+          "name": "[double=true]", 
+          "desc": "In case you just really need to double it."
+        }, 
+        {
+          "line_number": 67, 
+          "properties": [
+            {
+              "line_number": 68, 
+              "type": "function", 
+              "name": "callback", 
+              "desc": "The callback"
+            }, 
+            {
+              "line_number": 69, 
+              "type": "bool", 
+              "name": "[random]", 
+              "desc": "Do something random?"
+            }
+          ], 
+          "name": "[options]", 
+          "desc": "An object-bag of goodies."
+        }, 
+        {
+          "line_number": 70, 
+          "type": "bool", 
+          "name": "[onemore]", 
+          "desc": "One more paramater"
+        }, 
+        {
+          "line_number": 71, 
+          "properties": [
+            {
+              "line_number": 75, 
+              "type": "string", 
+              "name": "monkey", 
+              "desc": "You heard me right"
+            }, 
+            {
+              "line_number": 76, 
+              "type": "bool", 
+              "name": "[freak=true]", 
+              "desc": "Yes, you are a freak."
+            }
+          ], 
+          "name": "[options2]", 
+          "desc": "This is a full description of something\nthat really sucks. Because I now have a multiline\ndescription of this thingy."
+        }
+      ], 
+      "signature": "cool-func.dot(howMuch, [double=true], [options], [onemore], [options2])", 
+      "desc": ""
+    }, 
+    {
+      "line_number": 80, 
+      "returns": {
+        "line_number": 83, 
+        "type": "int", 
+        "desc": "The random number."
+      }, 
+      "signature": "random()", 
+      "name": "random", 
+      "desc": "A function that returns a random integer between 0 and 10."
+    }
+  ], 
+  "version": 3, 
+  "properties": [
+    {
+      "line_number": 5, 
+      "type": "string", 
+      "name": "test_property", 
+      "desc": "It's a string."
+    }
+  ], 
+  "desc": "# Title #\n\nSome text here\n\n"
+}

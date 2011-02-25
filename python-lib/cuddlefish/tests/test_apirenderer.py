@@ -1,18 +1,21 @@
 
 import os
 import unittest
-from cuddlefish.apiparser import parse_hunks, ParseError
-from cuddlefish.apirenderer import md_to_html
+
+from cuddlefish import apiparser
+from cuddlefish import apirenderer
+from cuddlefish import docstract
 
 tests_path = os.path.abspath(os.path.dirname(__file__))
 static_files_path = os.path.join(tests_path, "static-files")
 
 class ParserTests(unittest.TestCase):
-    def pathname(self, filename):
-        return os.path.join(static_files_path, "docs", filename)
 
     def render_markdown(self, pathname):
         return md_to_html(pathname)
+        md_path = os.path.join(static_files_path, "docs", "APIsample.md")
+        module_json_md = apiparser_md.get_api_json(open(md_path).read())
+        module_div_md = apirenderer.json_to_div(module_json_md, "APIsample")
 
     def test_renderer(self):
         test = self.render_markdown(self.pathname("APIsample.md"))
