@@ -2,24 +2,23 @@
 import os
 import unittest
 
-from cuddlefish import apiparser
+from cuddlefish import apiparser_md
 from cuddlefish import apirenderer
 from cuddlefish import docstract
 
-tests_path = os.path.abspath(os.path.dirname(__file__))
-static_files_path = os.path.join(tests_path, "static-files")
+test_files_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "static-files", "docs")
 
 class ParserTests(unittest.TestCase):
 
-    def render_markdown(self, pathname):
-        return md_to_html(pathname)
-        md_path = os.path.join(static_files_path, "docs", "APIsample.md")
-        module_json_md = apiparser_md.get_api_json(open(md_path).read())
-        module_div_md = apirenderer.json_to_div(module_json_md, "APIsample")
+    def render_markdown(self):
+        md_path = os.path.join(test_files_path, "APIsample.md")
+        module_json_md = apiparser_md.parse_api_doc(open(md_path).read())
+        module_html_md = apirenderer.json_to_html(module_json_md, "APIsample")
+        return module_html_md
 
     def test_renderer(self):
-        test = self.render_markdown(self.pathname("APIsample.md"))
-        reference = open(self.pathname("APIreference.html")).read()
+        test = self.render_markdown()
+        reference = open(os.path.join(test_files_path, "APIreference.html")).read()
         test_lines = test.splitlines(True)
         reference_lines = reference.splitlines(True)
         for x in range(len(test_lines)):

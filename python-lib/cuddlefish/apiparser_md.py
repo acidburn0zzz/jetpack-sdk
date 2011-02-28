@@ -254,6 +254,8 @@ def parse_api_doc(text):
             module_json["classes"].append(api_item)
         elif api_type == "function":
             module_json["functions"].append(api_item)
+        elif api_type == "method":
+            module_json["functions"].append(api_item)
         elif api_type == "property":
             module_json["properties"].append(api_item)
     return module_json

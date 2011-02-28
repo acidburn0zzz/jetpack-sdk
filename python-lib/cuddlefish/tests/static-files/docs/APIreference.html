@@ -64,9 +64,6 @@
     
     <h1>Title</h1>
     <p>Some text here</p>
-    <p>This text appears between the API blocks.</p>
-    <p>Wooo, more text.</p>
-    <p>Some more text here, at the end of the file.</p>
   </div>
   
   
@@ -123,7 +120,7 @@
             
             <div class="api_name">
               
-              one-constructor(options)
+              one-constructor([options])
             </div>
             
             
@@ -135,91 +132,7 @@
                 
                 <div class="api_name">
                   
-                  options
-                </div>
-                
-                <p>An object-bag of goodies.</p>
-              </div>
-              
-              
-            </div>
-            
-            
-          </div>
-          
-          
-        </div>
-        
-        
-      </div>
-      
-      
-      <div class="api_component">
-        
-        
-        <h4 class="api_name">
-        
-        two-ctors
-        </h4>
-        
-        <p>This class contains two constructors.</p>
-        <div class="api_component_group">
-          
-          
-          <div class="api_header">
-            
-            Constructors
-          </div>
-          
-          
-          <div class="api_component">
-            
-            
-            <div class="api_name">
-              
-              one-constructor(options)
-            </div>
-            
-            <p>The first constructor.</p>
-            <div class="parameter_set">
-              
-              
-              <div class="api_component">
-                
-                
-                <div class="api_name">
-                  
-                  options
-                </div>
-                
-                <p>An object-bag of goodies.</p>
-              </div>
-              
-              
-            </div>
-            
-            
-          </div>
-          
-          
-          <div class="api_component">
-            
-            
-            <div class="api_name">
-              
-              another-constructor(options)
-            </div>
-            
-            <p>The second constructor.</p>
-            <div class="parameter_set">
-              
-              
-              <div class="api_component">
-                
-                
-                <div class="api_name">
-                  
-                  options
+                  [options]
                 </div>
                 
                 <p>An object-bag of goodies.</p>
@@ -261,7 +174,7 @@
             
             <div class="api_name">
               
-              one-constructor(options)
+              one-constructor([options])
             </div>
             
             <p>The first constructor.</p>
@@ -273,7 +186,7 @@
                 
                 <div class="api_name">
                   
-                  options
+                  [options]
                 </div>
                 
                 <p>An object-bag of goodies.</p>
@@ -303,7 +216,7 @@
             
             <div class="api_name">
               
-              a-method(options)
+              a-method([options])
             </div>
             
             <p>Does things.</p>
@@ -315,7 +228,7 @@
                 
                 <div class="api_name">
                   
-                  options
+                  [options]
                 </div>
                 
                 <p>An argument.</p>
@@ -357,7 +270,7 @@
             
             <div class="api_name">
               
-              one-constructor(options)
+              one-constructor([options])
             </div>
             
             <p>The first constructor.</p>
@@ -369,7 +282,7 @@
                 
                 <div class="api_name">
                   
-                  options
+                  [options]
                 </div>
                 
                 <p>An object-bag of goodies.</p>
@@ -399,7 +312,7 @@
             
             <div class="api_name">
               
-              a-method(options)
+              a-method([options])
             </div>
             
             <p>Does things.</p>
@@ -411,7 +324,7 @@
                 
                 <div class="api_name">
                   
-                  options
+                  [options]
                 </div>
                 
                 <p>An argument.</p>
@@ -474,7 +387,7 @@
         
         <h4 class="api_name">
         
-        test(argOne, argTwo, argThree, options)
+        test(argOne, [argTwo], [argThree=default], [options])
         </h4>
         
         <p>This is a function which does nothing in particular.</p>
@@ -501,7 +414,7 @@
             
             <div class="api_name">
               
-              argTwo : 
+              [argTwo] : 
               <span class="datatype">bool</span>
               
               
@@ -516,7 +429,7 @@
             
             <div class="api_name">
               
-              argThree : 
+              [argThree=default] : 
               <span class="datatype">uri</span>
               
               
@@ -533,7 +446,7 @@
             
             <div class="api_name">
               
-              options
+              [options]
             </div>
             
             <p>Options Bag</p>
@@ -542,7 +455,7 @@
               
               <div class="api_name">
                 
-                style : 
+                [style] : 
                 <span class="datatype">string</span>
                 
                 
@@ -557,7 +470,7 @@
               
               <div class="api_name">
                 
-                secondToLastOption : 
+                [secondToLastOption=True] : 
                 <span class="datatype">bool</span>
                 
                 
@@ -572,7 +485,7 @@
               
               <div class="api_name">
                 
-                lastOption : 
+                [lastOption] : 
                 <span class="datatype">uri</span>
                 
                 
@@ -628,7 +541,7 @@
               
               <div class="api_name">
                 
-                icon : 
+                [icon] : 
                 <span class="datatype">uri</span>
                 
                 
@@ -643,7 +556,7 @@
               
               <div class="api_name">
                 
-                html : 
+                [html] : 
                 <span class="datatype">string/xml</span>
                 
                 
@@ -659,7 +572,7 @@
               
               <div class="api_name">
                 
-                url : 
+                [url] : 
                 <span class="datatype">uri</span>
                 
                 
@@ -674,7 +587,7 @@
               
               <div class="api_name">
                 
-                width : 
+                [width] : 
                 <span class="datatype">int</span>
                 
                 
@@ -689,7 +602,7 @@
               
               <div class="api_name">
                 
-                persist : 
+                [persist] : 
                 <span class="datatype">bool</span>
                 
                 
@@ -705,7 +618,7 @@
               
               <div class="api_name">
                 
-                autoReload : 
+                [autoReload] : 
                 <span class="datatype">bool</span>
                 
                 
@@ -720,7 +633,7 @@
               
               <div class="api_name">
                 
-                onClick : 
+                [onClick] : 
                 <span class="datatype">function</span>
                 
                 
@@ -735,7 +648,7 @@
               
               <div class="api_name">
                 
-                onSelect : 
+                [onSelect] : 
                 <span class="datatype">function</span>
                 
                 
@@ -750,7 +663,7 @@
               
               <div class="api_name">
                 
-                onReady : 
+                [onReady] : 
                 <span class="datatype">function</span>
                 
                 
@@ -774,7 +687,7 @@
         
         <h4 class="api_name">
         
-        cool-func.dot(howMuch, double, options, onemore, options2)
+        cool-func.dot(howMuch, [double=true], [options], [onemore], [options2])
         </h4>
         
         
@@ -801,7 +714,7 @@
             
             <div class="api_name">
               
-              double : 
+              [double=true] : 
               <span class="datatype">bool</span>
               
               
@@ -816,7 +729,7 @@
             
             <div class="api_name">
               
-              options
+              [options]
             </div>
             
             <p>An object-bag of goodies.</p>
@@ -840,7 +753,7 @@
               
               <div class="api_name">
                 
-                random : 
+                [random] : 
                 <span class="datatype">bool</span>
                 
                 
@@ -858,7 +771,7 @@
             
             <div class="api_name">
               
-              onemore : 
+              [onemore] : 
               <span class="datatype">bool</span>
               
               
@@ -873,7 +786,7 @@
             
             <div class="api_name">
               
-              options2
+              [options2]
             </div>
             
             <p>This is a full description of something
@@ -899,7 +812,7 @@
               
               <div class="api_name">
                 
-                freak : 
+                [freak=true] : 
                 <span class="datatype">bool</span>
                 
                 
@@ -957,6 +870,33 @@
     </div>
     
     
+    <div class="api_component_group">
+      
+      
+      <h3 class="api_header">
+      
+      Properties
+      </h3>
+      
+      
+      <div class="api_component">
+        
+        
+        <h4 class="api_name">
+        
+        test_property : 
+        <span class="datatype">string</span>
+        
+        
+        </h4>
+        
+        <p>It's a string.</p>
+      </div>
+      
+      
+    </div>
+    
+    
   </div>
   
   
@@ -968,4 +908,3 @@
 
 
 </html>
-

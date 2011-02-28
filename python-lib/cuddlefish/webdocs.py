@@ -26,16 +26,6 @@ def get_modules(modules_json):
                 modules.append([module, sub_module[0]])
     return modules
 
-def get_documented_modules(root, package_name, modules_json):
-    modules = get_modules(modules_json)
-    module_md_root = os.path.join(root, 'packages', package_name, 'docs')
-    documented_modules = []
-    for module in modules:
-        path = os.path.join(*module)
-        if module_md_exists(module_md_root, path):
-            documented_modules.append(module)
-    return documented_modules
-
 def module_md_exists(root, module_name):
     module_md_path = os.path.join(root, module_name + '.md')
     return os.path.exists(module_md_path)
@@ -71,7 +61,7 @@ class WebDocs(object):
         return self._create_page(guide_content)
 
     def create_module_page(self, parts):
-        # we expect the parts parameter to be a list containinghave the following format:
+        # we expect the parts parameter to be a list with the following format:
         # ['packages', <package_name>, 'docs', <module_name>'.html']
         # module_name may consist of multiple parts, e.g.
         # ['packages', 'api-utils', 'docs', 'content', 'symbiont.html']
@@ -89,6 +79,17 @@ class WebDocs(object):
         package_content = self._create_package_detail(package_name)
         return self._create_page(package_content)
 
+    def get_documented_modules(self, package_name, modules_json):
+	needs fixin
+        modules = get_modules(modules_json)
+        module_md_root = os.path.join(self.root, 'packages', package_name, 'docs')
+        documented_modules = []
+        for module in modules:
+            path = os.path.join(*module)
+            if module_md_exists(module_md_root, path):
+                documented_modules.append(module)
+        return documented_modules
+
     def _create_page(self, page_content):
         page = self._insert_title(self.base_page, page_content)
         page = insert_after(page, CONTENT_ID, page_content)
@@ -96,7 +97,7 @@ class WebDocs(object):
 
     def _create_module_list(self, package_json):
         package_name = package_json['name']
-        modules = get_documented_modules(self.root, package_name, \
+        modules = self.get_documented_modules(package_name, \
                               package_json['files']['lib'])
         modules.sort()
         module_items = ''

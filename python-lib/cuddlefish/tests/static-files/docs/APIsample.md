@@ -28,8 +28,6 @@ This is a function which does nothing in particular.
         Written as haiku
 </api>
 
-This text appears between the API blocks.
-
 <api name="append">
 @function
 This is a list of options to specify modifications to your slideBar instance.
@@ -49,8 +47,6 @@ This is a list of options to specify modifications to your slideBar instance.
   @prop [onSelect] {function} Callback when the feature is selected
   @prop [onReady] {function} Callback when featured is loaded
 </api>
-
-Wooo, more text.
 
 <api name="cool-func.dot">
 @function
@@ -130,6 +126,4 @@ Does things.
 Represents stuff.
 </api>
 </api>
-
-Some more text here, at the end of the file.
 

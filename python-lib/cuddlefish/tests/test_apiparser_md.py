@@ -11,8 +11,11 @@ class MD_ParserTests(unittest.TestCase):
     def pathname(self, filename):
         return os.path.join(static_files_path, "docs", filename)
 
+    def parse_text(self, text):
+        return apiparser_md.parse_api_doc(text)
+
     def parse(self, pathname):
-        return apiparser.parse_api_doc(open(pathname).read())
+        return apiparser_md.parse_api_doc(open(pathname).read())
 
     def test_parser(self):
         module_json = self.parse(self.pathname("APIsample.md"))
@@ -59,7 +62,7 @@ This is a function which does nothing in particular.
 </api>
 '''
         parsed = self.parse_text(md)
-        r = parsed[1][1]["returns"]
+        r = parsed["functions"][0]["returns"]
         self.assertEqual(r["properties"][0]["name"], "firststring")
         self.assertEqual(r["properties"][0],
                          {"name": "firststring",
@@ -67,8 +70,8 @@ This is a function which does nothing in particular.
                           "desc": "First string.",
                           "line_number": 5, # 1-indexed
                           })
-        self.assertEqual(r["props"][1],
-                         {"name": "firsturl",
+        self.assertEqual(r["properties"][1],
+                         {"name": "[firsturl]",
                           "type": "url",
                           "desc": "First URL, not always provided.",
                           "line_number": 6,
@@ -87,7 +90,7 @@ This is a function which does nothing in particular.
 </api>
 '''
         parsed = self.parse_text(md)
-        r = parsed[1][1]["returns"]
+        r = parsed["functions"][0]["returns"]
         self.assertEqual(r["desc"], "A one-line description.")
 
     def test_return_description_2(self):
@@ -108,7 +111,7 @@ This is a function which does nothing in particular.
 </api>
 '''
         parsed = self.parse_text(md)
-        r = parsed[1][1]["returns"]
+        r = parsed["functions"][0]["returns"]
         self.assertEqual(r["desc"],
                          "A six-line description\n"
                          "which is consistently indented by two spaces\n"
@@ -128,7 +131,7 @@ This is a function which does nothing in particular.
 </api>
 '''
         parsed = self.parse_text(md)
-        r = parsed[1][1]["returns"]
+        r = parsed["functions"][0]["returns"]
         self.assertEqual(r["desc"], "A one-line untyped description.")
 
     # if the return value was supposed to be an array, the correct syntax
@@ -148,7 +151,7 @@ This is a function which returns an array.
 </api>
 '''
         parsed = self.parse_text(md)
-        r = parsed[1][1]["returns"]
+        r = parsed["functions"][0]["returns"]
         self.assertEqual(r["desc"],
                          "Array consists of two elements, a string and a url.")
 
@@ -205,14 +208,12 @@ An object property named test of type foo.
 </api>
 '''
         parsed = self.parse_text(md)
-        self.assertEqual(parsed[1][0], 'api-json')
-        actual_api_json_obj = parsed[1][1]
+        actual_api_json_obj = parsed["properties"][0]
         expected_api_json_obj = {
             'line_number': 1,
-            'property_type': 'foo',
-            'type': 'property',
+            'type': 'foo',
             'name': 'test',
-            'description': "An object property named test of type foo."
+            'desc': "An object property named test of type foo."
             }
         self.assertEqual(actual_api_json_obj, expected_api_json_obj)
 

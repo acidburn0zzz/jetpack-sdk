@@ -375,7 +375,7 @@ def generate_static_docs(env_root, tgz_filename, base_url = ''):
                 if filename.endswith(".md"):
                     # parse and JSONify the API docs
                     docs_md = open(src_path, 'r').read()
-                    docs_parsed = list(apiparser.parse_hunks(docs_md))
+                    docs_parsed = apiparser.get_api_json(docs_md))
                     docs_json = json.dumps(docs_parsed)
                     open(dest_path + ".json", "w").write(docs_json)
                     # write the HTML div files
