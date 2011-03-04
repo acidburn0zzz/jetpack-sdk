@@ -64,11 +64,18 @@ packages, structured like so:
      */
   aardvark/lib/empty.js:
   <BLANKLINE>
+  aardvark/lib/ignore_me:
+    The docs processor should tolerate (by ignoring) random non-.js files in lib
+    directories, such as those left around by editors, version-control systems,
+    or OS metadata like .DS_Store . This file exercises that tolerance.
   aardvark/lib/main.js:
     exports.main = function(options, callbacks) {
       console.log("1 + 1 =", require("bar-module").add(1, 1));
       callbacks.quit();
     };
+  aardvark/lib/surprise.js/ignore_me_too:
+    The docs processor should also ignore directories named *.js, and their
+    contents.
   aardvark/package.json:
     {
       "author": "Jon Smith",
@@ -95,6 +102,18 @@ packages, structured like so:
     {
       "keywords": ["potato", "jetpack-low-level"],
       "description": "A package used by 'aardvark' as a library."
+    }
+  minimal/docs/main.md:
+    minimal docs
+  minimal/lib/main.js:
+    exports.main = function(options, callbacks) {
+      console.log("minimal");
+      callbacks.quit();
+    };
+  minimal/package.json:
+    {
+      "author": "Jon Smith",
+      "description": "A package w/ a main module; can be built into an extension."
     }
 
 </pre>
@@ -167,11 +186,18 @@ auto-generated files:
      */
   resources/guid-aardvark-lib/empty.js:
   <BLANKLINE>
+  resources/guid-aardvark-lib/ignore_me:
+    The docs processor should tolerate (by ignoring) random non-.js files in lib
+    directories, such as those left around by editors, version-control systems,
+    or OS metadata like .DS_Store . This file exercises that tolerance.
   resources/guid-aardvark-lib/main.js:
     exports.main = function(options, callbacks) {
       console.log("1 + 1 =", require("bar-module").add(1, 1));
       callbacks.quit();
     };
+  resources/guid-aardvark-lib/surprise.js/ignore_me_too:
+    The docs processor should also ignore directories named *.js, and their
+    contents.
   resources/guid-barbeque-lib/:
   <BLANKLINE>
   resources/guid-barbeque-lib/bar-module.js:

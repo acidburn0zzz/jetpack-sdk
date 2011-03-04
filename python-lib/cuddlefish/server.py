@@ -395,7 +395,7 @@ def generate_static_docs(env_root, tgz_filename, base_url = ''):
         # create and copy JSON, DIV and HTML for each documented module in the package
         packages_json = packaging.build_pkg_index(pkg_cfg)
         package_json = packages_json[pkg_name]
-        documented_modules = web_docs.get_documented_modules(pkg_name, package_json['files']['lib'])
+        documented_modules = web_docs.get_documented_modules(pkg_name, package_json['files'][1]['lib'][1])
         for module_name in documented_modules:
             module_json = apiparser.get_api_json(env_root, pkg_name, module_name)
             module_div = apirenderer.json_to_div(module_json)

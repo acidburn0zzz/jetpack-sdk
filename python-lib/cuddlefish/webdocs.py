@@ -17,15 +17,15 @@ DEFAULT_TITLE = 'Add-on SDK Documentation'
 
 def get_modules(modules_json):
     modules = []
-    for module in modules_json:
-        if '.js' in module:
-            modules.append([module[:-3]])
-        elif '.' in module:
-            continue
-        else:
-            sub_modules = get_modules(modules_json[module])
+    for name in modules_json:
+        typ = modules_json[name][0]
+        if typ == "directory":
+            sub_modules = get_modules(modules_json[name][1])
             for sub_module in sub_modules:
-                modules.append([module, sub_module[0]])
+                modules.append([name, sub_module[0]])
+        elif typ == "file":
+            if not name.startswith(".") and name.endswith('.js'):
+                modules.append([name[:-3]])
     return modules
 
 def module_md_exists(root, module_name):
@@ -43,7 +43,7 @@ def is_high_level(package_json):
     return not is_low_level(package_json)
 
 def is_low_level(package_json):
-    return 'jetpack-low-level' in package_json['keywords']
+    return 'jetpack-low-level' in package_json.get('keywords', [])
 
 def insert_after(target, insertion_point_id, text_to_insert):
     insertion_point = target.find(insertion_point_id) + len(insertion_point_id)
@@ -90,8 +90,8 @@ class WebDocs(object):
 
     def _create_module_list(self, package_json):
         package_name = package_json['name']
-        modules = self.get_documented_modules(package_name, \
-                              package_json['files']['lib'])
+        libs = package_json['files'][1]['lib'][1]
+        modules = self.get_documented_modules(package_name, libs)
         modules.sort()
         module_items = ''
         for module in modules:
