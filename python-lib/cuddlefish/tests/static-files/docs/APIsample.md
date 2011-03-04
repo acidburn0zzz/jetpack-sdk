@@ -48,7 +48,7 @@ This is a list of options to specify modifications to your slideBar instance.
   @prop [onReady] {function} Callback when featured is loaded
 </api>
 
-<api name="cool-func.dot">
+<api name="cool_func">
 @function
 @returns {string} A value telling you just how cool you are.
 A boa-constructor!
@@ -79,49 +79,49 @@ A function that returns a random integer between 0 and 10.
 @returns {int} The random number.
 </api>
 
-<api name="empty-class">
+<api name="empty_class">
 @class
 This class contains nothing.
 </api>
 
-<api name="only-one-ctor">
+<api name="only_one_ctor">
 @class
 This class contains only one constructor.
-<api name="one-constructor">
+<api name="only_one_ctor">
 @constructor
 @param [options] An object-bag of goodies.
 </api>
 </api>
 
-<api name="ctor-and-method">
+<api name="ctor_and_method">
 @class
 This class contains one constructor and one method.
-<api name="one-constructor">
+<api name="ctor_and_method">
 @constructor
 The first constructor.
 @param [options] An object-bag of goodies.
 </api>
-<api name="a-method">
+<api name="a_method">
 @method
 Does things.
 @param [options] An argument.
 </api>
 </api>
 
-<api name="ctor-and-method-and-prop">
+<api name="ctor_and_method_and_prop">
 @class
 This class contains one constructor, one method, and one property.
-<api name="one-constructor">
+<api name="ctor_and_method_and_prop">
 @constructor
 The first constructor.
 @param [options] An object-bag of goodies.
 </api>
-<api name="a-method">
+<api name="a_method">
 @method
 Does things.
 @param [options] An argument.
 </api>
-<api name="a-property">
+<api name="a_property">
 @property {bool}
 Represents stuff.
 </api>

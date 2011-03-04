@@ -20,6 +20,8 @@ def get_modules(modules_json):
     for module in modules_json:
         if '.js' in module:
             modules.append([module[:-3]])
+        elif '.' in module:
+            continue
         else:
             sub_modules = get_modules(modules_json[module])
             for sub_module in sub_modules:
@@ -60,17 +62,9 @@ class WebDocs(object):
         guide_content = markdown.markdown(md_content)
         return self._create_page(guide_content)
 
-    def create_module_page(self, parts):
-        # we expect the parts parameter to be a list with the following format:
-        # ['packages', <package_name>, 'docs', <module_name>'.html']
-        # module_name may consist of multiple parts, e.g.
-        # ['packages', 'api-utils', 'docs', 'content', 'symbiont.html']
-        root = os.path.join(self.root, parts[0], parts[1])
-        module_name_and_ext = os.path.join(*parts[3:])
-        module_name, ext = os.path.splitext(module_name_and_ext)
-
-        module_json = apiparser.get_api_json(root, module_name)
-        module_content = apirenderer.json_to_div(module_json, module_name)
+    def create_module_page(self, package_name, module_name):
+        module_json = apiparser.get_api_json(self.root, package_name, module_name)
+        module_content = apirenderer.json_to_div(module_json)
         return self._create_page(module_content)
 
     def create_package_page(self, path):
@@ -80,7 +74,6 @@ class WebDocs(object):
         return self._create_page(package_content)
 
     def get_documented_modules(self, package_name, modules_json):
-	needs fixin
         modules = get_modules(modules_json)
         module_md_root = os.path.join(self.root, 'packages', package_name, 'docs')
         documented_modules = []
@@ -108,10 +101,10 @@ class WebDocs(object):
             module_items += tag_wrap(module_link, 'li', {'class':'module'})
         return tag_wrap(module_items, 'ul', {'class':'modules'})
 
-    def _create_package_summaries(self, packages_json, include):
+    def _create_package_summaries(self, include):
         packages = ''
-        for package_name in packages_json.keys():
-            package_json = packages_json[package_name]
+        for package_name in self.packages_json.keys():
+            package_json = self.packages_json[package_name]
             if not include(package_json):
                 continue
             package_link = tag_wrap(package_name, 'a', {'href':'packages/' \
@@ -132,11 +125,11 @@ class WebDocs(object):
         base_tag = 'href="' + base_url + '"'
         base_page = insert_after(base_page, BASE_URL_INSERTION_POINT, base_tag)
         high_level_summaries = \
-            self._create_package_summaries(self.packages_json, is_high_level)
+            self._create_package_summaries(is_high_level)
         base_page = insert_after(base_page, \
             HIGH_LEVEL_PACKAGE_SUMMARIES, high_level_summaries)
         low_level_summaries = \
-            self._create_package_summaries(self.packages_json, is_low_level)
+            self._create_package_summaries(is_low_level)
         base_page = insert_after(base_page, \
             LOW_LEVEL_PACKAGE_SUMMARIES, low_level_summaries)
         return base_page

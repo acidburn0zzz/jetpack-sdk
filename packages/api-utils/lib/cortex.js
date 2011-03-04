@@ -114,7 +114,7 @@ function defineAlias(source, target, name, alias) {
  * used as `prototype` instead.
  * @param {Object} object
  *    Object to create cortex for.
- * @param {String[]} [names]
+ * @param {array} [names]
  *    Optional array of public property names.
  * @param {Object} [prototype]
  *    Optional argument that will be used as `prototype` of the returned object,

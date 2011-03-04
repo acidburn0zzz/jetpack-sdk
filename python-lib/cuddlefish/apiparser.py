@@ -5,8 +5,9 @@ def api_json_exists(module_json):
            len(module_json["functions"]) != 0 or \
            len(module_json["properties"]) != 0
 
-def get_api_json(root, module_name):
-    md_path = os.path.join(root, 'docs', module_name + '.md')
+def get_api_json(root, package_name, module_name):
+    module_path = os.path.join(*module_name) + '.md'
+    md_path = os.path.join(root, 'packages', package_name, 'docs', module_path)
     module_json = {}
     module_json["desc"] = ""
     module_json["classes"] = []
@@ -21,16 +22,19 @@ def get_api_json(root, module_name):
         # if the MD file exists at all, then use it for the
         # description (even if it's empty)
         description_needed = False
-        md_text = open(md_path).read()
-        module_json = apiparser_md.parse_api_doc(md_text)
+        module_json = apiparser_md.extractFromFile(md_path)
         api_docs_needed = not api_json_exists(module_json)
 
     if description_needed or api_docs_needed:
         try:
-            js_path = os.path.join(root, 'lib', module_name + '.js')
+            module_path = os.path.join(*module_name) + '.js'
+            js_path = os.path.join(root, 'packages', package_name, 'lib', module_path)
             module_json_js = docstract.DocStract().extractFromFile(js_path)
+
         except:
-            pass # just ignore parse errors in the JS
+            pass
+            # if the js contains comments that use '/**' style, but aren't formatted
+            # like dostract comments, gracefully ignore them
 
     if description_needed and module_json_js and "desc" in module_json_js:
         module_json["desc"] = module_json_js["desc"]

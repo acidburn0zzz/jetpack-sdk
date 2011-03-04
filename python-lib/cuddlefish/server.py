@@ -134,23 +134,24 @@ class Server(object):
         mimetype = 'text/html'
         try:
             if parts[0] == 'dev-guide':
-                path = os.path.join(self.env_root, \
-                                    'static-files', 'md', *parts)
+                path = os.path.join(self.env_root, 'static-files', 'md', *parts)
                 response = self.web_docs.create_guide_page(path)
+            elif self._is_json_index_request(parts):
+                mimetype = 'text/plain'
+                response = json.dumps(self.web_docs.packages_json)
+            elif self._is_package_file_request(parts):
+                path = os.path.join(self.env_root, *parts)
+                response = self.web_docs.create_package_page(path)
+            elif self._is_module_file_request(parts):
+                module_name = parts[3:]
+                module_name[-1] = module_name[-1][:-len('.html')]
+                response = self.web_docs.create_module_page(parts[1], module_name)
             elif parts[0] == 'packages':
-                 if len(parts) > 1 and parts[1] == 'index.json':
-                     mimetype = 'text/plain'
-                     response = json.dumps(self.web_docs.packages_json)
-                 elif self._is_package_file_request(parts):
-                     path = os.path.join(self.env_root, *parts)
-                     response = self.web_docs.create_package_page(path)
-                 else:
-                     response = self.web_docs.create_module_page(parts)
+                path = os.path.join(self.env_root, *parts)
+                response, mimetype = self._respond_with_file(path)
             else:
                 path = os.path.join(self.root, *parts)
-                url = urllib.pathname2url(path)
-                mimetype = guess_mime_type(url)
-                response = open(path, 'r').read()
+                response, mimetype = self._respond_with_file(path)
         except IOError, e:
             if e.errno==errno.ENOENT:
                 return self._error('404 Not Found')
@@ -162,12 +163,28 @@ class Server(object):
             self.start_response('200 OK', [('Content-type', mimetype)])
             return [response]
 
+    def _is_json_index_request(self, parts):
+        return len(parts) > 1 and \
+               parts[0] == 'packages' and \
+               parts[1] == 'index.json'
+
     def _is_package_file_request(self, parts):
         # format of a package file request is always:
         # "packages/<package_name>/<package_name>.html"
-        if len(parts) != 3:
-            return False
-        return (parts[0] == 'packages') and ((parts[1] + '.html') == parts[2])
+        return len(parts) == 3 and \
+               parts[0] == 'packages' and \
+               parts[1] + '.html' == parts[2]
+
+    def _is_module_file_request(self, parts):
+        return len(parts) >= 4 and \
+               parts[0] == 'packages' and \
+               parts[2] == 'docs' and \
+               parts[-1].endswith('.html')
+
+    def _respond_with_file(self, path):
+        url = urllib.pathname2url(path)
+        mimetype = guess_mime_type(url)
+        return open(path, 'r').read(), mimetype
 
     def _respond_with_api(self, parts):
         parts = [part for part in parts
@@ -355,6 +372,8 @@ def generate_static_docs(env_root, tgz_filename, base_url = ''):
         open(os.path.join(dest_dir, pkg_name + ".html"), "w")\
             .write(package_doc_html)
 
+
+        # copy all *.md files from package directory
         docs_src_dir = os.path.join(src_dir, "docs")
         docs_dest_dir = os.path.join(dest_dir, "docs")
         if not os.path.exists(docs_dest_dir):
@@ -372,18 +391,22 @@ def generate_static_docs(env_root, tgz_filename, base_url = ''):
                 src_path = os.path.join(dirpath, filename)
                 dest_path = os.path.join(docs_dest_dir, relpath, filename)
                 shutil.copyfile(src_path, dest_path)
-                if filename.endswith(".md"):
-                    # parse and JSONify the API docs
-                    docs_md = open(src_path, 'r').read()
-                    docs_parsed = apiparser.get_api_json(docs_md))
-                    docs_json = json.dumps(docs_parsed)
-                    open(dest_path + ".json", "w").write(docs_json)
-                    # write the HTML div files
-                    docs_div = apirenderer.json_to_div(docs_parsed, src_path)
-                    open(dest_path + ".div", "w").write(docs_div)
-                    # write the standalone HTML files
-                    docs_html = web_docs.create_module_page(src_path)
-                    open(dest_path[:-3] + ".html", "w").write(docs_html)
+
+        # create and copy JSON, DIV and HTML for each documented module in the package
+        packages_json = packaging.build_pkg_index(pkg_cfg)
+        package_json = packages_json[pkg_name]
+        documented_modules = web_docs.get_documented_modules(pkg_name, package_json['files']['lib'])
+        for module_name in documented_modules:
+            module_json = apiparser.get_api_json(env_root, pkg_name, module_name)
+            module_div = apirenderer.json_to_div(module_json)
+            module_html = web_docs.create_module_page(pkg_name, module_name)
+            formatted_json = json.dumps(module_json)
+
+            module_path = os.path.join(*module_name)
+            dest_path = os.path.join(docs_dest_dir, module_path)
+            open(dest_path + ".json", "w").write(formatted_json)
+            open(dest_path + ".div", "w").write(module_div)
+            open(dest_path + ".html", "w").write(module_html)
 
     dev_guide_src = os.path.join(server.root, 'md', 'dev-guide')
     dev_guide_dest = os.path.join(staging_dir, 'dev-guide')

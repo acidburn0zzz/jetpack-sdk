@@ -1,4 +1,4 @@
-import sys, re, textwrap
+import os, sys, re, textwrap
 
 VERSION = 3
 
@@ -170,6 +170,13 @@ def validate_info(tag, info, line, lineno):
     if tag == 'property':
         if not 'type' in info:
             raise ParseError("No type found for @property.", lineno)
+    elif tag == "param":
+        optional = info.get('optional', False)
+        default = '=' in info["name"]
+        if default and not optional:
+            raise ParseError(
+                "required parameters should not have defaults: '%s'"
+                                    % line, lineno)
     elif tag == "prop":
         if "type" not in info:
             raise ParseError("@prop lines must include {type}: '%s'" %
@@ -214,7 +221,11 @@ def parseTypeLine(line, lineno):
             pass
         else:
             if expect_name:
-                info["name"] = pieces[next_piece_index]
+                optional = pieces[next_piece_index].startswith("[")
+                if optional:
+                    info["optional"] = True
+                name = pieces[1].strip("[ ]")
+                info["name"] = name
                 next_piece_index += 1
 
         if len(pieces) > next_piece_index and pieces[next_piece_index].startswith("{"):
@@ -230,7 +241,7 @@ def parseTypeLine(line, lineno):
     validate_info(tag, info, line, lineno)
     return tag, info, description
 
-def parse_api_doc(text):
+def extract(text):
     lines = text.splitlines(True)
     line_number = 0;
     description = ""
@@ -260,13 +271,26 @@ def parse_api_doc(text):
             module_json["properties"].append(api_item)
     return module_json
 
+def extractFromFile(path):
+        md_text = open(path).read()
+        data = extract(md_text)
+        module_name = os.path.basename(path)
+        dotLoc = module_name.rfind(".")
+        if (dotLoc > 0):
+            module_name = module_name[:dotLoc]
+        if not "module" in data:
+            data["module"] = module_name
+        if not "filename" in data:
+            data["filename"] = path
+        return data
+
 if __name__ == "__main__":
     json = False
     if sys.argv[1] == "--json":
         json = True
         del sys.argv[1]
     docs_text = open(sys.argv[1]).read()
-    docs_parsed = parse_api_doc(docs_text)
+    docs_parsed = extract(docs_text)
     if json:
         import simplejson
         print simplejson.dumps(docs_parsed, indent=2)

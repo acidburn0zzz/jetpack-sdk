@@ -49,10 +49,9 @@ class WebDocTests(unittest.TestCase):
             in guide)
 
     def test_create_module_doc(self):
-        root = os.path.join(os.getcwd() + \
-            '/python-lib/cuddlefish/tests/static-files')
+        root = os.path.join(os.getcwd() + '/python-lib/cuddlefish/tests/static-files')
         web_docs = webdocs.WebDocs(root)
-        module = web_docs.create_module_page('/packages/aardvark/docs/aardvark-feeder.blah'.split('/'))
+        module = web_docs.create_module_page('aardvark', ['aardvark-feeder'])
         self._test_common_contents(module)
         self.assertTrue(\
             '<title>aardvark-feeder - Add-on SDK Documentation</title>'\
@@ -66,18 +65,10 @@ class WebDocTests(unittest.TestCase):
         self.assertTrue(\
             '<p>The <code>aardvark-feeder</code> module simplifies feeding aardvarks.</p>'\
             in module)
-        self.assertTrue(\
-            '<h2 class="api_header">\n\nAPI Reference\n</h2>'\
-            in module)
-        self.assertTrue(\
-            '<h3 class="api_header">\n\nFunctions\n</h3>'\
-            in module)
-        self.assertTrue(\
-            '<h4 class="api_name">\n\nfeed(food)\n</h4>'\
-            in module)
-        self.assertTrue(
-            '<p>Feed the aardvark.</p>'\
-            in module)
+        self.assertTrue('<h2 class="api_header">API Reference</h2>' in module)
+        self.assertTrue('<h3 class="api_header">Functions</h3>' in module)
+        self.assertTrue('<h4 class="api_name">feed(food)</h4>' in module)
+        self.assertTrue('<p>Feed the aardvark.</p>' in module)
 
     def _test_common_contents(self, doc):
         self.assertTrue(\

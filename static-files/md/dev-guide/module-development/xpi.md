@@ -28,7 +28,41 @@ packages, structured like so:
     @param food {string}
       The food.  Aardvarks will eat anything.
     </api>
+  aardvark/docs/all.md:
+    Markdown description
+    <api name="func">
+    @function
+    Markdown-documented function
+    </api>
+  aardvark/docs/api.md:
+    <api name="func">
+    @function
+    Markdown-documented function
+    </api>
+  aardvark/docs/desc.md:
+    Markdown description
+  aardvark/docs/empty.md:
+  <BLANKLINE>
   aardvark/docs/main.md:
+  <BLANKLINE>
+  aardvark/lib/all.js:
+    /**
+     * JavaScript description
+     */
+    /**
+     * @function func
+     * JavaScript-documented function
+     */
+  aardvark/lib/api.js:
+    /**
+     * @function func
+     * JavaScript-documented function
+     */
+  aardvark/lib/desc.js:
+    /**
+     * JavaScript description
+     */
+  aardvark/lib/empty.js:
   <BLANKLINE>
   aardvark/lib/main.js:
     exports.main = function(options, callbacks) {
@@ -114,6 +148,25 @@ auto-generated files:
     // CommonJS module loader.
   resources/guid-aardvark-lib/:
   <BLANKLINE>
+  resources/guid-aardvark-lib/all.js:
+    /**
+     * JavaScript description
+     */
+    /**
+     * @function func
+     * JavaScript-documented function
+     */
+  resources/guid-aardvark-lib/api.js:
+    /**
+     * @function func
+     * JavaScript-documented function
+     */
+  resources/guid-aardvark-lib/desc.js:
+    /**
+     * JavaScript description
+     */
+  resources/guid-aardvark-lib/empty.js:
+  <BLANKLINE>
   resources/guid-aardvark-lib/main.js:
     exports.main = function(options, callbacks) {
       console.log("1 + 1 =", require("bar-module").add(1, 1));
@@ -130,12 +183,52 @@ auto-generated files:
      "loader": "resource://guid-api-utils-lib/loader.js",
      "main": "main",
      "manifest": {
+       "resource://guid-aardvark-lib/all.js": {
+        "chrome": false,
+        "e10s-adapter": null,
+        "hash": "dbdbaca6df618d4374f355589607e8ff67a3e0f6aca74e96951bc908da19e720",
+        "name": "all",
+        "packageName": "aardvark",
+        "requires": {},
+        "sectionName": "lib",
+        "zipname": "resources/guid-aardvark-lib/all.js"
+       },
+       "resource://guid-aardvark-lib/api.js": {
+        "chrome": false,
+        "e10s-adapter": null,
+        "hash": "3fe1b77c919f61935bc56be0315d72fa7bcc25e8a6f8cf255a2a5e925bd310ec",
+        "name": "api",
+        "packageName": "aardvark",
+        "requires": {},
+        "sectionName": "lib",
+        "zipname": "resources/guid-aardvark-lib/api.js"
+       },
+       "resource://guid-aardvark-lib/desc.js": {
+        "chrome": false,
+        "e10s-adapter": null,
+        "hash": "2f7fea7fb896afc3e979f1a879ffcfeac9eecea83b81599e6b197466e1dcc4b6",
+        "name": "desc",
+        "packageName": "aardvark",
+        "requires": {},
+        "sectionName": "lib",
+        "zipname": "resources/guid-aardvark-lib/desc.js"
+       },
+       "resource://guid-aardvark-lib/empty.js": {
+        "chrome": false,
+        "e10s-adapter": null,
+        "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "name": "empty",
+        "packageName": "aardvark",
+        "requires": {},
+        "sectionName": "lib",
+        "zipname": "resources/guid-aardvark-lib/empty.js"
+       },
       "resource://guid-aardvark-lib/main.js": {
-       "chrome": false,
-       "e10s-adapter": null,
-       "hash": "a592cf3cf924f2c77e0728d97131138fcb7495c77f5202ac55c2e0c77ef903c2",
-       "name": "main",
-       "packageName": "aardvark",
+        "chrome": false,
+        "e10s-adapter": null,
+        "hash": "a592cf3cf924f2c77e0728d97131138fcb7495c77f5202ac55c2e0c77ef903c2",
+        "name": "main",
+        "packageName": "aardvark",
        "requires": {
         "bar-module": {
          "url": "resource://guid-barbeque-lib/bar-module.js"
