@@ -143,9 +143,9 @@ class Server(object):
                 path = os.path.join(self.env_root, *parts)
                 response = self.web_docs.create_package_page(path)
             elif self._is_module_file_request(parts):
-                module_name = parts[3:]
-                module_name[-1] = module_name[-1][:-len('.html')]
-                response = self.web_docs.create_module_page(parts[1], module_name)
+                m_name = parts[3:]
+                m_name[-1] = m_name[-1][:-len('.html')]
+                response = self.web_docs.create_module_page(parts[1], m_name)
             elif parts[0] == 'packages':
                 path = os.path.join(self.env_root, *parts)
                 response, mimetype = self._respond_with_file(path)
@@ -392,12 +392,16 @@ def generate_static_docs(env_root, tgz_filename, base_url = ''):
                 dest_path = os.path.join(docs_dest_dir, relpath, filename)
                 shutil.copyfile(src_path, dest_path)
 
-        # create and copy JSON, DIV and HTML for each documented module in the package
+        # create and copy JSON, DIV and HTML
+        # for each documented module in the package
         packages_json = packaging.build_pkg_index(pkg_cfg)
         package_json = packages_json[pkg_name]
-        documented_modules = web_docs.get_documented_modules(pkg_name, package_json['files'][1]['lib'][1])
+        documented_modules = \
+            web_docs.get_documented_modules(pkg_name, \
+            package_json['files'][1]['lib'][1])
         for module_name in documented_modules:
-            module_json = apiparser.get_api_json(env_root, pkg_name, module_name)
+            module_json = \
+                apiparser.get_api_json(env_root, pkg_name, module_name)
             module_div = apirenderer.json_to_div(module_json)
             module_html = web_docs.create_module_page(pkg_name, module_name)
             formatted_json = json.dumps(module_json)

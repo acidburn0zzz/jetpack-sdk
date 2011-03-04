@@ -205,7 +205,8 @@ def render_comp(component):
     # a component is wrapped inside a single div marked 'API_COMPONENT'
     # containing:
     # 1) the component name, marked 'API_NAME'
-    text = tag_wrap_inline(component.render_name(), API_NAME, component.get_tag())
+    text = tag_wrap_inline(component.render_name(), \
+                           API_NAME, component.get_tag())
     # 2) the component description
     text += component.render_description()
     # 3) the component contents
@@ -237,11 +238,14 @@ def render_api_reference(api_docs):
     # 1) a title 'API Reference' marked with 'API_HEADER'
     text = tag_wrap_inline('API Reference', API_HEADER, 'h2')
     # 2) a component group called 'Classes' containing any class elements
-    text += render_comp_group(api_docs["classes"], 'Classes', Class_Doc, 'h3', 'h4')
+    text += render_comp_group(api_docs["classes"], \
+                              'Classes', Class_Doc, 'h3', 'h4')
     # 3) a component group called 'Functions' containing any global functions
-    text += render_comp_group(api_docs["functions"], 'Functions', Function_Doc, 'h3', 'h4')
+    text += render_comp_group(api_docs["functions"], \
+                              'Functions', Function_Doc, 'h3', 'h4')
     # 4) a component group called 'Properties' containing any global properties
-    text += render_comp_group(api_docs["properties"], 'Properties', Property_Doc, 'h3', 'h4')
+    text += render_comp_group(api_docs["properties"], \
+                              'Properties', Property_Doc, 'h3', 'h4')
     return tag_wrap(text, API_REFERENCE)
 
 def fix_constructor_names(json):

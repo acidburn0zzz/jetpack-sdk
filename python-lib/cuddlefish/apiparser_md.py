@@ -69,8 +69,10 @@ class APIParser:
                 currentAccumulator.finish()
                 if line.startswith("<api"):
                 # then we should recursively handle a nested element
-                    nested_api, nested_api_type, lineno = self.parse(lines, lineno)
-                    self._update_working_set(nested_api, nested_api_type, working_set)
+                    nested_api, nested_api_type, lineno = \
+                        self.parse(lines, lineno)
+                    self._update_working_set(nested_api, \
+                                             nested_api_type, working_set)
                 elif line.startswith("</api"):
                 # then we have finished parsing this api element
                     currentAccumulator.finish()
@@ -134,7 +136,8 @@ class APIParser:
         # add this api element to whichever list is appropriate
         if nested_api_type == "constructor":
             if len(working_set["constructor"]) != 0:
-                raise ParseError("class can only have one constructor", nested_api["line_number"])
+                raise ParseError("class can only have one constructor", \
+                      nested_api["line_number"])
             working_set["constructor"] = nested_api
         if nested_api_type == "method":
             working_set["functions"].append(nested_api)
@@ -228,7 +231,8 @@ def parseTypeLine(line, lineno):
                 info["name"] = name
                 next_piece_index += 1
 
-        if len(pieces) > next_piece_index and pieces[next_piece_index].startswith("{"):
+        if len(pieces) > next_piece_index and \
+           pieces[next_piece_index].startswith("{"):
             info["type"] = pieces[next_piece_index].strip("{ }")
             next_piece_index += 1
 
@@ -294,4 +298,3 @@ if __name__ == "__main__":
     if json:
         import simplejson
         print simplejson.dumps(docs_parsed, indent=2)
-

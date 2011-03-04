@@ -206,107 +206,107 @@ auto-generated files:
     };
   harness-options.json:
     {
-     "loader": "resource://guid-api-utils-lib/loader.js",
-     "main": "main",
+     "loader": "resource://guid-api-utils-lib/loader.js", 
+     "main": "main", 
      "manifest": {
-       "resource://guid-aardvark-lib/all.js": {
-        "chrome": false,
-        "e10s-adapter": null,
-        "hash": "dbdbaca6df618d4374f355589607e8ff67a3e0f6aca74e96951bc908da19e720",
-        "name": "all",
-        "packageName": "aardvark",
-        "requires": {},
-        "sectionName": "lib",
-        "zipname": "resources/guid-aardvark-lib/all.js"
-       },
-       "resource://guid-aardvark-lib/api.js": {
-        "chrome": false,
-        "e10s-adapter": null,
-        "hash": "3fe1b77c919f61935bc56be0315d72fa7bcc25e8a6f8cf255a2a5e925bd310ec",
-        "name": "api",
-        "packageName": "aardvark",
-        "requires": {},
-        "sectionName": "lib",
-        "zipname": "resources/guid-aardvark-lib/api.js"
-       },
-       "resource://guid-aardvark-lib/desc.js": {
-        "chrome": false,
-        "e10s-adapter": null,
-        "hash": "2f7fea7fb896afc3e979f1a879ffcfeac9eecea83b81599e6b197466e1dcc4b6",
-        "name": "desc",
-        "packageName": "aardvark",
-        "requires": {},
-        "sectionName": "lib",
-        "zipname": "resources/guid-aardvark-lib/desc.js"
-       },
-       "resource://guid-aardvark-lib/empty.js": {
-        "chrome": false,
-        "e10s-adapter": null,
-        "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "name": "empty",
-        "packageName": "aardvark",
-        "requires": {},
-        "sectionName": "lib",
-        "zipname": "resources/guid-aardvark-lib/empty.js"
-       },
+      "resource://guid-aardvark-lib/all.js": {
+       "chrome": false, 
+       "e10s-adapter": null, 
+       "hash": "1f8871348cec6bb4ce1363b22e4583bafcba893abf32ee63146b226d182c7d19", 
+       "name": "all", 
+       "packageName": "aardvark", 
+       "requires": {}, 
+       "sectionName": "lib", 
+       "zipname": "resources/guid-aardvark-lib/all.js"
+      }, 
+      "resource://guid-aardvark-lib/api.js": {
+       "chrome": false, 
+       "e10s-adapter": null, 
+       "hash": "078d24c9fdb715dc5a0f2810c59d47ab726327e7f35ac27f866817faae48566b", 
+       "name": "api", 
+       "packageName": "aardvark", 
+       "requires": {}, 
+       "sectionName": "lib", 
+       "zipname": "resources/guid-aardvark-lib/api.js"
+      }, 
+      "resource://guid-aardvark-lib/desc.js": {
+       "chrome": false, 
+       "e10s-adapter": null, 
+       "hash": "2f7fea7fb896afc3e979f1a879ffcfeac9eecea83b81599e6b197466e1dcc4b6", 
+       "name": "desc", 
+       "packageName": "aardvark", 
+       "requires": {}, 
+       "sectionName": "lib", 
+       "zipname": "resources/guid-aardvark-lib/desc.js"
+      }, 
+      "resource://guid-aardvark-lib/empty.js": {
+       "chrome": false, 
+       "e10s-adapter": null, 
+       "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", 
+       "name": "empty", 
+       "packageName": "aardvark", 
+     "requires": {}, 
+       "sectionName": "lib", 
+       "zipname": "resources/guid-aardvark-lib/empty.js"
+      }, 
       "resource://guid-aardvark-lib/main.js": {
-        "chrome": false,
-        "e10s-adapter": null,
-        "hash": "a592cf3cf924f2c77e0728d97131138fcb7495c77f5202ac55c2e0c77ef903c2",
-        "name": "main",
-        "packageName": "aardvark",
+       "chrome": false, 
+       "e10s-adapter": null, 
+       "hash": "a592cf3cf924f2c77e0728d97131138fcb7495c77f5202ac55c2e0c77ef903c2", 
+       "name": "main", 
+       "packageName": "aardvark", 
        "requires": {
         "bar-module": {
          "url": "resource://guid-barbeque-lib/bar-module.js"
         }
-       },
-       "sectionName": "lib",
+       }, 
+       "sectionName": "lib", 
        "zipname": "resources/guid-aardvark-lib/main.js"
-      },
+      }, 
       "resource://guid-api-utils-lib/loader.js": {
-       "chrome": false,
-       "e10s-adapter": null,
-       "hash": "efac9dc700a56e693ac75ab81955c11e6874ddc83d92c11177d643601eaac346",
-       "name": "loader",
-       "packageName": "api-utils",
-       "requires": {},
-       "sectionName": "lib",
+       "chrome": false, 
+       "e10s-adapter": null, 
+       "hash": "efac9dc700a56e693ac75ab81955c11e6874ddc83d92c11177d643601eaac346", 
+       "name": "loader", 
+       "packageName": "api-utils", 
+       "requires": {}, 
+       "sectionName": "lib", 
        "zipname": "resources/guid-api-utils-lib/loader.js"
-      },
+      }, 
       "resource://guid-barbeque-lib/bar-module.js": {
-       "chrome": false,
-       "e10s-adapter": null,
-       "hash": "2515f8623e793571f1dffc4828de14a00a3da9be666147f8cebb3b3f1929e4d6",
-       "name": "bar-module",
-       "packageName": "barbeque",
-       "requires": {},
-       "sectionName": "lib",
+       "chrome": false, 
+       "e10s-adapter": null, 
+       "hash": "2515f8623e793571f1dffc4828de14a00a3da9be666147f8cebb3b3f1929e4d6", 
+       "name": "bar-module", 
+       "packageName": "barbeque", 
+       "requires": {}, 
+       "sectionName": "lib", 
        "zipname": "resources/guid-barbeque-lib/bar-module.js"
       }
-     },
-     "packageData": {},
+     }, 
+     "packageData": {}, 
      "resourcePackages": {
-      "guid-aardvark-lib": "aardvark",
-      "guid-api-utils-lib": "api-utils",
+      "guid-aardvark-lib": "aardvark", 
+      "guid-api-utils-lib": "api-utils", 
       "guid-barbeque-lib": "barbeque"
-     },
+     }, 
      "resources": {
       "guid-aardvark-lib": [
-       "resources",
+       "resources", 
        "guid-aardvark-lib"
-      ],
+      ], 
       "guid-api-utils-lib": [
-       "resources",
+       "resources", 
        "guid-api-utils-lib"
-      ],
+      ], 
       "guid-barbeque-lib": [
-       "resources",
+       "resources", 
        "guid-barbeque-lib"
       ]
-     },
+     }, 
      "rootPaths": [
-      "resource://guid-api-utils-lib/",
-      "resource://guid-barbeque-lib/",
+      "resource://guid-api-utils-lib/", 
+      "resource://guid-barbeque-lib/", 
       "resource://guid-aardvark-lib/"
      ]
     }

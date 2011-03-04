@@ -4,6 +4,9 @@
 # We'll:
 # - generate JSON from a sample MD file and check it looks reasonable
 # - use specially crafted MD to test some corner cases and exceptions
+#
+# These lines exceed 80 characters in some places for the sake of making it
+# much, much easier to read.
 
 import os
 import unittest
@@ -41,12 +44,12 @@ class MD_ParserTests(unittest.TestCase):
 
         self.assertEqual(module_json["functions"][0]["name"], "test")
         self.assertEqual(module_json["functions"][0]["desc"], "This is a function which does nothing in particular.")
-        
+
         self.assertEqual(module_json["functions"][0]["returns"]["type"], "object")
         self._testLength(module_json["functions"][0]["returns"]["properties"], 2)
         self._test_props(module_json["functions"][0]["returns"]["properties"][0], "firststring", "string", "First string", None)
         self._test_props(module_json["functions"][0]["returns"]["properties"][1], "firsturl", "url", "First URL", None)
-        
+
         self._testLength(module_json["functions"][0]["params"], 4)
         self._test_props(module_json["functions"][0]["params"][0], "argOne", "string", "This is the first argument.", None)
         self._test_props(module_json["functions"][0]["params"][1], "argTwo", "bool", "This is the second argument.", True)

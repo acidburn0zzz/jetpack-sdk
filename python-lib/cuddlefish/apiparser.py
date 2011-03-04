@@ -27,14 +27,17 @@ def get_api_json(root, package_name, module_name):
 
     if description_needed or api_docs_needed:
         try:
-            module_path = os.path.join(*module_name) + '.js'
-            js_path = os.path.join(root, 'packages', package_name, 'lib', module_path)
+            m_path = os.path.join(*module_name) + '.js'
+            js_path = \
+                os.path.join(root, 'packages', package_name, 'lib', m_path)
             module_json_js = docstract.DocStract().extractFromFile(js_path)
 
         except:
             pass
-            # if the js contains comments that use '/**' style, but aren't formatted
-            # like dostract comments, gracefully ignore them
+            # if the js contains comments that use '/**' style, but aren't
+            # formatted like dostract comments, gracefully ignore them
+            # if would be nice here to use a specific exception for this
+            # but docstract only raises a generic exception at present
 
     if description_needed and module_json_js and "desc" in module_json_js:
         module_json["desc"] = module_json_js["desc"]
@@ -58,4 +61,3 @@ if __name__ == "__main__":
     if json:
         import simplejson
         print simplejson.dumps(docs_parsed, indent = 2)
-

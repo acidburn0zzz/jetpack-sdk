@@ -7,7 +7,9 @@ from cuddlefish import apirenderer
 from cuddlefish import docstract
 from cuddlefish import BeautifulSoup
 
-test_files_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "static-files", "docs")
+test_files_path = \
+    os.path.join(os.path.abspath\
+        (os.path.dirname(__file__)), "static-files", "docs")
 
 class ParserTests(unittest.TestCase):
 
@@ -34,11 +36,11 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(soup.html.body.div["class"], "module_api_docs")
         self.assertEqual(soup.html.body.div.h1.string, unicode("APIsample"))
         top_level_divs = soup.html.body.div("div", recursive = False)
-        
+
         module_desc = top_level_divs[0]
         self.assertEqual(module_desc["class"], "module_description")
         self.assertEqual(module_desc.h1.string, unicode("Title"))
-        
+
         api_ref = top_level_divs[1]
         self.assertEqual(api_ref["class"], "api_reference")
         self.assertEqual(api_ref.h2["class"], "api_header")
@@ -57,23 +59,31 @@ class ParserTests(unittest.TestCase):
 # class 2 only has a single ctor
         class2_subcomps = self.check_comp_h4(classes[1], "only_one_ctor", 1)
         class2_ctors = self.check_cg_div(class2_subcomps[0], "Constructors", 1)
-        class2_ctor_subcomps = self.check_comp_div(class2_ctors[0], "only_one_ctor(options)", 1)
+        class2_ctor_subcomps = \
+            self.check_comp_div(class2_ctors[0], "only_one_ctor(options)", 1)
 
 # class 3 has a ctor and a method
         class3_subcomps = self.check_comp_h4(classes[2], "ctor_and_method", 2)
         class3_ctors = self.check_cg_div(class3_subcomps[0], "Constructors", 1)
-        class3_ctor_subcomps = self.check_comp_div(class3_ctors[0], "ctor_and_method(options)", 1)
+        class3_ctor_subcomps = \
+            self.check_comp_div(class3_ctors[0], "ctor_and_method(options)", 1)
         class3_methods = self.check_cg_div(class3_subcomps[1], "Methods", 1)
-        class3_method_subcomps = self.check_comp_div(class3_methods[0], "a_method(options)", 1)
+        class3_method_subcomps = \
+            self.check_comp_div(class3_methods[0], "a_method(options)", 1)
 
 # class 4 has a property too
-        class4_subcomps = self.check_comp_h4(classes[3], "ctor_and_method_and_prop", 3)
+        class4_subcomps = \
+            self.check_comp_h4(classes[3], "ctor_and_method_and_prop", 3)
         class4_ctors = self.check_cg_div(class4_subcomps[0], "Constructors", 1)
-        class4_ctor_subcomps = self.check_comp_div(class4_ctors[0], "ctor_and_method_and_prop(options)", 1)
+        class4_ctor_subcomps = \
+            self.check_comp_div(class4_ctors[0], \
+                                "ctor_and_method_and_prop(options)", 1)
         class4_methods = self.check_cg_div(class4_subcomps[1], "Methods", 1)
-        class4_method_subcomps = self.check_comp_div(class4_methods[0], "a_method(options)", 1)
+        class4_method_subcomps = \
+            self.check_comp_div(class4_methods[0], "a_method(options)", 1)
         class4_props = self.check_cg_div(class4_subcomps[2], "Properties", 1)
-        class4_prop_subcomps = self.check_comp_div(class4_props[0], 'a_property : ', 0)
+        class4_prop_subcomps = \
+            self.check_comp_div(class4_props[0], 'a_property : ', 0)
 
 # 2) functions
         cg_functions = component_groups[1]
@@ -82,24 +92,33 @@ class ParserTests(unittest.TestCase):
 # function 1
 # first subcomps is a parameter set containing 4 params
 # second is a returns value
-        function1_subcomps = self.check_comp_h4(functions[0], "test(argOne, argTwo, argThree=default, options)", 2)
-        function1_params = self.check_param_set(function1_subcomps[0], 4)
+        function1_subcomps = \
+            self.check_comp_h4(functions[0], \
+                "test(argOne, argTwo, argThree=default, options)", 2)
+        function1_params = \
+            self.check_param_set(function1_subcomps[0], 4)
         self.check_returns(function1_subcomps[1])
 
 # function 2
 # has a single param and no returns
-        function2_subcomps = self.check_comp_h4(functions[1], "append(options)", 1)
-        function2_params = self.check_param_set(function2_subcomps[0], 1)
+        function2_subcomps = \
+            self.check_comp_h4(functions[1], "append(options)", 1)
+        function2_params = \
+            self.check_param_set(function2_subcomps[0], 1)
 
 # function 3
 # has 5 params and a return value
-        function3_subcomps = self.check_comp_h4(functions[2], "cool_func(howMuch, double=true, options, onemore, options2)", 2)
-        function3_params = self.check_param_set(function3_subcomps[0], 5)
+        function3_subcomps = \
+            self.check_comp_h4(functions[2], \
+                "cool_func(howMuch, double=true, options, onemore, options2)", 2)
+        function3_params = \
+            self.check_param_set(function3_subcomps[0], 5)
         self.check_returns(function3_subcomps[1])
 
 # function 4
 # has 0 params and a return value
-        function4_subcomps = self.check_comp_h4(functions[3], "random()", 1)
+        function4_subcomps = \
+            self.check_comp_h4(functions[3], "random()", 1)
         self.check_returns(function4_subcomps[0])
 
 # 3) Properties

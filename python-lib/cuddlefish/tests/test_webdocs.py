@@ -49,7 +49,8 @@ class WebDocTests(unittest.TestCase):
             in guide)
 
     def test_create_module_doc(self):
-        root = os.path.join(os.getcwd() + '/python-lib/cuddlefish/tests/static-files')
+        root = os.path.join(os.getcwd() +
+                            '/python-lib/cuddlefish/tests/static-files')
         web_docs = webdocs.WebDocs(root)
         module = web_docs.create_module_page('aardvark', ['aardvark-feeder'])
         self._test_common_contents(module)
