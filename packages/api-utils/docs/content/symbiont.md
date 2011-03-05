@@ -38,9 +38,6 @@ See the [panel] module for a real-world example of usage of this module.
 
 [panel]:#module/api-utils/panel
 
-Reference
----------
-
 <api name="Symbiont">
 @class
 Symbiont is composed from the [Worker] trait, therefore instances

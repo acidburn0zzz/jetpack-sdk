@@ -144,22 +144,9 @@ class APIParser:
         if nested_api_type == "property":
             working_set["properties"].append(nested_api)
 
-    def _assemble_signature(self, api_element, params):
-        signature = api_element["name"] + "("
-        if len(params) > 0:
-            signature += params[0]["name"]
-            for param in params[1:]:
-                signature += ", " + param["name"]
-        signature += ")"
-        api_element["signature"] = signature
-
     def _assemble_api_element(self, api_element, api_type, working_set):
         # if any of this working set's lists are non-empty,
         # add it to the current api element
-        if (api_type == "constructor") or \
-           (api_type == "function") or \
-           (api_type == "method"):
-           self._assemble_signature(api_element, working_set["params"])
         if len(working_set["params"]) > 0:
             api_element["params"] = working_set["params"]
         if len(working_set["properties"]) > 0:
