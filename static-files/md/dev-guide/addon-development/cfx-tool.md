@@ -88,7 +88,7 @@ your add-on alongside debuggers like [Firebug](http://getfirebug.com/).
   </td>
   <td>
     Extra packages to include, specified as a comma-separated list. Defaults
-    to `addon-kit`.
+    to <code>addon-kit</code>.
   </td>
 </tr>
 
@@ -97,7 +97,7 @@ your add-on alongside debuggers like [Firebug](http://getfirebug.com/).
     <code>-g CONFIG, --use-config=CONFIG</code>
   </td>
   <td>
-    Pass a set of options by 
+    Pass a set of options by
     <a href="dev-guide/addon-development/cfx-tool.html#configurations">referencing a named configuration</a>.
   </td>
 </tr>
@@ -107,7 +107,7 @@ your add-on alongside debuggers like [Firebug](http://getfirebug.com/).
     <code>-p PROFILEDIR, --profiledir=PROFILEDIR</code>
   </td>
   <td>
-    Use an existing 
+    Use an existing
     <a href="http://support.mozilla.com/en-US/kb/profiles">profile</a>
     located in PROFILEDIR.
   </td>
@@ -154,8 +154,10 @@ your add-on alongside debuggers like [Firebug](http://getfirebug.com/).
     <code>--templatedir=TEMPLATEDIR</code>
   </td>
   <td>
-    Specify a XULRunner application extension template. Use this to create a
-    <a href="dev-guide/addon-development/xul-extensions.html">XUL-based extension</a>.
+    The <code>cfx run</code> command constructs the add-on using a extension
+    template which you can find under the SDK root, in
+    <code>python-lib/cuddlefish/app-extension</code>.
+    Use the <code>--templatedir</code> option to specify a different template.
   </td>
 </tr>
 </table>
@@ -251,7 +253,7 @@ times.
     <code>-g CONFIG, --use-config=CONFIG</code>
   </td>
   <td>
-    Pass a set of options by 
+    Pass a set of options by
     <a href="dev-guide/addon-development/cfx-tool.html#configurations">referencing a named configuration</a>.
   </td>
 </tr>
@@ -261,7 +263,7 @@ times.
     <code>-p PROFILEDIR, --profiledir=PROFILEDIR</code>
   </td>
   <td>
-    Use an existing 
+    Use an existing
     <a href="http://support.mozilla.com/en-US/kb/profiles">profile</a>
     located in PROFILEDIR.
   </td>
@@ -300,7 +302,7 @@ times.
     <code>--use-server</code>
   </td>
   <td>
-    Run tests using a server previously started with `cfx develop`.
+    Run tests using a server previously started with <code>cfx develop</code>.
   </td>
 </tr>
 
@@ -406,7 +408,7 @@ of `updateURL`.
 So if we run the following command:
 
 <pre>
-  cfx xpi --update-link http://example.com/addon/latest 
+  cfx xpi --update-link http://example.com/addon/latest
           --update-url http://example.com/addon/update_rdf
 </pre>
 
@@ -444,7 +446,7 @@ add-on whenever it is run.
     <code>-g CONFIG, --use-config=CONFIG</code>
   </td>
   <td>
-    Pass a set of options by 
+    Pass a set of options by
     <a href="dev-guide/addon-development/cfx-tool.html#configurations">referencing a named configuration</a>.
   </td>
 </tr>
@@ -503,8 +505,10 @@ add-on whenever it is run.
     <code>--templatedir=TEMPLATEDIR</code>
   </td>
   <td>
-    Specify a XULRunner application extension template. Use this to create a
-    <a href="dev-guide/addon-development/xul-extensions.html">XUL-based extension</a>.
+    The <code>cfx xpi</code> command constructs the add-on using a extension
+    template which you can find under the SDK root, in
+    <code>python-lib/cuddlefish/app-extension</code>.
+    Use the <code>--templatedir</code> option to specify a different template.
   </td>
 </tr>
 </table>
@@ -576,7 +580,7 @@ hosted on a web server without the special application support required by
   </td>
   <td>
     The root of the static docs tree, for example:
-    'http://example.com/sdk-docs/'.
+    <code>http://example.com/sdk-docs/</code>.
   </td>
 </tr>
 </table>
