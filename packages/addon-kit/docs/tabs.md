@@ -154,9 +154,6 @@ This is an optional property.
 @prop [onDeactivate] {function}
 A callback function that will be registered for 'deactivate' event.
 This is an optional property.
-@prop [onActivate] {function}
-A callback function that will be registered for 'activate' event.
-This is an optional property.
 </api>
 
 <api name="Tab">
@@ -239,7 +236,7 @@ Makes this tab active, which will bring this tab to the foreground.
     tabs.activeTab.attach({
       contentScript: 
         'document.body.style.border="5px solid black";' +
-        'postMessage(document.getElementById("#my-watched-element").innerText);',
+        'postMessage(document.getElementById("#my-watched-element").textContent);',
       onMessage: function (data) {
         // data is equal to the text of my DOM element with ID "#my-watched-element"
         
