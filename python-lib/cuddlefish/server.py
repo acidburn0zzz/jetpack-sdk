@@ -248,7 +248,7 @@ def make_httpd(env_root, host=DEFAULT_HOST, port=DEFAULT_PORT,
 
     tq = Queue.Queue()
     url = get_url(host, port)
-    web_docs = webdocs.WebDocs(env_root, url)
+    web_docs = webdocs.WebDocs(env_root)
     httpd = simple_server.make_server(host, port,
                                       make_wsgi_app(env_root, web_docs, tq),
                                       ThreadedWSGIServer,

@@ -100,7 +100,7 @@ class API_Renderer(object):
         raise Exception('not implemented in this class')
 
     def render_description(self):
-        return markdown.markdown(self.description)
+        return self.description
 
     def render_subcomponents(self):
         raise Exception('not implemented in this class')
@@ -142,7 +142,7 @@ class Function_Doc(API_Renderer):
         if not self.returns:
             return ''
         text = 'Returns: ' + span_wrap(self.returns['datatype'], DATATYPE)
-        text += markdown.markdown(self.returns['description'])
+        text += self.returns['description']
         return tag_wrap(text, RETURNS)
 
 class Property_Doc(API_Renderer):
@@ -210,7 +210,7 @@ def render_comp_group(group, group_name, ctor, tag = 'div', comp_tag = 'div'):
 
 def render_descriptions(descriptions_md):
     text = ''.join([description_md for description_md in descriptions_md])
-    return tag_wrap(markdown.markdown(text), MODULE_DESCRIPTION)
+    return tag_wrap(text, MODULE_DESCRIPTION)
 
 def render_api_reference(api_docs):
     if (len(api_docs) == 0):
@@ -241,7 +241,8 @@ def json_to_div(json, markdown_filename):
     text += render_api_reference(api_docs)
     text = tag_wrap_id(text, MODULE_API_DOCS_CLASS, \
                        module_name + MODULE_API_DOCS_ID)
-    return text.encode('utf8')
+    print text
+    return markdown.markdown(text.encode('utf8'), extensions=['toc-'])
 
 # take the JSON output of apiparser
 # return standalone HTML containing the rendered component
