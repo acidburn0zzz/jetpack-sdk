@@ -210,7 +210,7 @@ def render_comp_group(group, group_name, ctor, tag = 'div', comp_tag = 'div'):
 
 def render_descriptions(descriptions_md):
     text = ''.join([description_md for description_md in descriptions_md])
-    return tag_wrap(markdown.markdown(text, extensions=['toc']), MODULE_DESCRIPTION)
+    return tag_wrap(markdown.markdown(text), MODULE_DESCRIPTION)
 
 def render_api_reference(api_docs):
     if (len(api_docs) == 0):

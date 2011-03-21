@@ -3,8 +3,6 @@
 
 The `context-menu` module lets you add items to Firefox's page context menu.
 
-[TOC]
-
 Introduction
 ------------
 
