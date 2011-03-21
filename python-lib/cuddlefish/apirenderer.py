@@ -100,7 +100,7 @@ class API_Renderer(object):
         raise Exception('not implemented in this class')
 
     def render_description(self):
-        return self.description
+        return markdown.markdown(self.description)
 
     def render_subcomponents(self):
         raise Exception('not implemented in this class')
@@ -116,7 +116,7 @@ class Class_Doc(API_Renderer):
         return self.name
 
     def render_subcomponents(self):
-        return render_object_contents(self.json)
+        return render_object_contents(self.json, 'h5', 'h6')
 
 class Function_Doc(API_Renderer):
     def __init__(self, json, tag):
@@ -142,7 +142,7 @@ class Function_Doc(API_Renderer):
         if not self.returns:
             return ''
         text = 'Returns: ' + span_wrap(self.returns['datatype'], DATATYPE)
-        text += self.returns['description']
+        text += markdown.markdown(self.returns['description'])
         return tag_wrap(text, RETURNS)
 
 class Property_Doc(API_Renderer):
@@ -177,13 +177,13 @@ class Parameter_Doc(Property_Doc):
                        for property_json in self.properties_json])
         return text
 
-def render_object_contents(json):
+def render_object_contents(json, tag = 'div', comp_tag = 'div'):
     ctors = json.get('constructors', None)
-    text = render_comp_group(ctors, 'Constructors', Function_Doc)
+    text = render_comp_group(ctors, 'Constructors', Function_Doc, tag, comp_tag)
     methods = json.get('methods', None)
-    text += render_comp_group(methods, 'Methods', Function_Doc)
+    text += render_comp_group(methods, 'Methods', Function_Doc, tag, comp_tag)
     properties = json.get('properties', None)
-    text += render_comp_group(properties, 'Properties', Property_Doc)
+    text += render_comp_group(properties, 'Properties', Property_Doc, tag, comp_tag)
     return text
 
 def render_comp(component):
@@ -210,7 +210,7 @@ def render_comp_group(group, group_name, ctor, tag = 'div', comp_tag = 'div'):
 
 def render_descriptions(descriptions_md):
     text = ''.join([description_md for description_md in descriptions_md])
-    return tag_wrap(text, MODULE_DESCRIPTION)
+    return tag_wrap(markdown.markdown(text, extensions=['toc']), MODULE_DESCRIPTION)
 
 def render_api_reference(api_docs):
     if (len(api_docs) == 0):
@@ -241,8 +241,7 @@ def json_to_div(json, markdown_filename):
     text += render_api_reference(api_docs)
     text = tag_wrap_id(text, MODULE_API_DOCS_CLASS, \
                        module_name + MODULE_API_DOCS_ID)
-    print text
-    return markdown.markdown(text.encode('utf8'), extensions=['toc-'])
+    return text.encode('utf8')
 
 # take the JSON output of apiparser
 # return standalone HTML containing the rendered component

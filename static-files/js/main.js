@@ -40,6 +40,21 @@ function run(jQuery) {
     $(currentSideBarSection).show();
   }
 
+  function generateToC() {
+    $(".api-reference  h2,.api_reference h3, .api_reference h4, .api_reference h5, .api_reference h6").each(function(i) {
+    var current = $(this);
+    var dataTypeStart = current.html().indexOf(" : ");
+    var tocName = current.html();
+    var link = document.location + "#title" + i;
+    if (dataTypeStart != -1)
+      tocName = tocName.slice(0, dataTypeStart);
+    current.attr("id", "title" + i);
+    $("#toc").append("<a id='link" + i + "' href='" +
+        link + "' title='" + current.attr("tagName") + "'>" + 
+        tocName + "</a>");
+    });
+  }
+
   var serverNeedsKeepalive = true;
 
   function sendIdlePing() {
@@ -64,6 +79,7 @@ function run(jQuery) {
     scheduleNextIdlePing();
   highlightCurrentPage();
   highlightCode();
+  generateToC();
 }
 
 $(window).ready(function() {
