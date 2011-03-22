@@ -143,3 +143,9 @@ Represents stuff.
 
 Some more text here, at the end of the file.
 
+<api name="bang">
+@event
+It goes bang.
+@argument {Boom}
+Something else
+</api>
