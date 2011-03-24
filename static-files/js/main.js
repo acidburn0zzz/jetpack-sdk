@@ -52,7 +52,7 @@ function run(jQuery) {
         tocName = tocName.slice(0, dataTypeStart);
       current.attr("id", "title" + i);
       $("#toc").append("<a id='link" + i + "' href='" +
-        link + "' title='" + current.attr("tagName") + "'>" + 
+        link + "' title='" + current.attr("tagName") + "'>" +
         tocName + "</a>");
       });
   }
