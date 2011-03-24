@@ -6,7 +6,10 @@ from cuddlefish.apiparser import parse_hunks, ParseError
 tests_path = os.path.abspath(os.path.dirname(__file__))
 static_files_path = os.path.join(tests_path, "static-files")
 
-class ParserTests(unittest.TestCase):
+tests_path = os.path.abspath(os.path.dirname(__file__))
+static_files_path = os.path.join(tests_path, "static-files")
+
+class MD_ParserTests(unittest.TestCase):
     def pathname(self, filename):
         return os.path.join(static_files_path, "docs", filename)
 
@@ -16,275 +19,230 @@ class ParserTests(unittest.TestCase):
     def parse(self, pathname):
         return self.parse_text(open(pathname).read())
 
+    def _test_props(self, json, name, api_type, desc, optional):
+        self.assertEqual(json.get("name", None), name)
+        self.assertEqual(json.get("type", None), api_type)
+        self.assertEqual(json.get("desc", None), desc)
+        self.assertEqual(json.get("optional", None), optional)
+
+    def _test_json(self, function_json, **kwargs):
+        for key in kwargs:
+            self.assertEqual(function_json[key], kwargs[key])
+
+    # this function only exists so the test code lines up, to make it easier to read
+    def _testLength(self, item, length):
+        self.assertEqual(len(item), length)
+
     def test_parser(self):
-        parsed = self.parse(self.pathname("APIsample.md"))
-        #for i,h in enumerate(parsed):
-        #    print i, h
-        self.assertEqual(parsed[0],
-                         ("version", 3))
-        self.assertEqual(parsed[1],
+        module_json = self.parse(self.pathname("APIsample.md"))
+        version_json = module_json[0]
+        self.assertEqual(module_json[0], ("version", 4))
+        self.assertEqual(module_json[1],
                          ("markdown", "# Title #\n\nSome text here\n\n"))
-        self.assertEqual(parsed[2][0], "api-json")
-        p_test = parsed[2][1]
-        self.assertEqual(p_test["name"], "test")
-        self.assertEqual(p_test["type"], "function")
-        self.assertEqual(p_test["signature"], "test(argOne, argTwo, \
-argThree, options)")
-        self.assertEqual(p_test["description"],
-                         "This is a function which does nothing in \
-particular.")
-        r = p_test["returns"]
-        self.assertEqual(r["datatype"], "object")
-        self.assertEqual(r["description"], "")
-        self.assertEqual(len(r["props"]), 2)
-        self.assertEqual(r["props"][0]["datatype"], "string")
-        self.assertEqual(r["props"][0]["description"], "First string")
-        self.assertEqual(r["props"][1]["datatype"], "url")
-        self.assertEqual(r["props"][1]["description"], "First URL")
-
-        self.assertEqual(p_test["params"][0],
-                         {"name": "argOne",
-                          "required": True,
-                          "datatype": "string",
-                          "description": "This is the first argument.",
-                          "line_number": 11,
-                          })
-
-        self.assertEqual(p_test["params"][1],
-                         {"name": "argTwo",
-                          "required": False,
-                          "datatype": "bool",
-                          "description": "This is the second argument.",
-                          "line_number": 12,
-                          })
-
-        self.assertEqual(p_test["params"][2],
-                         {"name": "argThree",
-                          "required": False,
-                          "default": "default",
-                          "datatype": "uri",
-                          "line_number": 13,
-                          "description": """\
-This is the third and final argument. And this is
-a test of the ability to do multiple lines of
-text.""",
-                          })
-        p3 = p_test["params"][3]
-        self.assertEqual(p3["name"], "options")
-        self.assertEqual(p3["required"], False)
-        self.failIf("type" in p3)
-        self.assertEqual(p3["description"], "Options Bag")
-        self.assertEqual(p3["props"][0],
-                         {"name": "style",
-                          "required": False,
-                          "datatype": "string",
-                          "description": "Some style information.",
-                          "line_number": 18,
-                          })
-        self.assertEqual(p3["props"][1],
-                         {"name": "secondToLastOption",
-                          "required": False,
-                          "default": "True",
-                          "datatype": "bool",
-                          "description": "The last property.",
-                          "line_number": 19,
-                          })
-        self.assertEqual(p3["props"][2]["name"], "lastOption")
-        self.assertEqual(p3["props"][2]["required"], False)
-        self.assertEqual(p3["props"][2]["datatype"], "uri")
-        self.assertEqual(p3["props"][2]["description"], """\
-And this time we have
-A multiline description
-Written as haiku""")
-
-        self.assertEqual(parsed[3][0], "markdown")
-        self.assertEqual(parsed[3][1], "\n\nThis text appears between the \
-API blocks.\n\n")
-
-        self.assertEqual(parsed[4][0], "api-json")
-        p_test = parsed[4][1]
-
-        expected = {'line_number': 28,
- 'name': 'append',
- 'params': [{'props':[{'line_number': 33,
-                       'required': False,
-                       'datatype': 'uri',
-                       'name': 'icon',
-                       'description': 'The HREF of an icon to show as the \
-method of accessing your features slideBar'},
-                      {'line_number': 34,
-                       'required': False,
-                       'datatype': 'string/xml',
-                       'name': 'html',
-                       'description': 'The content of the feature, either \
-as an HTML string,\nor an E4X document fragment (e.g., <><h1>Hi!</h1></>)'},
-                      {'line_number': 37,
-                       'required': False,
-                       'datatype': 'uri',
-                       'name': 'url',
-                       'description': 'The url to load into the content area \
-of the feature'},
-                      {'line_number': 38,
-                       'required': False,
-                       'datatype': 'int',
-                       'name': 'width',
-                       'description': 'Width of the content area and the \
-selected slide size'},
-                      {'line_number': 39,
-                       'required': False,
-                       'datatype': 'bool',
-                       'name': 'persist',
-                       'description': 'Default slide behavior when being \
-selected as follows:\nIf true: blah; If false: double blah.'},
-                      {'line_number': 42,
-                       'required': False,
-                       'datatype': 'bool',
-                       'name': 'autoReload',
-                       'description': 'Automatically reload content on \
-select'},
-                      {'line_number': 43,
-                       'required': False,
-                       'datatype': 'function',
-                       'name': 'onClick',
-                       'description': 'Callback when the icon is \
-clicked'},
-                      {'line_number': 44,
-                       'required': False,
-                       'datatype': 'function',
-                       'name': 'onSelect',
-                       'description': 'Callback when the feature is selected'},
-                      {'line_number': 45,
-                       'required': False,
-                       'datatype': 'function',
-                       'name': 'onReady',
-                       'description':
-                       'Callback when featured is loaded'}],
-                       'line_number': 31,
-             'required': True,
-             'name': 'options',
-             'description': 'Pass in all of your options here.'}],
- 'signature': 'append(options)',
- 'type': 'function',
- 'description': 'This is a list of options to specify modifications to your \
-slideBar instance.'}
-        self.assertEqual(p_test, expected)
-
-        self.assertEqual(parsed[6][0], "api-json")
-        p_test = parsed[6][1]
-        self.assertEqual(p_test["name"], "cool-func.dot")
-        self.assertEqual(p_test["signature"], "cool-func.dot(howMuch, double, \
-options, onemore, options2)")
-        self.assertEqual(p_test["returns"]["description"],
-                         """\
-A value telling you just how cool you are.
-A boa-constructor!
-This description can go on for a while, and can even contain
-some **realy** fancy things. Like `code`, or even
-~~~~{.javascript}
-// Some code!
-~~~~""")
-        self.assertEqual(p_test["params"][2]["props"][0],
-                         {"name": "callback",
-                          "required": True,
-                          "datatype": "function",
-                          "line_number": 63,
-                          "description": "The callback",
-                          })
-        self.assertEqual(p_test["params"][2]["props"][1],
-                         {"name": "random",
-                          "required": False,
-                          "datatype": "bool",
-                          "line_number": 64,
-                          "description": "Do something random?",
-                          })
-
-        p_test = parsed[8][1]
-        self.assertEqual(p_test["signature"],"random()")
-
-        # tests for classes
-        #1) empty class
-        p_test = parsed[10][1]
-        self.assertEqual(len(p_test), 4)
-        self.assertEqual(p_test["name"], "empty-class")
-        self.assertEqual(p_test["description"], "This class contains nothing.")
-        self.assertEqual(p_test["type"], "class")
-        # 2) class with just one ctor
-        p_test = parsed[12][1]
-        self.assertEqual(len(p_test), 5)
-        self.assertEqual(p_test["name"], "only-one-ctor")
-        self.assertEqual(p_test["description"], "This class contains only \
-one constructor.")
-        self.assertEqual(p_test["type"], "class")
-        constructors = p_test["constructors"]
-        self.assertEqual(len(constructors), 1)
-        self._test_class_constructor(constructors[0], "one-constructor")
-        # 3) class with 2 ctors
-        p_test = parsed[14][1]
-        self.assertEqual(len(p_test), 5)
-        self.assertEqual(p_test["name"], "two-ctors")
-        self.assertEqual(p_test["description"], "This class contains two \
-constructors.")
-        self.assertEqual(p_test["type"], "class")
-        constructors = p_test["constructors"]
-        self.assertEqual(len(constructors), 2)
-        self._test_class_constructor(constructors[0], "one-constructor")
-        self._test_class_constructor(constructors[1], "another-constructor")
-        # 4) class with ctor + method
-        p_test = parsed[16][1]
-        self.assertEqual(len(p_test), 6)
-        self.assertEqual(p_test["name"], "ctor-and-method")
-        self.assertEqual(p_test["description"], "This class contains one \
-constructor and one method.")
-        self.assertEqual(p_test["type"], "class")
-        constructors = p_test["constructors"]
-        self.assertEqual(len(constructors), 1)
-        self._test_class_constructor(constructors[0], "one-constructor")
-        methods = p_test["methods"]
-        self.assertEqual(len(methods), 1)
-        self._test_class_method(methods[0])
-        # 5) class with ctor + method + property
-        p_test = parsed[18][1]
-        self.assertEqual(len(p_test), 7)
-        self.assertEqual(p_test["name"], "ctor-and-method-and-prop")
-        self.assertEqual(p_test["description"], "This class contains one \
-constructor, one method, and one property.")
-        self.assertEqual(p_test["type"], "class")
-        constructors = p_test["constructors"]
-        self.assertEqual(len(constructors), 1)
-        self._test_class_constructor(constructors[0], "one-constructor")
-        methods = p_test["methods"]
-        self.assertEqual(len(methods), 1)
-        self._test_class_method(methods[0])
-        properties = p_test["properties"]
-        self.assertEqual(len(properties), 1)
-        self._test_class_property(properties[0])
-
-        self.assertEqual(parsed[-1][0], "markdown")
-        self.assertEqual(parsed[-1][1], "\n\nSome more text here, \
-at the end of the file.\n\n")
-
-    def _test_class_constructor(self, constructor, name):
-        self.assertEqual(constructor["type"], "constructor")
-        self.assertEqual(constructor["name"], name)
-        params = constructor["params"]
-        self.assertEqual(len(params), 1)
-        self.assertEqual(params[0]["name"], "options")
-        self.assertEqual(params[0]["description"], "An object-bag of goodies.")
-
-    def _test_class_method(self, method):
-        self.assertEqual(method["type"], "method")
-        self.assertEqual(method["name"], "a-method")
-        self.assertEqual(method["description"], "Does things.")
-        params = method["params"]
-        self.assertEqual(len(params), 1)
-        self.assertEqual(params[0]["name"], "options")
-        self.assertEqual(params[0]["description"], "An argument.")
-
-    def _test_class_property(self, prop):
-        self.assertEqual(prop["type"], "property")
-        self.assertEqual(prop["name"], "a-property")
-        self.assertEqual(prop["description"], "Represents stuff.")
-        self.assertEqual(prop["datatype"], "bool")
+        self.assertEqual(module_json[2][0], "api-json")
+        # function 1
+        function_1 = module_json[2][1]
+        self._test_json(function_1, type="function",
+                                    name="test",
+                                    signature="test(argOne, argTwo, argThree, options)",
+                                    description="This is a function which does nothing in particular.")
+        self._test_json(function_1["params"][0], datatype="string",
+                                              required=True,
+                                              name="argOne",
+                                              description="This is the first argument.")
+        self._test_json(function_1["params"][1], datatype="bool",
+                                              required=False,
+                                              name="argTwo",
+                                              description="This is the second argument.")
+        self._test_json(function_1["params"][2], datatype="uri",
+                                              required=False,
+                                              name="argThree",
+                                              description="This is the third and final argument. And this is\na test of the ability to do multiple lines of\ntext.")
+        self._test_json(function_1["params"][3], required=False,
+                                              name="options",
+                                              description="Options Bag")
+        self._test_json(function_1["params"][3]["props"][0], datatype="string",
+                                                          required=False,
+                                                          name="style",
+                                                          description="Some style information.")
+        self._test_json(function_1["params"][3]["props"][1], datatype="bool",
+                                                          required=False,
+                                                          default="True",
+                                                          name="secondToLastOption",
+                                                          description="The last property.")
+        self._test_json(function_1["params"][3]["props"][2], datatype="uri",
+                                                          required=False,
+                                                          name="lastOption",
+                                                          description="And this time we have\nA multiline description\nWritten as haiku")
+        self._test_json(function_1["returns"], datatype="object")
+        # function 2
+        function_2 = module_json[4][1]
+        self._test_json(function_2, type="function",
+                                    name="append",
+                                    signature="append(options)",
+                                    description="This is a list of options to specify modifications to your slideBar instance.")
+        self._test_json(function_2["params"][0], required=True,
+                                                 name="options",
+                                                 description="Pass in all of your options here.")
+        self._test_json(function_2["params"][0]["props"][0], datatype="uri",
+                                                             required=False,
+                                                             name="icon",
+                                                             description="The HREF of an icon to show as the method of accessing your features slideBar")
+        self._test_json(function_2["params"][0]["props"][1], datatype="string/xml",
+                                                             required=False,
+                                                             name="html",
+                                                             description="The content of the feature, either as an HTML string,\nor an E4X document fragment.")
+        self._test_json(function_2["params"][0]["props"][2], datatype="uri",
+                                                             required=False,
+                                                             name="url",
+                                                             description="The url to load into the content area of the feature")
+        self._test_json(function_2["params"][0]["props"][3], datatype="int",
+                                                             required=False,
+                                                             name="width",
+                                                             description="Width of the content area and the selected slide size")
+        self._test_json(function_2["params"][0]["props"][4], datatype="bool",
+                                                             required=False,
+                                                             name="persist",
+                                                             description="Default slide behavior when being selected as follows:\nIf true: blah; If false: double blah.")
+        self._test_json(function_2["params"][0]["props"][5], datatype="bool",
+                                                             required=False,
+                                                             name="autoReload",
+                                                             description="Automatically reload content on select")
+        self._test_json(function_2["params"][0]["props"][6], datatype="function",
+                                                             required=False,
+                                                             name="onClick",
+                                                             description="Callback when the icon is clicked")
+        self._test_json(function_2["params"][0]["props"][7], datatype="function",
+                                                             required=False,
+                                                             name="onSelect",
+                                                             description="Callback when the feature is selected")
+        self._test_json(function_2["params"][0]["props"][8], datatype="function",
+                                                             required=False,
+                                                             name="onReady",
+                                                             description="Callback when featured is loaded")
+        # function 3
+        function_3 = module_json[6][1]
+        self._test_json(function_3, type="function",
+                                    name="cool-func.dot",
+                                    signature="cool-func.dot(howMuch, double, options, onemore, options2)",
+                                    description="")
+        self._test_json(function_3["params"][0], datatype="string",
+                                                 required=True,
+                                                 name="howMuch",
+                                                 description="How much cool it is.")
+        self._test_json(function_3["params"][1], datatype="bool",
+                                                 required=False,
+                                                 default="true",
+                                                 name="double",
+                                                 description="In case you just really need to double it.")
+        self._test_json(function_3["params"][2], required=False,
+                                                 name="options",
+                                                 description="An object-bag of goodies.")
+        self._test_json(function_3["params"][3], datatype="bool",
+                                                 required=False,
+                                                 name="onemore",
+                                                 description="One more paramater")
+        self._test_json(function_3["params"][4], required=False,
+                                                 name="options2",
+                                                 description="This is a full description of something\nthat really sucks. Because I now have a multiline\ndescription of this thingy.")
+        self._test_json(function_3["returns"], datatype="string",
+                                               description="A value telling you just how cool you are.\nA boa-constructor!\n" + \
+                                                         "This description can go on for a while, and can even contain\nsome **realy** fancy things. " + \
+                                                         "Like `code`, or even\n~~~~{.javascript}\n// Some code!\n~~~~")
+        # function 4
+        function_4 = module_json[8][1]
+        self._test_json(function_4, type="function",
+                                    name="random",
+                                    signature="random()",
+                                    description="A function that returns a random integer between 0 and 10.")
+        self._test_json(function_4["returns"], datatype="int",
+                                               description="The random number.")
+        # class 1 is empty
+        class_1 = module_json[10][1]
+        self._test_json(class_1, type="class",
+                                 name="empty-class",
+                                 description="This class contains nothing.")
+        # class 2
+        class_2 = module_json[12][1]
+        self._test_json(class_2, type="class",
+                                 name="only-one-ctor",
+                                 description="This class contains only one constructor.")
+        self._test_json(class_2["constructors"][0], type="constructor",
+                                                    name="one-constructor",
+                                                    signature="one-constructor(options)",
+                                                    description="")
+        self._test_json(class_2["constructors"][0]["params"][0], name="options",
+                                                                 required=False,
+                                                                 description="An object-bag of goodies.")
+        # class 3
+        class_3 = module_json[14][1]
+        self._test_json(class_3, type="class",
+                                 name="two-ctors",
+                                 description="This class contains two constructors.")
+        self._test_json(class_3["constructors"][0], type="constructor",
+                                                    name="one-constructor",
+                                                    signature="one-constructor(options)",
+                                                    description="The first constructor.")
+        self._test_json(class_3["constructors"][0]["params"][0], name="options",
+                                                                 required=False,
+                                                                 description="An object-bag of goodies.")
+        self._test_json(class_3["constructors"][1], type="constructor",
+                                                    name="another-constructor",
+                                                    signature="another-constructor(options)",
+                                                    description="The second constructor.")
+        self._test_json(class_3["constructors"][1]["params"][0], name="options",
+                                                                 required=False,
+                                                                 description="An object-bag of goodies.")
+        # class 4
+        class_4 = module_json[16][1]
+        self._test_json(class_4, type="class",
+                                 name="ctor-and-method",
+                                 description="This class contains one constructor and one method.")
+        self._test_json(class_4["constructors"][0], type="constructor",
+                                                    name="one-constructor",
+                                                    signature="one-constructor(options)",
+                                                    description="The first constructor.")
+        self._test_json(class_4["constructors"][0]["params"][0], name="options",
+                                                                 required=False,
+                                                                 description="An object-bag of goodies.")
+        self._test_json(class_4["methods"][0], type="method",
+                                               name="a-method",
+                                               signature="a-method(options)",
+                                               description="Does things.")
+        self._test_json(class_4["methods"][0]["params"][0], name="options",
+                                                            required=False,
+                                                            description="An argument.")
+        # class 4
+        class_4 = module_json[18][1]
+        self._test_json(class_4, type="class",
+                                 name="ctor-method-prop-event",
+                                 description="This class contains one constructor, one method, one property and an event.")
+        self._test_json(class_4["constructors"][0], type="constructor",
+                                                    name="one-constructor",
+                                                    signature="one-constructor(options)",
+                                                    description="The first constructor.")
+        self._test_json(class_4["constructors"][0]["params"][0], name="options",
+                                                                 required=False,
+                                                                 description="An object-bag of goodies.")
+        self._test_json(class_4["methods"][0], type="method",
+                                               name="a-method",
+                                               signature="a-method(options)",
+                                               description="Does things.")
+        self._test_json(class_4["methods"][0]["params"][0], name="options",
+                                                            required=False,
+                                                            description="An argument.")
+        self._test_json(class_4["events"][0], type="event",
+                                              name="message",
+                                              description="Event emitted when the content script sends a message to the add-on.")
+        self._test_json(class_4["events"][0]["arguments"][0], datatype="JSON",
+                                                              description="The message itself as a JSON-serialized object.")
+        # event 1
+        event_1 = module_json[20][1]
+        self._test_json(event_1, type="event",
+                                 name="open",
+                                 description="A module-level event called open.")
+        self._test_json(event_1["arguments"][0], datatype="bool",
+                                                 description="Yes, it's open.")
 
     def test_missing_return_propname(self):
         md = '''\
@@ -292,8 +250,8 @@ at the end of the file.\n\n")
 @method
 This is a function which does nothing in particular.
 @returns {object}
-  @prop {string} First string, but the property name is missing
-  @prop {url} First URL, same problem
+@prop {string} First string, but the property name is missing
+@prop {url} First URL, same problem
 @param argOne {string} This is the first argument.
 </api>
 '''
@@ -305,7 +263,7 @@ This is a function which does nothing in particular.
 @method
 This is a function which does nothing in particular.
 @returns {object}
-  @prop untyped It is an error to omit the type of a return property.
+@prop untyped It is an error to omit the type of a return property.
 @param argOne {string} This is the first argument.
 @param [argTwo=True] {bool} This is the second argument.
 </api>
@@ -318,8 +276,8 @@ This is a function which does nothing in particular.
 @method
 This is a function which does nothing in particular.
 @returns {object}
-  @prop firststring {string} First string.
-  @prop [firsturl] {url} First URL, not always provided.
+@prop firststring {string} First string.
+@prop [firsturl] {url} First URL, not always provided.
 @param argOne {string} This is the first argument.
 @param [argTwo=True] {bool} This is the second argument.
 </api>
@@ -348,8 +306,8 @@ This is a function which does nothing in particular.
 @method
 This is a function which does nothing in particular.
 @returns {object} A one-line description.
-  @prop firststring {string} First string.
-  @prop [firsturl] {url} First URL, not always provided.
+@prop firststring {string} First string.
+@prop [firsturl] {url} First URL, not always provided.
 @param argOne {string} This is the first argument.
 @param [argTwo=True] {bool} This is the second argument.
 </api>
@@ -365,12 +323,12 @@ This is a function which does nothing in particular.
 This is a function which does nothing in particular.
 @returns {object} A six-line description
   which is consistently indented by two spaces
-    except for this line
+   except for this line
   and preserves the following empty line
   
   from which a two-space indentation will be removed.
-  @prop firststring {string} First string.
-  @prop [firsturl] {url} First URL, not always provided.
+@prop firststring {string} First string.
+@prop [firsturl] {url} First URL, not always provided.
 @param argOne {string} This is the first argument.
 @param [argTwo=True] {bool} This is the second argument.
 </api>
@@ -380,7 +338,7 @@ This is a function which does nothing in particular.
         self.assertEqual(r["description"],
                          "A six-line description\n"
                          "which is consistently indented by two spaces\n"
-                         "  except for this line\n"
+                         " except for this line\n"
                          "and preserves the following empty line\n"
                          "\n"
                          "from which a two-space indentation will be removed.")
@@ -401,8 +359,8 @@ This is a function which does nothing in particular.
 
     # if the return value was supposed to be an array, the correct syntax
     # would not have any @prop tags:
-    #  @returns {array}
-    #   Array consists of two elements, a string and a url...
+    # @returns {array}
+    # Array consists of two elements, a string and a url...
 
     def test_return_array(self):
         md = '''\
@@ -410,7 +368,7 @@ This is a function which does nothing in particular.
 @method
 This is a function which returns an array.
 @returns {array}
-  Array consists of two elements, a string and a url.
+Array consists of two elements, a string and a url.
 @param argOne {string} This is the first argument.
 @param [argTwo=True] {bool} This is the second argument.
 </api>
@@ -449,7 +407,7 @@ Putting it after the description is not good enough
 @method
 This is a function which does nothing in particular.
 @param p1 {object} This is a parameter.
-  @prop {string} Oops, props must have a name.
+@prop {string} Oops, props must have a name.
 </api>
 '''
         self.assertRaises(ParseError, self.parse_text, md)
@@ -460,7 +418,7 @@ This is a function which does nothing in particular.
 @method
 This is a function which does nothing in particular.
 @param p1 {object} This is a parameter.
-  @prop name Oops, props must have a type.
+@prop name Oops, props must have a type.
 </api>
 '''
         self.assertRaises(ParseError, self.parse_text, md)

@@ -1,6 +1,6 @@
 import sys, re, textwrap
 
-VERSION = 3
+VERSION = 4
 
 class ParseError(Exception):
     # args[1] is the line number that caused the problem
