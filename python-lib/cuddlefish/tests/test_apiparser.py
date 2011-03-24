@@ -321,8 +321,8 @@ This is a function which does nothing in particular.
   and preserves the following empty line
   
   from which a two-space indentation will be removed.
-@prop firststring {string} First string.
-@prop [firsturl] {url} First URL, not always provided.
+  @prop firststring {string} First string.
+  @prop [firsturl] {url} First URL, not always provided.
 @param argOne {string} This is the first argument.
 @param [argTwo=True] {bool} This is the second argument.
 </api>
