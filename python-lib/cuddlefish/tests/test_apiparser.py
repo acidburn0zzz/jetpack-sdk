@@ -19,12 +19,6 @@ class MD_ParserTests(unittest.TestCase):
     def parse(self, pathname):
         return self.parse_text(open(pathname).read())
 
-    def _test_props(self, json, name, api_type, desc, optional):
-        self.assertEqual(json.get("name", None), name)
-        self.assertEqual(json.get("type", None), api_type)
-        self.assertEqual(json.get("desc", None), desc)
-        self.assertEqual(json.get("optional", None), optional)
-
     def _test_json(self, function_json, **kwargs):
         for key in kwargs:
             self.assertEqual(function_json[key], kwargs[key])
@@ -250,8 +244,8 @@ class MD_ParserTests(unittest.TestCase):
 @method
 This is a function which does nothing in particular.
 @returns {object}
-@prop {string} First string, but the property name is missing
-@prop {url} First URL, same problem
+  @prop {string} First string, but the property name is missing
+  @prop {url} First URL, same problem
 @param argOne {string} This is the first argument.
 </api>
 '''
@@ -263,7 +257,7 @@ This is a function which does nothing in particular.
 @method
 This is a function which does nothing in particular.
 @returns {object}
-@prop untyped It is an error to omit the type of a return property.
+  @prop untyped It is an error to omit the type of a return property.
 @param argOne {string} This is the first argument.
 @param [argTwo=True] {bool} This is the second argument.
 </api>
@@ -276,8 +270,8 @@ This is a function which does nothing in particular.
 @method
 This is a function which does nothing in particular.
 @returns {object}
-@prop firststring {string} First string.
-@prop [firsturl] {url} First URL, not always provided.
+  @prop firststring {string} First string.
+  @prop [firsturl] {url} First URL, not always provided.
 @param argOne {string} This is the first argument.
 @param [argTwo=True] {bool} This is the second argument.
 </api>
@@ -306,8 +300,8 @@ This is a function which does nothing in particular.
 @method
 This is a function which does nothing in particular.
 @returns {object} A one-line description.
-@prop firststring {string} First string.
-@prop [firsturl] {url} First URL, not always provided.
+  @prop firststring {string} First string.
+  @prop [firsturl] {url} First URL, not always provided.
 @param argOne {string} This is the first argument.
 @param [argTwo=True] {bool} This is the second argument.
 </api>
@@ -323,7 +317,7 @@ This is a function which does nothing in particular.
 This is a function which does nothing in particular.
 @returns {object} A six-line description
   which is consistently indented by two spaces
-   except for this line
+    except for this line
   and preserves the following empty line
   
   from which a two-space indentation will be removed.
@@ -338,7 +332,7 @@ This is a function which does nothing in particular.
         self.assertEqual(r["description"],
                          "A six-line description\n"
                          "which is consistently indented by two spaces\n"
-                         " except for this line\n"
+                         "  except for this line\n"
                          "and preserves the following empty line\n"
                          "\n"
                          "from which a two-space indentation will be removed.")
@@ -359,8 +353,8 @@ This is a function which does nothing in particular.
 
     # if the return value was supposed to be an array, the correct syntax
     # would not have any @prop tags:
-    # @returns {array}
-    # Array consists of two elements, a string and a url...
+    #  @returns {array}
+    #   Array consists of two elements, a string and a url...
 
     def test_return_array(self):
         md = '''\
@@ -368,7 +362,7 @@ This is a function which does nothing in particular.
 @method
 This is a function which returns an array.
 @returns {array}
-Array consists of two elements, a string and a url.
+  Array consists of two elements, a string and a url.
 @param argOne {string} This is the first argument.
 @param [argTwo=True] {bool} This is the second argument.
 </api>
@@ -407,7 +401,7 @@ Putting it after the description is not good enough
 @method
 This is a function which does nothing in particular.
 @param p1 {object} This is a parameter.
-@prop {string} Oops, props must have a name.
+  @prop {string} Oops, props must have a name.
 </api>
 '''
         self.assertRaises(ParseError, self.parse_text, md)
@@ -418,7 +412,7 @@ This is a function which does nothing in particular.
 @method
 This is a function which does nothing in particular.
 @param p1 {object} This is a parameter.
-@prop name Oops, props must have a type.
+  @prop name Oops, props must have a type.
 </api>
 '''
         self.assertRaises(ParseError, self.parse_text, md)
