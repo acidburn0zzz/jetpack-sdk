@@ -154,7 +154,6 @@ The type of event for which `listener` was registered.
 @param listener {function}
 The listener function that was registered.
 </api>
-</api>
 
 <api name="message">
 @event
@@ -175,4 +174,6 @@ content scripts.
 Listeners are passed a single argument, the
 [Error](https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Error)
 object.
+</api>
+
 </api>
