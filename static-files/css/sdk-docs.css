@@ -13,7 +13,6 @@
   float: left;
   width: 60%;
   padding: 1em;
-  padding-top: 3em;
 }
 
 .aside {
@@ -177,16 +176,17 @@ table.meta-table {
 
 .sidebar-section {
   clear: both;
-  background-color: #E0EFFD;
+  background-color: #d1e8fd;
   margin-bottom: 1.0em;
   border-style: solid;
-  border-color: #E0EFFD;
-  border-width: 2px;
+  border-color: #a0d0fb;
+  border-width: 1px;
   -moz-border-radius: 5px;
 }
 
-.sidebar-section-contents {
+.sidebar-subsection-contents {
   display: none;
+  background: #F0F8FF;
 }
 
 .sidebar-section ul {
@@ -208,19 +208,28 @@ table.meta-table {
 }
 
 .sidebar-section h2, .sidebar-section h3 {
-  background: #E0EFFD;
+  background: #d1e8fd;
   padding-top: 5px;
   padding-bottom: 5px;
   margin: 0px;
-  background: #E0EFFD;
+  background: #d1e8fd;
   font-weight: bold;
   font-style: normal;
   font-family: arial, helvetica, sans-serif;
+
+}
+
+.sidebar-section h3 {
+border-top-style: solid;
+border-bottom-style: solid;
+border-color: #a0d0fb;
+border-width: 1px;
 }
 
 .sidebar-section h2 {
   font-size: 1.2em;
-  -moz-border-radius: 5px;
+  -moz-border-radius-topleft: 5px;
+  -moz-border-radius-topright: 5px;
 }
 
 .sidebar-section h3 {
