@@ -1,6 +1,16 @@
 
-#columns {
+#container {
   height: 100%;
+}
+
+#footer {
+  background: #33559b url(../media/bg-footer.png) 0 0 repeat-x;
+  color: white;
+  display: block;
+  font-family: Georgia,serif;
+  min-width: 978px;
+  padding: 350px 0 0 0;
+  clear: both;
 }
 
 #left-column {
@@ -39,23 +49,24 @@
 }
 
 .site-logo {
+  margin-left: 5px;
   float:left;
+}
+
+.site-title {
+  margin-bottom: .4em;
+  margin-top: -0.1em;
 }
 
 .site-title a, .site-title a:visited, .site-title a:hover, .site-title a:focus {
   color: #444;
   font-family: MetaBlack,'Trebuchet MS',sans-serif;
-  font-size: 0.8em;
+  font-size: 0.7em;
   font-weight: bold;
-  line-height: 1.2em;
+  line-height: 1.0em;
   text-decoration: none;
   padding-left: 0.2em;
   display:inline;
-}
-
-#footer .actions {
-  display: block;
-  float: right;
 }
 
 .meta-header {
@@ -142,28 +153,8 @@ table.meta-table {
   color: red;
 }
 
-#footer {
-  background: #33559b url(../media/bg-footer.png) 0 0 repeat-x;
-  clear: both;
-  color: white;
-  display: block;
-  font-family: Georgia,serif;
-  min-width: 978px;
-  padding: 123px 0 5px 0;
-}
-
 #footer .full-name {
   margin-left: 0.5em;
-}
-
-#footer a:link,#footer a:visited {
-  color: #669BE1;
-  text-decoration: none;
-}
-
-#footer a:hover,#footer a:active {
-  color: #fff;
-  text-decoration: underline;
 }
 
 #right-column h1 {
@@ -187,6 +178,10 @@ table.meta-table {
 .sidebar-subsection-contents {
   display: none;
   background: #F0F8FF;
+}
+
+.always-show {
+  display: normal;
 }
 
 .sidebar-section ul {
@@ -216,14 +211,16 @@ table.meta-table {
   font-weight: bold;
   font-style: normal;
   font-family: arial, helvetica, sans-serif;
-
+  border-bottom-style: solid;
+  border-color: #a0d0fb;
+  border-width: 1px;
 }
 
 .sidebar-section h3 {
-border-top-style: solid;
-border-bottom-style: solid;
-border-color: #a0d0fb;
-border-width: 1px;
+  border-top-style: solid;
+  border-bottom-style: solid;
+  border-color: #a0d0fb;
+  border-width: 1px;
 }
 
 .sidebar-section h2 {
