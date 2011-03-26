@@ -48,25 +48,23 @@
   color: white;
 }
 
-.site-logo {
+.title {
+  margin-bottom: 10px;
+}
+
+.logo {
   margin-left: 5px;
   float:left;
 }
 
-.site-title {
-  margin-bottom: .4em;
-  margin-top: -0.1em;
-}
-
-.site-title a, .site-title a:visited, .site-title a:hover, .site-title a:focus {
-  color: #444;
+.title-text {
   font-family: MetaBlack,'Trebuchet MS',sans-serif;
-  font-size: 0.7em;
+  font-size: 1.7em;
   font-weight: bold;
-  line-height: 1.0em;
-  text-decoration: none;
+  line-height: 1.4em;
   padding-left: 0.2em;
-  display:inline;
+  margin-bottom: .2em;
+  margin-top: -0.3em;
 }
 
 .meta-header {
@@ -172,7 +170,11 @@ table.meta-table {
   border-style: solid;
   border-color: #a0d0fb;
   border-width: 1px;
+
   -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -khtml-border-radius: 5px;
+  border-radius: 5px;
 }
 
 .sidebar-subsection-contents {
@@ -227,6 +229,12 @@ table.meta-table {
   font-size: 1.2em;
   -moz-border-radius-topleft: 5px;
   -moz-border-radius-topright: 5px;
+  -webkit-border-radius-topleft: 5px;
+  -webkit-border-radius-topright: 5px;
+  -khtml-border-radius-topleft: 5px;
+  -khtml-border-radius-topright: 5px;
+  border-radius-topleft: 5px;
+  border-radius-topright: 5px;
 }
 
 .sidebar-section h3 {
