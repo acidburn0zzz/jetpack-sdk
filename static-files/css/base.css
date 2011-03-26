@@ -11,6 +11,10 @@ The file contains generic style rules, that don't depend on any special structur
   vertical-align: baseline;
 }
 
+html, body {
+  height: 100%;
+}
+
 html {
   background-color: #fff;
   background-image: url(../media/bg-header.png);
