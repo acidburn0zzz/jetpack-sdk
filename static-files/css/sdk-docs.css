@@ -1,4 +1,8 @@
 
+/*
+#container and #push CSS is
+used to implement a 'sticky footer'
+*/
 #container {
   min-height: 100%;
   height: auto !important;
@@ -198,10 +202,6 @@ table.meta-table {
   list-style: none;
 }
 
-.sidebar-section h2, .sidebar-section h3, .sidebar-section h4 {
-  padding-left: 10px;
-}
-
 .sidebar-section li li {
   padding-left: 30px;
   margin-left: 0;
@@ -209,6 +209,10 @@ table.meta-table {
 
 .sidebar-section .modules {
   padding-left: 25px;
+}
+
+.sidebar-section h2, .sidebar-section h3, .sidebar-section h4 {
+  padding-left: 10px;
 }
 
 .sidebar-section h2, .sidebar-section h3 {
@@ -220,13 +224,6 @@ table.meta-table {
   font-weight: bold;
   font-style: normal;
   font-family: arial, helvetica, sans-serif;
-  border-bottom-style: solid;
-  border-color: #a0d0fb;
-  border-width: 1px;
-}
-
-.sidebar-section h3 {
-  border-top-style: solid;
   border-bottom-style: solid;
   border-color: #a0d0fb;
   border-width: 1px;
@@ -246,6 +243,7 @@ table.meta-table {
 
 .sidebar-section h3 {
   font-size: 1.0em;
+  border-top-style: solid;
 }
 
 .sidebar-section h4 {
