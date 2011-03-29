@@ -136,7 +136,7 @@ If present and true, the new tab will be opened to the right of the active tab
 and will not be active. This is an optional property.
 
 @prop [isPinned] {boolean}
-If present and true, then the new tab will be pinned as an 
+If present and true, then the new tab will be pinned as an
 [app tab](http://support.mozilla.com/en-US/kb/what-are-app-tabs).
 
 @prop [onOpen] {function}

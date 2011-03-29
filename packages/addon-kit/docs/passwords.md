@@ -91,7 +91,7 @@ called with an array of matched credentials.
 </api>
 
 <api name="store">
-@function 
+@function
 
 This function is used to store credentials in the host
 application's built-in login manager.
@@ -198,7 +198,7 @@ realm to identify the "protection space": see
 [RFC 2617](http://tools.ietf.org/html/rfc2617).
 
 If the result did not include a realm, then this option must be omitted.
-For logins obtained from HTML forms, this field must be omitted. 
+For logins obtained from HTML forms, this field must be omitted.
 
 For credentials associated with add-ons this field briefly denotes the
 credential's purpose. It will be displayed as a description in the
