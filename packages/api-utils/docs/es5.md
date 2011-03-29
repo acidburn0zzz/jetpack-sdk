@@ -28,10 +28,10 @@ but `Object.getOwnPropertyDescriptor` will still behave as expected
 
 - Defining properties using ES5 functions will break your
      [custom iterators][] if you have any. Think twice before employing
-     custom iterator cause in majority of cases you can just make properties
-     non enumerable. In case you really need to have custom iterator be smart
-     about it, make sure to add it after running ES5 functions and don't
-     ignore previous iterators. Please see example below for inspiration:
+     custom iterators, because in most cases you can just make properties
+     non enumerable. If you really need to have a custom iterator, add it
+     after running ES5 functions and don't ignore previous iterators.
+     For example:
 
          let object = Object.create({}, {
            myField: { value: 6 }

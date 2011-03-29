@@ -70,8 +70,9 @@ Contact the Project Team and User Group
 ---------------------------------------
 
 SDK users and project team members discuss problems and proposals on the
-[project mailing list] [].  Someone else may have had the same problem you do, so
-try searching the list.  You're welcome to post a question, too.
+[project mailing list][jetpack-list].  Someone else may have had the same
+problem you do, so try searching the list.
+You're welcome to post a question, too.
 
 You can also chat with other SDK users in [#jetpack][#jetpack] on
 [Mozilla's IRC network][IRC].

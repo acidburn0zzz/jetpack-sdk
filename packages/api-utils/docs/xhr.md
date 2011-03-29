@@ -80,7 +80,7 @@ cookie information.
   be preceded by the `new` operator.  For more information about
   `XMLHttpRequest` objects, see the MDC page on
   [Using XMLHttpRequest](https://developer.mozilla.org/En/Using_XMLHttpRequest)
-  and the Limitations section below.
+  and the Limitations section in this page.
 </api>
 </api>
 

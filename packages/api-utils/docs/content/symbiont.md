@@ -54,9 +54,10 @@ are listed below:
 @constructor
 Creates a content symbiont.
 @param options {object}
-  Options for the constructor. Includes all the keys that [Worker] constructor
-  accepts and few additional:
-[Worker]:#module/api-utils/panel
+  Options for the constructor. Includes all the keys that
+the [Worker](packages/api-utils/docs/content/worker.html)
+constructor accepts and a few more:
+
   @prop [frame] {object}
     The host application frame in which the page is loaded.
     If frame is not provided hidden one will be created.
@@ -101,9 +102,9 @@ The URL of the content loaded.
 
 <api name="allow">
 @property {object}
-Permissions for the content, with the following keys:
-  @prop script {boolean}
-  Whether or not to execute script in the content.  Defaults to true.
+Permissions for the content, with a single boolean key called `script` which
+defaults to true and indicates whether or not to execute scripts in the
+content.
 </api>
 
 </api>
