@@ -1,6 +1,6 @@
 <!-- contributed by Irakli Gozalishvili [gozala@mozilla.com]  -->
 
-The `passwords` module allows consumers to interact with an application's
+The `passwords` module allows add-ons to interact with the host application's
 built-in password management system, in order to:
 
 1. Retrieve credentials for a website, to access the user's account on the
@@ -14,137 +14,96 @@ built-in password management system, in order to:
 <api name="search">
 @function
 
-Module exports `search` function that may be used to locate a credential stored
-in the application's built-in login management system.
+This function is used to locate a credential stored in the host application's
+built-in login management system.
 
-@param options {object}
-An object containing fields associated with a credential being searched. It may
-contain any combination of the following fields: `username`, `password`,
-`realm`, `url`, `usernameField`, `passwordField`. All those fields are
-described in details under the `store` section. Given fields will be used as
-search terms to narrow down search results.
-
-Options need to contain `onComplete` callback property which will be called
-with an array of matched credentials.
-
-## Searching for add-on associated credential ##
+** Searching for credentials associated with an add-on **
 
     require("passwords").search({
       realm: "{{add-on}} Login",
       onComplete: function onComplete(credentials) {
-        // credentials is an array of all credentials with a given `realm`.
+        // credentials is an array of all credentials
+        // with a given `realm`.
         credentials.forEach(function(credential) {
           // Your logic goes here.
         });
       }
     });
 
-## Searching a credentials for a given user name ##
+** Searching for credentials associated with a given user name **
 
     require("passwords").search({
       username: "jack",
       onComplete: function onComplete(credentials) {
-        // credentials is an array of all credentials with a given `username`.
+        // credentials is an array of all credentials
+        // with a given `username`.
         credentials.forEach(function(credential) {
           // Your logic goes here.
         });
       }
     });
 
-## Searching web page associated credentials ##
+** Searching for credentials associated with a given web page **
 
     require("passwords").search({
       url: "http://www.example.com",
       onComplete: function onComplete(credentials) {
-        // credentials is an array of all credentials associated with given url.
+        // credentials is an array of all credentials
+        // associated with the supplied url.
         credentials.forEach(function(credential) {
           // Your logic goes here.
         });
       }
     });
 
-## Combining search temps together ##
+** Combining search terms together **
 
     require("passwords").search({
       url: "http://www.example.com",
       username: "jack",
       realm: "Login",
       onComplete: function onComplete(credentials) {
-        // credentials is an array of all credentials associated with given url
-        // and given realm for useres with given username. 
+        // credentials is an array of all credentials
+        // associated with given url, realm, and user name
         credentials.forEach(function(credential) {
           // Your logic goes here.
         });
       }
     });
 
+@param options {object}
+An object containing fields associated with a credential being searched. It may
+contain any combination of the following fields:
+
+* `username`
+* `password`,
+* `realm`
+* `url`
+* `usernameField`
+* `passwordField`
+
+All these fields are described in detail under the `store` section. Any
+supplied fields are used as search terms to narrow down the search results.
+
+This parameter must contain an `onComplete` callback property which will be
+called with an array of matched credentials.
+
 </api>
 
 <api name="store">
 @function 
 
-Module exports `store` method allowing users to store credentials in the
-application built-in login manager. Function takes an `options` object as an
-argument containing fields necessary to create a login credential. Properties
-of an `options` depend on type of authentication, but regardless of that,
-there are two optional callback `onComplete` and `onError` properties that may
-be passed to observe success or failure of performed operation.
+This function is used to store credentials in the host
+application's built-in login manager.
 
-@param options {object}
-An object containing fields associated to a credential being created and stored.
-Some fields are necessary for one type of authentication and not for second.
-Please see examples to find more details.
+It takes an `options` object as an
+argument: this contains the containing fields needed to create a login
+credential.
 
-@prop username {string}
-The user name for the login.
+** Storing a credential associated with an add-on**
 
-@prop password {string}
-The password for the login.
-
-@prop [url] {string}
-The `url` to which the login applies, formatted as a URL (for example,
-"http://www.site.com"). A port number (":123") may be appended.
-
-_Please note: `http`, `https` and `ftp` URLs should not include path from the
-full URL, it will be stripped out if included._
-
-@prop [formSubmitURL] {string}
-The URL a form-based login was submitted to. For logins obtained from HTML
-forms, this field is the `action` attribute from the form element, with the
-with the path removedwith the path removed (for example, "http://www.site.com").
-Forms with no `action` attribute default to submitting to their origin URL, so
-that should be stored here. (`formSubmitURL` should not include path from the
-full URL, it will be stripped out if included).
-
-@prop [realm] {string}
-The HTTP Realm for which the login was requested. When an HTTP server sends a
-401 result, the WWW-Authenticate header includes a realm to identify the
-"protection space." See [RFC 2617](http://tools.ietf.org/html/rfc2617). If the
-result did not include a realm, then option must be omitted. For logins
-obtained from HTML forms, this field must be omitted. 
-For add-on associated credentials this field briefly denotes the credentials
-purpose (It is displayed as a description in the application's built-in login
-management UI).
-
-@prop [usernameField] {string}
-The `name` attribute for the user name input in a form. Non-form logins
-must omit this field.
-
-@prop [passwordField] {string}
-The `name` attribute for the password input in a form. Non-form logins
-must omit this field.
-
-@prop  [onComplete] {function}
-The callback function that is called once credential is stored.
-
-@prop [onError] {function}
-The callback function that is called if storing a credential failed. Function is
-passed an `error` containing a reason of a failure.
-
-## Storing an add-on associated credential ##
-
-Add-ons also may store credentials that are not associated with any web sites.
-In such case `realm` string briefly denotes the login's purpose.
+Add-ons may store credentials that are not associated with any web sites.
+In this case the `realm` string briefly denotes the login's purpose.
 
     require("passwords").store({
       realm: "User Registration",
@@ -152,10 +111,10 @@ In such case `realm` string briefly denotes the login's purpose.
       password: "SeCrEt123",
     });
 
-## Storing a web page associated credential ##
+** Storing a credential associated with a web page **
 
-Most sites use HTML form login based authentication. Following example stores
-credentials for such a web site:
+Most sites use HTML form login based authentication. The following example
+stores a credential for such a web site:
 
     require("passwords").store({
       url: "http://www.example.com",
@@ -166,19 +125,18 @@ credentials for such a web site:
       passwordField: "pword"
     });
 
-
 This login would correspond to a form on "http://www.example.com/login" with
-following HTML:
+the following HTML:
 
     <form action="http://login.example.com/foo/authenticate.cgi">
           <div>Please log in.</div>
-          <label>Username:</label> <input type="text" name="uname">      
-          <label>Password:</label> <input type="password" name="pword">    
+          <label>Username:</label> <input type="text" name="uname">
+          <label>Password:</label> <input type="password" name="pword">
     </form>
 
-## Storing a site authentication login ##
+** Storing a site authentication login **
 
-Some web sites use HTTP/FTP authentication mechanism and associated credentials
+Some web sites use HTTP/FTP authentication. The associated credentials
 contain different fields:
 
     require("passwords").store({
@@ -195,20 +153,80 @@ sends a reply such as:
     Server: Apache/1.3.27
     WWW-Authenticate: Basic realm="ExampleCo Login"
 
-If website does not sends `realm` string with `WWW-Authenticate` header then
-`realm` property must be omitted.
+If the website does not include the `realm` string in the `WWW-Authenticate`
+header, then the `realm` property must be omitted.
+
+Which properties are valid for `options` depends on the type of
+authentication, but regardless of that there are two optional callback
+`onComplete` and `onError` properties that may be passed to observe the
+success or failure of the operation.
+
+@param options {object}
+An object containing fields associated with a credential being created and
+stored. Some fields are necessary for one type of authentication and not
+for another. Please see examples to find more details.
+
+@prop username {string}
+The user name for the login.
+
+@prop password {string}
+The password for the login.
+
+@prop [url] {string}
+The `url` to which the login applies, formatted as a URL (for example,
+"http://www.site.com"). A port number (":123") may be appended.
+
+_Please note: `http`, `https` and `ftp` URLs should not include path from the
+full URL, it will be stripped out if included._
+
+@prop [formSubmitURL] {string}
+The URL a form-based login was submitted to.
+
+For logins obtained from HTML forms, this field is the `action` attribute
+from the form element, with the path removed
+(for example, "http://www.site.com").
+
+Forms with no `action` attribute default to submitting to their origin URL, so
+that should be stored here. (`formSubmitURL` should not include the path from
+the full URL, it will be stripped out if included).
+
+@prop [realm] {string}
+The HTTP Realm for which the login was requested.
+
+When an HTTP server sends a 401 result, the WWW-Authenticate header includes a
+realm to identify the "protection space": see
+[RFC 2617](http://tools.ietf.org/html/rfc2617).
+
+If the result did not include a realm, then this option must be omitted.
+For logins obtained from HTML forms, this field must be omitted. 
+
+For credentials associated with add-ons this field briefly denotes the
+credential's purpose. It will be displayed as a description in the
+application's built-in login management UI.
+
+@prop [usernameField] {string}
+The `name` attribute for the user name input in a form. Non-form logins
+must omit this field.
+
+@prop [passwordField] {string}
+The `name` attribute for the password input in a form. Non-form logins
+must omit this field.
+
+@prop  [onComplete] {function}
+The callback function that is called once the credential is stored.
+
+@prop [onError] {function}
+The callback function that is called if storing a credential failed. The
+function is passed an `error` containing a reason of a failure.
 
 </api>
 
 <api name="remove">
 @function
-@param options {object}
-When removing a credentials the specified `options` object must exactly match
-what was stored (including a `password`). For this reason it is recommended to
-chain this function with `search` to make sure that only necessary matches are
-removed.
 
-## Removing a credential ##
+Remove a stored credential.
+
+** Removing a credential **
 
     require("passwords").search({
       url: "http://www.example.com",
@@ -218,10 +236,9 @@ removed.
       })
     });
 
-## Changing a credential ##
+** Changing a credential **
 
-There is no direct function to change an existing login, still doing it is
-rather simple. It's just matter of calling `store` after `remove` succeeds:
+To change an existing credential just call `store` after `remove` succeeds:
 
     require("passwords").remove({
       realm: "User Registration",
@@ -235,5 +252,11 @@ rather simple. It's just matter of calling `store` after `remove` succeeds:
         })
       }
     });
+
+@param options {object}
+When removing a credential the specified `options` object must exactly match
+what was stored (including a `password`). For this reason it is recommended to
+chain this function with `search` to make sure that only necessary matches are
+removed.
 
 </api>

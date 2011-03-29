@@ -36,7 +36,7 @@ Examples
 
 See the [panel][] module for a real-world example of usage of this module.
 
-[panel]:#module/api-utils/panel
+[panel]:packages/addon-kit/docs/panel.html
 
 Reference
 ---------
@@ -48,7 +48,8 @@ of Symbiont and their descendants expose all the public properties
 exposed by [Worker][] along with additional public properties that
 are listed below:
 
-[Worker]:#module/api-utils/content/worker
+[Worker]:packages/api-utils/docs/content/worker.html
+
 <api name="Symbiont">
 @constructor
 Creates a content symbiont.
