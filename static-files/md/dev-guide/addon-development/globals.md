@@ -2,7 +2,7 @@
 <br>
 ## JavaScript Globals ##
 
-By default, all code is executed as [JavaScript 1.8.1] and has access
+By default, all code is executed as [JavaScript 1.8.1][] and has access
 to all the globals defined by it, such as `Math`, `Array`, and `JSON`. Each
 module has its own set of these objects; this means that if, for
 instance, the `String` prototype is changed in one module, the changes
@@ -16,8 +16,8 @@ For an introduction to CommonJS modules, see the
 ## CommonJS Globals ##
 
 Code has access to the `require` and `exports` globals
-as specified by version 1.0 of the [CommonJS Module Specification].
-In addition, `define` from the [CommonJS Asynchronous Module Proposal]
+as specified by version 1.0 of the [CommonJS Module Specification][].
+In addition, `define` from the [CommonJS Asynchronous Module Proposal][]
 is available.
 
 ## HTML5 Globals ##

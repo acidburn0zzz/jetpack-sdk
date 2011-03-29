@@ -1,9 +1,9 @@
 The `es5` module provides shim layer to a versions of firefox not yet
 implementing EcmaScript 5 features.
 
-- New API's are described in the official [ES5 specification].
-- John Resig made post with good [introduction] of new API's.
-- Google tech talk [changes to JavaScript] is also a good walk through.
+- New API's are described in the official [ES5 specification][].
+- John Resig made post with good [introduction][] of new API's.
+- Google tech talk [changes to JavaScript][] is also a good walk through.
 
 **There is no need to `require` this module** since it gets preloaded into
 all sandboxes automatically.
@@ -21,12 +21,12 @@ specification.
 	- Instead of non-writable properties getters and setters will be defined,
 		but `Object.getOwnPropertyDescriptor` will still behave as expected
 		(will return property descriptor for non-writable property not a getter)
-	- Defining properties using ES5 functions will break your [custom iterators]
-		 if you have any. Think twice before employing custom iterator cause in
-		 majority of cases you can just make properties non enumerable. In case
-		 you really need to have custom iterator be smart about it, make sure to
-		 add it after running ES5 functions and don't ignore previous iterators.
-		 Please see example below for inspiration:
+	- Defining properties using ES5 functions will break your
+	     [custom iterators][] if you have any. Think twice before employing
+	     custom iterator cause in majority of cases you can just make properties
+	     non enumerable. In case you really need to have custom iterator be smart
+	     about it, make sure to add it after running ES5 functions and don't
+	     ignore previous iterators. Please see example below for inspiration:
 
 		     let object = Object.create({}, {
 		       myField: { value: 6 }

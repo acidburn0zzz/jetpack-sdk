@@ -34,7 +34,7 @@ Examples
       }
     });
 
-See the [panel] module for a real-world example of usage of this module.
+See the [panel][] module for a real-world example of usage of this module.
 
 [panel]:#module/api-utils/panel
 
@@ -43,9 +43,9 @@ Reference
 
 <api name="Symbiont">
 @class
-Symbiont is composed from the [Worker] trait, therefore instances
+Symbiont is composed from the [Worker][] trait, therefore instances
 of Symbiont and their descendants expose all the public properties
-exposed by [Worker] along with additional public properties that
+exposed by [Worker][] along with additional public properties that
 are listed below:
 
 [Worker]:#module/api-utils/content/worker
