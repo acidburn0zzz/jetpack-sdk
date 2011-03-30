@@ -11,10 +11,9 @@ INDEX_PAGE = '/static-files/base.html'
 BASE_URL_INSERTION_POINT = '<base '
 HIGH_LEVEL_PACKAGE_SUMMARIES = '<li id="high-level-package-summaries">'
 LOW_LEVEL_PACKAGE_SUMMARIES = '<li id="low-level-package-summaries">'
-CONTENT_ID = '<div id="main-content">'
+CONTENT_ID = '<div id="main-content" class="column">'
 TITLE_ID = '<title>'
 DEFAULT_TITLE = 'Add-on SDK Documentation'
-TOC_TEMPLATE = '<div class="toc"></div>'
 
 def get_modules(modules_json):
     modules = []

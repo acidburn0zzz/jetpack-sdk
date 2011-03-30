@@ -41,7 +41,7 @@ function run(jQuery) {
   }
 
   function generateToC() {
-    var select = '.api-reference  h2,.api_reference h3, .api_reference h4, ' +
+    var select = '.api_reference  h2,.api_reference h3, .api_reference h4, ' +
                  '.api_reference h5, .api_reference h6';
     $(select).each(function(i) {
       var link = document.location + "#title" + i;

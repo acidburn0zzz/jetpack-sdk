@@ -16,17 +16,20 @@
   <title></title>
 </head>
 <body>
-<div id="container">
-  <div id="columns">
+  <div id="container">
 
-  <div id="left-column">
+  <div id="main-content" class="column"></div>
 
+  <div id="sidebar" class="column">
+
+    <div class="site-title">
     <img class="site-logo" alt="Firefox" src="https://addons.mozilla.org/media/img/zamboni/app_icons/firefox.png">
 
-    <h1 class="site-title">
+    <h1 class="site-title-text">
       <a href="dev-guide/welcome.html" title="Return to the Add-on SDK's homepage">
         Add-on SDK</a>
     </h1>
+    </div>
 
     <div class="sidebar-section" id="addon-development">
       <h2 class="sidebar-section-header"><a href="dev-guide/addon-development/about.html">Developer Guide</a></h2>
@@ -132,17 +135,13 @@
 
   </div>
 
-  <div id="right-column">
-    <div id="toc"></div>
-    <div id="main-content"></div>
-  </div>
+  <div id="toc" class="column"></div>
 
   </div>
+
   <div id="footer">
     <span class="full-name">Add-on SDK Documentation v1.0b4pre</span>
   </div>
-
-</div>
 
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/main.js"></script>

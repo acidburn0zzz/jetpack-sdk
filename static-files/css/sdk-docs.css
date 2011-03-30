@@ -1,28 +1,36 @@
-
-#columns {
-  height: 100%;
+body {
+	min-width: 800px;         /* 2 x LC width + RC width  CC padding*/
 }
 
-#left-column {
-  float: left;
-  width: 18em;
-  padding: 1em;
+#container {
+	padding-left: 275px;      /* LC width */
+	padding-right: 245px;     /* RC width + CC padding*/
+	padding-top: 10px;
 }
 
-#right-column {
-  float: left;
-  width: 70%;
-  padding: 1em;
+#container .column {
+	position: relative;
+	float: left;
 }
 
 #main-content {
+	width: 100%;
+	padding-right:10px;
+}
+
+#sidebar {
+  width: 250px;        /* LC fullwidth - padding */
+  right: 280px;        /* LC fullwidth + CC padding */
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-left: -100%;
 }
 
 #toc {
-  float: right;
-  width: 25em;
-  margin-left: 1em;
-  }
+	width: 220px;             /* RC width */
+	margin-right: -100%;
+	font-size:0.9em;
+}
 
 .aside {
   color: gray;
@@ -38,23 +46,29 @@
   display: block;
   }
 
+#toc a[title = H2] {
+	font-size: 1.1em;
+	font-weight: bold;
+	margin-left: 0.5em;
+}
+
 #toc a[title = H3] {
-  margin-left: 1em;
+  margin-left: 0.5em;
   font-weight: bold;
 }
 
 #toc a[title = H4] {
-  margin-left: 2em;
+  margin-left: 1.5em;
   font-family: "andale mono",monospace;
 }
 
 #toc a[title = H5] {
-  margin-left: 3em;
+  margin-left: 2.5em;
   font-weight: bold;
 }
 
 #toc a[title = H6] {
-  margin-left: 4em;
+  margin-left: 3em;
   font-family: "andale mono",monospace;
 }
 
@@ -75,7 +89,7 @@
   float:left;
 }
 
-.site-title a, .site-title a:visited, .site-title a:hover, .site-title a:focus {
+.site-title-text a, .site-title-text a:visited, .site-title-text a:hover, .site-title-text a:focus {
   color: #444;
   font-family: MetaBlack,'Trebuchet MS',sans-serif;
   font-size: 0.8em;
@@ -146,6 +160,7 @@ td {
 }
 
 /* Rule to fix quirks-mode inheritance behavior */
+
 table, caption {
   font-size: inherit;
   font-weight: inherit;
@@ -199,16 +214,15 @@ table.meta-table {
   text-decoration: underline;
 }
 
-#right-column h1 {
+#main-content h1 {
   font-size: 2.2em;
 }
 
-#right-column h2 {
+#main-content h2 {
   font-size: 1.7em;
 }
 
 .sidebar-section, #toc {
-  clear: both;
   background-color: #E0EFFD;
   margin-bottom: 1.0em;
   border-style: solid;
