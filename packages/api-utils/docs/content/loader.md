@@ -1,8 +1,5 @@
 <!-- contributed by Irakli Gozalishvili [gozala@mozilla.com] -->
 
-Loader
-------
-
 Loader is base trait and it provides set of core properties and associated
 validations. Trait is useful for all the compositions providing high level
 APIs for creating JavaScript contexts that can access web content.
