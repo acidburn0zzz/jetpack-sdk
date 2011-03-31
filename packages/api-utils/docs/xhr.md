@@ -69,8 +69,6 @@ Finally, we need to also consider attenuating http/https requests such
 that they're "sandboxed" and don't communicate potentially sensitive
 cookie information.
 
-## Constructors ##
-
 <api name="XMLHttpRequest">
 @class
 
