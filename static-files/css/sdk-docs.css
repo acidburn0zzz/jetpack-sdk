@@ -1,38 +1,37 @@
 body {
-	min-width: 660px;         /* 2 x LC width + RC width  CC padding*/
+  min-width: 660px;         /* 2 x sidebar fullwidth + toc fullwidth + main-content padding*/
 }
 
 #container {
-	padding-left: 225px;      /* LC width */
-	padding-right: 205px;     /* RC width + CC padding*/
-	padding-top: 10px;
+  padding-left: 225px;      /* sidebar fullwidth -5(?) */
+  padding-right: 205px;     /* toc width + main-content padding*/
+  padding-top: 10px;
 }
 
 #container .column {
-	position: relative;
-	float: left;
+  position: relative;
+  float: left;
 }
 
 #main-content {
-	width: 100%;
-	padding-right:10px;
+  width: 100%;
+  padding-right: 10px;
 }
 
 #sidebar {
-  width: 200px;        /* LC fullwidth - padding */
-  right: 230px;        /* LC fullwidth + CC padding */
+  width: 200px;        /* sidebar usable width (fullwidth - padding) */
+  right: 230px;        /* sidebar fullwidth + main-content padding */
   padding-left: 10px;
   padding-right: 10px;
   margin-left: -100%;
 }
 
 #toc {
-	width: 180px;             /* RC width */
-	margin-right: -100%;
-	font-size:0.9em;
-	overflow:hidden;
+  width: 180px;             /* toc usable width */
+  margin-right: -100%;
+  font-size: 0.9em;
+  overflow:hidden;
 }
-
 
 #footer {
   background: #33559b url(../media/bg-footer.png) 0 0 repeat-x;
@@ -59,9 +58,9 @@ body {
   }
 
 #toc a[title = H2] {
-	font-size: 1.1em;
-	font-weight: bold;
-	margin-left: 0.5em;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-left: 0.5em;
 }
 
 #toc a[title = H3] {
@@ -203,16 +202,6 @@ table.meta-table {
 
 #footer .full-name {
   margin-left: 0.5em;
-}
-
-#footer a:link,#footer a:visited {
-  color: #669BE1;
-  text-decoration: none;
-}
-
-#footer a:hover,#footer a:active {
-  color: #fff;
-  text-decoration: underline;
 }
 
 #main-content h1 {
