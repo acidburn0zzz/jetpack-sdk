@@ -22,6 +22,7 @@
  *
  * Contributor(s):
  *   Drew Willcoxon <adw@mozilla.com> (Original Author)
+ *   Irakli Gozalishvili <gozala@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -52,6 +53,8 @@ const collection = require("collection");
 const { Worker } = require("content");
 const url = require("url");
 const { MatchPattern } = require("match-pattern");
+const { EventEmitterTrait: EventEmitter } = require("events");
+const observerServ = require("observer-service");
 
 // All user items we add have this class name.
 const ITEM_CLASS = "jetpack-context-menu-item";
@@ -105,6 +108,11 @@ const NON_PAGE_CONTEXT_ELTS = [
   Ci.nsIDOMHTMLTextAreaElement,
 ];
 
+// This object is used elsewhere in this file to access private properties of
+// Item and Menu instances.
+const PRIVATE_PROPS_KEY = {
+  valueOf: function valueOf() "private properties key"
+};
 
 exports.Item = apiUtils.publicConstructor(Item);
 exports.Menu = apiUtils.publicConstructor(Menu);
@@ -240,8 +248,13 @@ function URLContext(patterns) {
     throw err;
   }
 
+  const self = this;
+
   this.isCurrent = function URLContext_isCurrent(popupNode) {
-    let url = popupNode.ownerDocument.URL;
+    return self.isCurrentForURL(popupNode.ownerDocument.URL);
+  };
+
+  this.isCurrentForURL = function URLContext_isCurrentForURL(url) {
     return patterns.some(function (p) p.test(url));
   };
 }
@@ -309,9 +322,7 @@ function optionsRules() {
 // options is a validated options object.
 function defineItemProps(item, options) {
   // TODO: Add setter for label?  It would require finding the item's DOM
-  // element and changing its attributes as well.  Note however that
-  // WorkerRegistry relies on label remaining constant, so if setters are added,
-  // that would need fixing.
+  // element and changing its attributes as well.
   item.__defineGetter__("label", function () options.label);
 
   // Stupid ternaries to avoid Spidermonkey strict warnings.
@@ -319,18 +330,66 @@ function defineItemProps(item, options) {
     return "contentScript" in options ? options.contentScript : undefined;
   });
   item.__defineGetter__("contentScriptFile", function () {
-    return "contentScriptFile" in options ? options.contentScriptFile : undefined;
-  });
-  item.__defineGetter__("onMessage", function () {
-    return "onMessage" in options ? options.onMessage : undefined;
+    return "contentScriptFile" in options ? options.contentScriptFile :
+           undefined;
   });
 
+  item.destroy = function Item_destroy() {
+    browserManager.removeItem(item);
+  };
+
+  // Create a private properties object for the item.
+  let privateProps = {
+    eventEmitter: EventEmitter.create(item),
+    workerReg: new WorkerRegistry(item)
+  };
+
+  // This makes the private properties accessible to anyone with access to the
+  // PRIVATE_PROPS_KEY object.  Only this file has has access to it, so only
+  // this file has access to the private properties.
+  item.valueOf = function Item_valueOf(key) {
+    return key === PRIVATE_PROPS_KEY ? privateProps : item;
+  };
+
+  // Add all of privateProps.eventEmitter's own public methods to the item,
+  // binding them to eventEmitter.  This will allow clients to treat the item as
+  // an event emitter.
+  Object.keys(privateProps.eventEmitter).forEach(function (key) {
+    if (key[0] !== "_")
+      item[key] =
+        privateProps.eventEmitter[key].bind(privateProps.eventEmitter);
+  });
+
+  // Register a message listener if one was passed to the constructor.
+  if ("onMessage" in options)
+    privateProps.eventEmitter.on("message", options.onMessage);
+
+  // When a URL context is removed (by calling item.context.remove(urlContext)),
+  // we may need to create workers for windows containing pages that the item
+  // now matches.  Likewise, when a URL context is added, we need to destroy
+  // workers for windows containing pages that the item now does not match.
+  //
+  // collection doesn't provide a way to listen for removals.  utils/registry
+  // does, but it doesn't allow its elements to be enumerated.  So as a hack,
+  // use a collection for item.context and replace its add and remove methods.
   collection.addCollectionProperty(item, "context");
   if (options.context)
     item.context.add(options.context);
 
-  item.destroy = function Item_destroy() {
-    browserManager.removeItem(item);
+  let add = item.context.add;
+  item.context.add = function itemContextAdd() {
+    let args = Array.slice(arguments);
+    add.apply(item.context, args);
+    if (args.some(function (a) a instanceof URLContext))
+      privateProps.workerReg.destroyUnneededWorkers();
+  };
+
+  let remove = item.context.remove;
+  item.context.remove = function itemContextRemove() {
+    let args = Array.slice(arguments);
+    remove.apply(item.context, args);
+    if (args.some(function (a) a instanceof URLContext))
+      privateProps.workerReg.createNeededWorkers();
   };
 }
 
@@ -372,8 +431,28 @@ let browserManager = {
   // that calling this method can cause onTrack to be called immediately if
   // there are open windows.
   init: function browserManager_init() {
+    require("unload").ensure(this);
     let windowTracker = new (require("window-utils").WindowTracker)(this);
-    require("unload").ensure(windowTracker);
+
+    // On inner-window-destroyed, remove the destroyed inner window's outer
+    // window from all items' worker registries.
+    observerServ.add("inner-window-destroyed", function observe(subj) {
+      let innerWinID = subj.QueryInterface(Ci.nsISupportsPRUint64).data;
+      this.items.forEach(function (item) {
+        let workerReg = item.valueOf(PRIVATE_PROPS_KEY).workerReg;
+        workerReg.unregisterContentWin(innerWinID);
+      });
+    }, this);
+  },
+
+  // When the window tracker is unloaded, it'll call our onUntrack for every
+  // open browser window, so there's no need to do that here.  The only other
+  // things to clean up are items and their worker registries.
+  unload: function browserManager_unload() {
+    this.items.forEach(function (item) {
+      item.valueOf(PRIVATE_PROPS_KEY).workerReg.destroy();
+    });
+    this.items.splice(0, this.items.length);
   },
 
   // Registers a window with the manager.  This is a WindowTracker callback.
@@ -386,11 +465,7 @@ let browserManager = {
   },
 
   // Unregisters a window from the manager.  It's told to undo all menu
-  // modifications.  This is a WindowTracker callback.  Note that when
-  // WindowTracker is unloaded, it calls onUntrack for every currently opened
-  // window.  The browserManager therefore doesn't need to specially handle
-  // unload itself, since unloading the browserManager means untracking all
-  // currently opened windows.
+  // modifications.  This is a WindowTracker callback.
   onUntrack: function browserManager_onUntrack(window) {
     if (this._isBrowserWindow(window)) {
       for (let i = 0; i < this.windows.length; i++) {
@@ -411,6 +486,7 @@ let browserManager = {
     if (idx >= 0) {
       this.items.splice(idx, 1);
       this.windows.forEach(function (w) w.removeItems([item]));
+      item.valueOf(PRIVATE_PROPS_KEY).workerReg.destroy();
     }
   },
 
@@ -424,7 +500,7 @@ let browserManager = {
 // A type of Worker tailored to our uses.
 const ContextMenuWorker = Worker.compose({
   destroy: Worker.required,
-  
+
   // Returns true if any context listeners are defined in the worker's port.
   anyContextListeners: function CMW_anyContextListeners() {
     return this._port._listeners("context").length > 0;
@@ -434,9 +510,15 @@ const ContextMenuWorker = Worker.compose({
   // true.  popupNode is the node that was context-clicked.
   isAnyContextCurrent: function CMW_isAnyContextCurrent(popupNode) {
     let listeners = this._port._listeners("context");
-    for (let i = 0; i < listeners.length; i++)
-      if (listeners[i].call(this._port._sandbox, popupNode))
-        return true;
+    for (let i = 0; i < listeners.length; i++) {
+      try {
+        if (listeners[i].call(this._port._sandbox, popupNode))
+          return true;
+      }
+      catch (err) {
+        console.exception(err);
+      }
+    }
     return false;
   },
 
@@ -446,183 +528,119 @@ const ContextMenuWorker = Worker.compose({
   fireClick: function CMW_fireClick(popupNode, clickedItemData) {
     this._port._emit("click", popupNode, clickedItemData);
   }
-
 });
 
 
 // This class creates and stores content workers for pairs of menu items and
-// content windows.  Since workers need to be looked up every time the context
-// menu is shown, the main purpose of this class, in addition to creating and
-// storing workers, is to provide fast lookup of workers given a menu item and
-// content window.
-function WorkerRegistry() {
-  // This is a matrix.  The rows are menu item keys, the columns content window
-  // keys.  Each entry in the matrix stores workers for pairs of content windows
-  // and menu items.
-  //
-  // workers[i][w] is an array of objects { item, win, worker }.  item is a menu
-  // item whose key is i, win is a content window whose key is w, and worker is
-  // the content worker created from the pair.  The reason workers[i][w] is an
-  // array and not a single object is that we don't require menu item keys and
-  // content window keys to be unique.
-  //
-  // This structure is fairly simple and allows worker lookups in constant time
-  // in the best case.  In the worst case, however -- when all content windows
-  // have the same key and all menu items have the same key -- lookup is O(I*W),
-  // where I is the number of items and W is the number of windows in the
-  // registry.  I don't expect users to open many duplicate pages or developers
-  // to create many identical items, so I think it's a good trade-off.
-  this.workers = {};
+// content windows.  Use one instance for each item.  Not all pairs need a
+// worker: if an item has a URL context that does not match a window's page,
+// then no worker is created for the pair.
+function WorkerRegistry(item) {
+  this.item = item;
 
-  // These are simple lists of registered menu items and content windows.  For
-  // better performance in the best and common cases (i.e., O(1) instead of
-  // O(n)) these could be hash tables with separate chaining...
-  this.items = [];
-  this.wins = [];
+  // inner window ID => { win, worker }
+  this.winWorkers = {};
+
+  // inner window ID => content window
+  this.winsWithoutWorkers = {};
 }
 
 WorkerRegistry.prototype = {
 
-  // Registers a content window, creating workers for each pair formed by the
-  // window and all previously registered menu items.
+  // Registers a content window, creating a worker for it if it needs one.
   registerContentWin: function WR_registerContentWin(win) {
-    let winKey = this._winKey(win);
-    let (self = this) this.items.forEach(function (item) {
-      self._registerPair(win, winKey, item, self._itemKey(item));
-    });
-    this.wins.push(win);
+    let innerWinID = this._innerWinID(win);
+    if (this._doesURLNeedWorker(win.document.URL))
+      this.winWorkers[innerWinID] = { win: win, worker: this._makeWorker(win) };
+    else
+      this.winsWithoutWorkers[innerWinID] = win;
   },
 
-  // Registers an array of menu items, creating workers for each pair formed by
-  // the items and all previously registered content windows.
-  registerItems: function WR_registerItems(items) {
-    let (self = this) items.forEach(function (item) {
-      let itemKey = self._itemKey(item);
-      self.workers[itemKey] = self.workers[itemKey] || {};
-      self.wins.forEach(function (win) {
-        self._registerPair(win, self._winKey(win), item, itemKey);
-      });
-      self.items.push(item);
-    });
+  // Unregisters a content window, destroying its related worker if it has one.
+  unregisterContentWin: function WR_unregisterContentWin(innerWinID) {
+    // Sometimes inner-window-destroyed is sent for a window that's not
+    // registered, which implies that DOMContentLoaded is not dispatched to any
+    // tabbrowser for that inner window's outer window...  So rather than
+    // erroneously throwing an error if the window is not registered, don't
+    // assume that the window is registered in the first place.
+    if (innerWinID in this.winWorkers) {
+      let winWorker = this.winWorkers[innerWinID];
+      winWorker.worker.destroy();
+      delete winWorker.worker;
+      delete winWorker.win;
+      delete this.winWorkers[innerWinID];
+    }
+    else
+      delete this.winsWithoutWorkers[innerWinID];
   },
 
-  // Unregisters a content window, destroying all workers related to it.
-  unregisterContentWin: function WR_unregisterContentWin(win) {
-    let winKey = this._winKey(win);
-    let (self = this) this.items.forEach(function (item) {
-      let itemKey = self._itemKey(item);
-      let list = self._unregisterPair(win, winKey, item, itemKey);
-
-      // Delete the window column (of this item row) if there are no more
-      // entries.
-      if (!list.length)
-        delete self.workers[itemKey][winKey];
-    });
-
-    let idx = this.wins.indexOf(win);
-    if (idx < 0)
-      throw new Error("Internal error: window not registered.");
-    this.wins.splice(idx, 1);
+  // Creates a worker for each window that needs a worker but doesn't have one.
+  createNeededWorkers: function WR_createNeededWorkers() {
+    for (let [innerWinID, win] in Iterator(this.winsWithoutWorkers)) {
+      delete this.winsWithoutWorkers[innerWinID];
+      this.registerContentWin(win);
+    }
   },
 
-  // Unregisters an array of menu items, destroying all workers related to them.
-  unregisterItems: function WR_unregisterItems(items) {
-    let (self = this) items.forEach(function (item) {
-      let allEmpty = true;
-      let itemKey = self._itemKey(item);
-      self.wins.forEach(function (win) {
-        let list = self._unregisterPair(win, self._winKey(win), item, itemKey);
-        allEmpty = allEmpty && !list.length;
-      });
-
-      // Delete the item row if there are no more entries in any of its window
-      // columns.
-      if (allEmpty)
-        delete self.workers[itemKey];
-
-      let idx = self.items.indexOf(item);
-      if (idx < 0)
-        throw new Error("Internal error: item not registered.");
-      self.items.splice(idx, 1);
-    });
-  },
-
-  // Returns the worker for the given content-window-item pair, or null if none
-  // exists.
-  find: function WR_find(contentWin, item) {
-    let itemKey = this._itemKey(item);
-    if (itemKey in this.workers) {
-      let wins = this.workers[itemKey];
-      let winKey = this._winKey(contentWin);
-      if (winKey in wins) {
-        let list = wins[winKey];
-        let idx = this._indexOfPair(list, contentWin, item);
-        if (idx >= 0)
-          return list[idx].worker;
+  // Destroys the worker for each window that has a worker but doesn't need it.
+  destroyUnneededWorkers: function WR_destroyUnneededWorkers() {
+    for (let [innerWinID, winWorker] in Iterator(this.winWorkers)) {
+      if (!this._doesURLNeedWorker(winWorker.win.document.URL)) {
+        this.unregisterContentWin(innerWinID);
+        this.winsWithoutWorkers[innerWinID] = winWorker.win;
       }
     }
-    return null;
   },
 
-  _registerPair: function WR__registerPair(win, winKey, item, itemKey) {
-    let worker = this._makeWorker(win, item);
-    this.workers[itemKey][winKey] = this.workers[itemKey][winKey] || [];
-    this.workers[itemKey][winKey].push({
-      win: win,
-      item: item,
-      worker: worker
-    });
+  // Returns the worker for the item-window pair or null if none exists.
+  find: function WR_find(contentWin) {
+    let innerWinID = this._innerWinID(contentWin);
+    return (innerWinID in this.winWorkers) ?
+           this.winWorkers[innerWinID].worker :
+           null;
   },
 
-  _unregisterPair: function WR__unregisterPair(win, winKey, item, itemKey) {
-    if (!(itemKey in this.workers))
-      throw new Error("Internal error: item key not in registry.");
-    if (!(winKey in this.workers[itemKey]))
-      throw new Error("Internal error: window key not in registry.");
-    let list = this.workers[itemKey][winKey];
-    let idx = this._indexOfPair(list, win, item);
-    if (idx < 0)
-      throw new Error("Internal error: target pair not found.");
-    list[idx].worker.destroy();
-    list.splice(idx, 1);
-    return list;
+  // Unregisters all content windows in the registry, destroying all workers.
+  destroy: function WR_destroy() {
+    for (let innerWinID in this.winWorkers)
+      this.unregisterContentWin(innerWinID);
+    for (let innerWinID in this.winsWithoutWorkers)
+      this.unregisterContentWin(innerWinID);
   },
 
-  _indexOfPair: function WR__indexOfPair(list, win, item) {
-    let idx = 0;
-    for (; idx < list.length; idx++)
-      if (list[idx].win === win && list[idx].item === item)
-        break;
-    return idx >= list.length ? -1 : idx;
+  // Returns false if the item has a URL context that does not match the given
+  // URL.
+  _doesURLNeedWorker: function WR__doesURLNeedWorker(url) {
+    for (let ctxt in this.item.context)
+      if ((ctxt instanceof URLContext) && !ctxt.isCurrentForURL(url))
+        return false;
+    return true;
   },
 
-  _makeWorker: function WR__makeWorker(win, item) {
+  _makeWorker: function WR__makeWorker(win) {
     let worker = ContextMenuWorker({
       window: win.wrappedJSObject,
-      contentScript: item.contentScript,
-      contentScriptFile: item.contentScriptFile,
+      contentScript: this.item.contentScript,
+      contentScriptFile: this.item.contentScriptFile,
       onError: function (err) console.exception(err)
     });
-    worker.on("message", function workerOnMessage(msg) {
-      if (item.onMessage) {
-        try {
-          item.onMessage(msg);
-        }
-        catch (err) {
-          console.exception(err);
-        }
+    let (item = this.item) worker.on("message", function workerOnMessage(msg) {
+      try {
+        let eventEmitter = item.valueOf(PRIVATE_PROPS_KEY).eventEmitter;
+        eventEmitter._emitOnObject(item, "message", msg);
+      }
+      catch (err) {
+        console.exception(err);
       }
     });
     return worker;
   },
 
-  _winKey: function WR__winKey(win) {
-    return win.document.URL;
-  },
-
-  _itemKey: function WR__itemKey(item) {
-    // We rely on label remaining constant over the lifetime of the item.
-    return item.label;
+  _innerWinID: function WR__innerWinID(win) {
+    return win.
+           QueryInterface(Ci.nsIInterfaceRequestor).
+           getInterface(Ci.nsIDOMWindowUtils).
+           currentInnerWindowID;
   }
 };
 
@@ -643,11 +661,7 @@ function BrowserWindow(window) {
     throw new Error("Internal error: Context menu popup not found.");
   this.contextMenuPopup = new ContextMenuPopup(popup, this);
 
-  // This browser window is responsible for workers related to its content
-  // windows.
-  this.workerReg = new WorkerRegistry();
-
-  // New workers are created when content windows are loaded.
+  // Listen for page loads on the tabbrowser so we can create workers.
   window.gBrowser.addEventListener("DOMContentLoaded", this, false);
 
   // Register content windows that are already open and loaded.
@@ -662,7 +676,6 @@ BrowserWindow.prototype = {
   // Adds an array of items to the window's context menu.
   addItems: function BW_addItems(items) {
     this.contextMenuPopup.addItems(items);
-    this.workerReg.registerItems(items);
   },
 
   // The context specified for a top-level item may not match exactly the real
@@ -687,12 +700,13 @@ BrowserWindow.prototype = {
 
   // Returns true if all of item's contexts are current in the window.
   areAllContextsCurrent: function BW_areAllContextsCurrent(item, popupNode) {
-    let worker = this.workerReg.find(popupNode.ownerDocument.defaultView, item);
+    let win = popupNode.ownerDocument.defaultView;
+    let worker = item.valueOf(PRIVATE_PROPS_KEY).workerReg.find(win);
 
-    // If the worker for the content-window-item pair doesn't exist (e.g.,
-    // because the page hasn't loaded yet), we can't really make a good decision
-    // since the content script may have a context listener.  So just don't show
-    // the item at all.
+    // If the worker for the item-window pair doesn't exist (e.g., because the
+    // page hasn't loaded yet), we can't really make a good decision since the
+    // content script may have a context listener.  So just don't show the item
+    // at all.
     if (!worker)
       return false;
 
@@ -728,16 +742,14 @@ BrowserWindow.prototype = {
   destroy: function BW_destroy() {
     this.contextMenuPopup.destroy();
     this.window.gBrowser.removeEventListener("DOMContentLoaded", this, false);
-    let (self = this) this.workerReg.wins.forEach(function (win) {
-      self._unregisterContentWin(win);
-    });
   },
 
   // Emits a click event in the port of the content worker related to item and
   // popupNode's content window.  Listeners will be passed popupNode and
   // clickedItemData.
   fireClick: function BW_fireClick(item, popupNode, clickedItemData) {
-    let worker = this.workerReg.find(popupNode.ownerDocument.defaultView, item);
+    let win = popupNode.ownerDocument.defaultView;
+    let worker = item.valueOf(PRIVATE_PROPS_KEY).workerReg.find(win);
     if (worker)
       worker.fireClick(popupNode, clickedItemData);
   },
@@ -745,19 +757,15 @@ BrowserWindow.prototype = {
   // Removes an array of items from the window's context menu.
   removeItems: function BW_removeItems(items) {
     this.contextMenuPopup.removeItems(items);
-    this.workerReg.unregisterItems(items);
   },
 
-  // Handles content window loads and unloads.
+  // Handles content window loads.
   handleEvent: function BW_handleEvent(event) {
     try {
       switch (event.type) {
       case "DOMContentLoaded":
         if (event.target.defaultView)
           this._registerContentWin(event.target.defaultView);
-        break;
-      case "unload":
-        this._unregisterContentWin(event.target.defaultView);
         break;
       }
     }
@@ -767,13 +775,9 @@ BrowserWindow.prototype = {
   },
 
   _registerContentWin: function BW__registerContentWin(win) {
-    win.addEventListener("unload", this, false);
-    this.workerReg.registerContentWin(win);
-  },
-
-  _unregisterContentWin: function BW__unregisterContentWin(win) {
-    win.removeEventListener("unload", this, false);
-    this.workerReg.unregisterContentWin(win);
+    browserManager.items.forEach(function (item) {
+      item.valueOf(PRIVATE_PROPS_KEY).workerReg.registerContentWin(win);
+    });
   }
 };
 
