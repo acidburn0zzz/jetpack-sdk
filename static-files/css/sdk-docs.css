@@ -26,8 +26,8 @@ body {
   margin-left: -100%;
 }
 
-#main-content-column h3, #main-content-column h4,
-#main-content-column h5, #main-content-column h6 {
+.api_reference h3, .api_reference  h4,
+.api_reference  h5, .api_reference  h6 {
   overflow:auto;
  }
 
