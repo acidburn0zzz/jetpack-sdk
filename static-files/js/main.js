@@ -72,7 +72,7 @@ function run(jQuery) {
       headingIds.push(suffixedName);
       // now add the ID attribute and ToC entry
       $(this).attr("id", suffixedName);
-      $("#toc").append("<a id='link" + i + 
+      $("#toc").append("<a id='link" + i +
                        "' href='" + document.location + "#" +
         suffixedName + "' title='" + $(this).attr("tagName") + "'>" +
         baseName + "</a>");
