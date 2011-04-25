@@ -44,42 +44,48 @@ function run(jQuery) {
   function generateToC() {
     var headings = '.api_reference  h2,.api_reference h3, .api_reference h4, ' +
                    '.api_reference h5, .api_reference h6';
+
     if ($(headings).length == 0) {
       $("#toc").hide();
       return;
     }
+
+    var suffix = 0;
+    var headingIds = new Array();
     $(headings).each(function(i) {
-      var link = document.location + "#title" + i;
-      var current = $(this);
- //     buildLink(current);
-      var dataTypeStart = current.html().indexOf(" : ");
-      var tocName = current.html();
+      var link = document.location;
+      var baseName = $(this).html();
+      // remove the datatype portion of properties
+      var dataTypeStart = baseName.indexOf(" : ");
       if (dataTypeStart != -1)
-        tocName = tocName.slice(0, dataTypeStart);
-      current.attr("id", "title" + i);
-      $("#toc").append("<a id='link" + i + "' href='" +
-        link + "' title='" + current.attr("tagName") + "'>" +
-        tocName + "</a>");
+        baseName = baseName.slice(0, dataTypeStart);
+      // slugify the name of the heading
+      slugifiedBaseName = slugify(baseName);
+      // uniqueify the name of the heading
+      suffixedName = slugifiedBaseName;
+      headingIdExists = headingIds.indexOf(suffixedName) != -1;
+      while(headingIdExists) {
+        suffix++;
+        suffixedName = baseName + suffix;
+        headingIdExists = headingIds.indexOf(suffixedName) != -1;
+        }
+      headingIds.push(suffixedName);
+      // now add the ID attribute and ToC entry
+      $(this).attr("id", suffixedName);
+      $("#toc").append("<a id='link" + i + 
+                       "' href='" + document.location + "#" +
+        suffixedName + "' title='" + $(this).attr("tagName") + "'>" +
+        baseName + "</a>");
       });
-
-  //  $(headings).each(function() {
-  //      window.alert($(this).html());
-//      $(this).prevAll(headings).each(function() {
-//        });
-  //  });
   }
-/*
-  function buildLink(heading) {
 
-    hierarchy = heading.parents(headings);
-      window.alert(hierarchy);
-    hierarchy.each(function(parent) {
- //     window.alert(parent.html());
-      window.alert(hierarchy);
-    });
-    window.alert(heading.html());    
+  // remove/replace characters which are not valid in URLs
+  function slugify(text) {
+    text = text.replace(/[^-a-zA-Z0-9,&\s]+/ig, '');
+    text = text.replace(/-/gi, "_");
+    text = text.replace(/\s/gi, "-");
+    return text.toLowerCase();
   }
-*/
 
   var serverNeedsKeepalive = true;
 
