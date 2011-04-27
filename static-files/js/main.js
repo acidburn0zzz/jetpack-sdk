@@ -42,8 +42,9 @@ function run(jQuery) {
   }
 
   function generateToC() {
-    var headings = '.api_reference  h2, .api_reference h3, .api_reference h4, ' +
-                   '.api_reference h5, .api_reference h6';
+    var headings = '.api_reference h2, .api_reference h3, ' +
+                   '.api_reference h4, .api_reference h5, ' +
+                   '.api_reference h6';
 
     if ($(headings).length == 0) {
       $("#toc").hide();
@@ -52,13 +53,18 @@ function run(jQuery) {
 
     var suffix = 1;
     var headingIDs = new Array();
+    var pageURL = document.location.protocol + "//" +
+                  document.location.host +
+                  document.location.pathname +
+                  document.location.search;
+
     $(headings).each(function(i) {
       var baseName = $(this).html();
-      // remove the datatype portion of properties
+      // Remove the datatype portion of properties
       var dataTypeStart = baseName.indexOf(" : ");
       if (dataTypeStart != -1)
         baseName = baseName.slice(0, dataTypeStart);
-      // uniqueify the name of the heading
+      // Uniqueify the name of the heading
       var suffixedName = baseName;
       var headingIDExists = headingIDs.indexOf(suffixedName) != -1;
       while (headingIDExists) {
@@ -68,17 +74,26 @@ function run(jQuery) {
       }
       headingIDs.push(suffixedName);
       var encodedName = encodeURIComponent(suffixedName);
-      // now add the ID attribute and ToC entry
+      // Now add the ID attribute and ToC entry
       $(this).attr("id", suffixedName);
-      var tocEntry = $("<a " +
-                       "href='"+ document.location + "#" + encodedName + "' " +
-                       "class='" + $(this).attr("tagName") + "' " +
-                       "title='" + baseName + "'></a>");
+      var url = pageURL + "#" + encodedName;
+      var tocEntry = $("<a></a>").attr({
+        href: url,
+        "class": $(this).attr("tagName"),
+        title: baseName
+      });
       tocEntry.text(baseName);
       $("#toc").append(tocEntry);
     });
-  }
 
+  // Make Firefox jump to the anchor even though we created it after it
+  // parsed the page.
+  if (document.location.hash) {
+    var hash = document.location.hash;
+    document.location.replace(pageURL + "#");
+    document.location.replace(pageURL + hash);
+    }
+  }
   var serverNeedsKeepalive = true;
 
   function sendIdlePing() {
@@ -103,7 +118,7 @@ function run(jQuery) {
     scheduleNextIdlePing();
   highlightCurrentPage();
   highlightCode();
-  $(".syntaxhighlighter").css("width", "auto");
+  $(".syntaxhighlighter").width("auto");
   generateToC();
 }
 
