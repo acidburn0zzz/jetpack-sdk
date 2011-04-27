@@ -51,9 +51,8 @@ function run(jQuery) {
     }
 
     var suffix = 1;
-    var headingIds = new Array();
+    var headingIDs = new Array();
     $(headings).each(function(i) {
-      var link = document.location;
       var baseName = $(this).html();
       // remove the datatype portion of properties
       var dataTypeStart = baseName.indexOf(" : ");
@@ -61,13 +60,13 @@ function run(jQuery) {
         baseName = baseName.slice(0, dataTypeStart);
       // uniqueify the name of the heading
       var suffixedName = baseName;
-      var headingIDExists = headingIds.indexOf(suffixedName) != -1;
+      var headingIDExists = headingIDs.indexOf(suffixedName) != -1;
       while (headingIDExists) {
         suffix++;
         suffixedName = baseName + "_" + suffix;
-        headingIDExists = headingIds.indexOf(suffixedName) != -1;
+        headingIDExists = headingIDs.indexOf(suffixedName) != -1;
       }
-      headingIds.push(suffixedName);
+      headingIDs.push(suffixedName);
       var encodedName = encodeURIComponent(suffixedName);
       // now add the ID attribute and ToC entry
       $(this).attr("id", suffixedName);
