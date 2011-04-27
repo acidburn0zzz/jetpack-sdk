@@ -42,7 +42,7 @@ function run(jQuery) {
   }
 
   function generateToC() {
-    var headings = '.api_reference  h2,.api_reference h3, .api_reference h4, ' +
+    var headings = '.api_reference  h2, .api_reference h3, .api_reference h4, ' +
                    '.api_reference h5, .api_reference h6';
 
     if ($(headings).length == 0) {
@@ -50,7 +50,7 @@ function run(jQuery) {
       return;
     }
 
-    var suffix = 0;
+    var suffix = 1;
     var headingIds = new Array();
     $(headings).each(function(i) {
       var link = document.location;
@@ -59,32 +59,25 @@ function run(jQuery) {
       var dataTypeStart = baseName.indexOf(" : ");
       if (dataTypeStart != -1)
         baseName = baseName.slice(0, dataTypeStart);
-      // slugify the name of the heading
-      slugifiedBaseName = slugify(baseName);
       // uniqueify the name of the heading
-      suffixedName = slugifiedBaseName;
-      headingIdExists = headingIds.indexOf(suffixedName) != -1;
-      while(headingIdExists) {
+      var suffixedName = baseName;
+      var headingIDExists = headingIds.indexOf(suffixedName) != -1;
+      while (headingIDExists) {
         suffix++;
-        suffixedName = baseName + suffix;
-        headingIdExists = headingIds.indexOf(suffixedName) != -1;
-        }
+        suffixedName = baseName + "_" + suffix;
+        headingIDExists = headingIds.indexOf(suffixedName) != -1;
+      }
       headingIds.push(suffixedName);
+      var encodedName = encodeURIComponent(suffixedName);
       // now add the ID attribute and ToC entry
       $(this).attr("id", suffixedName);
-      $("#toc").append("<a id='link" + i +
-                       "' href='" + document.location + "#" +
-        suffixedName + "' title='" + $(this).attr("tagName") + "'>" +
-        baseName + "</a>");
-      });
-  }
-
-  // remove/replace characters which are not valid in URLs
-  function slugify(text) {
-    text = text.replace(/[^-a-zA-Z0-9,&\s]+/ig, '');
-    text = text.replace(/-/gi, "_");
-    text = text.replace(/\s/gi, "-");
-    return text.toLowerCase();
+      var tocEntry = $("<a " +
+                       "href='"+ document.location + "#" + encodedName + "' " +
+                       "class='" + $(this).attr("tagName") + "' " +
+                       "title='" + baseName + "'></a>");
+      tocEntry.text(baseName);
+      $("#toc").append(tocEntry);
+    });
   }
 
   var serverNeedsKeepalive = true;

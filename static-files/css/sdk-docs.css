@@ -85,28 +85,28 @@ body {
   display: block;
   }
 
-#toc a[title = H2] {
+#toc a[class = H2] {
   font-size: 1.1em;
   font-weight: bold;
   margin-left: 0.5em;
 }
 
-#toc a[title = H3] {
+#toc a[class = H3] {
   margin-left: 0.5em;
   font-weight: bold;
 }
 
-#toc a[title = H4] {
+#toc a[class = H4] {
   margin-left: 1.5em;
   font-family: "andale mono", monospace;
 }
 
-#toc a[title = H5] {
+#toc a[class = H5] {
   margin-left: 2.5em;
   font-weight: bold;
 }
 
-#toc a[title = H6] {
+#toc a[class = H6] {
   margin-left: 3em;
   font-family: "andale mono", monospace;
 }
