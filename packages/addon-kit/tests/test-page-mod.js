@@ -20,7 +20,7 @@ exports.testPageMod1 = function(test) {
   let pageMod;
   [pageMod] = testPageMod(test, "about:", [{
       include: "about:*",
-      contentScriptWhen: 'ready',
+      contentScriptWhen: 'end',
       contentScript: 'new ' + function WorkerScope() {
         window.document.body.setAttribute("JEP-107", "worked");
       },
@@ -82,6 +82,10 @@ exports.testPageModIncludes = function(test) {
           window[msg] = true;
         }
       },
+      // The testPageMod callback with test assertions is called on 'end',
+      // and we want this page mod to be attached before it gets called,
+      // so we attach it on 'start'.
+      contentScriptWhen: 'start',
       onAttach: function(worker) {
         worker.postMessage(this.include[0]);
       }
@@ -118,7 +122,7 @@ exports.testCommunication1 = function(test) {
 
   testPageMod(test, "about:", [{
       include: "about:*",
-      contentScriptWhen: 'ready',
+      contentScriptWhen: 'end',
       contentScript: 'new ' + function WorkerScope() {
         self.on('message', function(msg) {
           document.body.setAttribute('JEP-107', 'worked');
@@ -200,6 +204,44 @@ exports.testCommunication2 = function(test) {
     function(win, done) {
       window = win;
       callbackDone = done;
+    }
+  );
+};
+
+exports.testEventEmitter = function(test) {
+  let workerDone = false,
+      callbackDone = null;
+
+  testPageMod(test, "about:", [{
+      include: "about:*",
+      contentScript: 'new ' + function WorkerScope() {
+        self.port.on('addon-to-content', function(data) {
+          self.port.emit('content-to-addon', data);
+        });
+      },
+      onAttach: function(worker) {
+        worker.on('error', function(e) {
+          test.fail('Errors were reported : '+e);
+        });
+        worker.port.on('content-to-addon', function(value) {
+          test.assertEqual(
+            "worked",
+            value,
+            "EventEmitter API works!"
+          );          
+          if (callbackDone)
+            callbackDone();
+          else
+            workerDone = true;
+        });
+        worker.port.emit('addon-to-content', 'worked');
+      }
+    }],
+    function(win, done) {
+      if (workerDone)
+        done();
+      else
+        callbackDone = done;
     }
   );
 };
