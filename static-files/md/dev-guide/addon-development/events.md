@@ -1,11 +1,27 @@
 # Working with Events #
 
 The Add-on SDK supports event-driven programming through its
-[`EventEmitter`](packages/api-utils/docs/events.html) framework. Objects emit
+[`EventEmitter`](packages/api-utils/docs/events.html) framework.
+
+There are two main ways you will interact with the EventEmitter
+framework:
+
+* many objects in the SDK emit **built-in events**. For example, a
+[widget](packages/addon-kit/docs/widget.html) will tell you when it's clicked,
+or the [tabs](packages/addon-kit/docs/tabs.html) module will tell you when a
+new tab is opened. You don't emit these events yourself, but can register a
+listener with such objects in order to receive them.
+
+* if you're using
+[content scripts](dev-guide/addon-development/web-content.html) to inteact with(you can define your own **custom events** to communicate between 
+
+Objects emit
 events on state changes that might be of interest to add-on code, such as
 browser windows opening, pages loading, network requests completing, and mouse
 clicks. By registering a listener function to an event emitter an add-on can
 receive notifications of these events.
+
+The SDK
 
 The interface exposed by an event emitter consists of two functions:
 
