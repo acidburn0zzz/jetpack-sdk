@@ -3,25 +3,33 @@
 The Add-on SDK supports event-driven programming through its
 [`EventEmitter`](packages/api-utils/docs/events.html) framework.
 
-There are two main ways you will interact with the EventEmitter
+Objects emit events on state changes that might be of interest to add-on code,
+such as browser windows opening, pages loading, network requests completing,
+and mouse clicks. By registering a listener function to an event emitter an
+add-on can receive notifications of these events.
+
+<span class="aside">
+We talk about content
+scripts in more detail in the
+[Working with Content Scripts](dev-guide/addon-development/web-content.html)
+guide.</span>
+Additionally, if you're using content scripts to interact with web content,
+you can define your own events and use them to communicate between the main
+add-on code and the content scripts. In this case one end of the conversation
+emits the events, and the other end listens to them.
+
+So there are two main ways you will interact with the EventEmitter
 framework:
 
-* many objects in the SDK emit **built-in events**. For example, a
-[widget](packages/addon-kit/docs/widget.html) will tell you when it's clicked,
-or the [tabs](packages/addon-kit/docs/tabs.html) module will tell you when a
-new tab is opened. You don't emit these events yourself, but can register a
-listener with such objects in order to receive them.
+* **listening to built-in events** emitted by objects in the SDK, such as tabs
+opening, pages loading, mouse clicks
 
-* if you're using
-[content scripts](dev-guide/addon-development/web-content.html) to inteact with(you can define your own **custom events** to communicate between 
+* **sending and receiving custom events** between content scripts and add-on
+code
 
-Objects emit
-events on state changes that might be of interest to add-on code, such as
-browser windows opening, pages loading, network requests completing, and mouse
-clicks. By registering a listener function to an event emitter an add-on can
-receive notifications of these events.
-
-The SDK
+This guide only covers the first of these; the second is explained in the guide
+to
+[Working with Content Scripts](dev-guide/addon-development/web-content.html).
 
 The interface exposed by an event emitter consists of two functions:
 
