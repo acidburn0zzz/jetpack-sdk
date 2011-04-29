@@ -69,7 +69,7 @@ In this example the content script is supplied directly to the page mod via
 the `contentScript` option in its constructor, and does not need to be
 maintained as a separate file at all.
 
-## Loading content scripts ##
+## Loading Content Scripts ##
 
 The constructors for content-script-using objects such as panel and page-mod
 define a group of options for loading content scripts:
@@ -129,7 +129,7 @@ fires.
 
 The default value is "end".
 
-### <a name="content_script_access">Content script access</a>###
+### <a name="content_script_access">Content Script Access</a>###
 
 Content scripts loaded into the same global execution context can interact
 with each other directly as well as with the web content itself. However,
@@ -153,7 +153,7 @@ to page B.
 The web content has no access to objects created by the content script, unless
 the content script explicitly makes them available.
 
-## Communicating with content scripts ##
+## Communicating with Content Scripts ##
 
 To enable add-on scripts and content scripts to communicate with each other,
 each end of the conversation has access to a `port` object which defines two
@@ -183,7 +183,7 @@ alt="Content script events">
 Events are asynchronous: that is, the sender does not wait for a reply from
 the recipient but just emits the event and continues processing.
 
-### Accessing `port` in the content script ###
+### Accessing `port` in the Content Script ###
 
 In the content script the `port` object is available as a property of the
 global `self` object. Thus, to emit an event from a content script:
@@ -208,7 +208,7 @@ object, you would call the `on` function attached to the global `self` object:
 So the `port` property is essentially used here as a namespace for
 user-defined events.
 
-### Accessing `port` in the add-on script ###
+### Accessing `port` in the Add-on Script ###
 
 In the add-on code, the channel of communication between the add-on and a
 particular content script context is encapsulated by the `worker` object. Thus
@@ -230,7 +230,7 @@ with a panel you use `panel.port.on()`:
 
     panel.show();
 
-To emit user-defined events from your add-on you can just call
+Conversely, to emit user-defined events from your add-on you can just call
 `panel.port.emit()`:
 
     var panel = require("panel").Panel({
@@ -282,7 +282,7 @@ element in the page
 
 ### Examples ###
 
-#### Reddit example ####
+#### Reddit Example ####
 
 This example add-on creates a panel containing the mobile version of Reddit.
 When the user clicks on the title of a story in the panel, the add-on opens
@@ -349,3 +349,140 @@ This script uses jQuery to interact with the DOM of the page and the
 
 See the `examples/reddit-panel` directory for the complete example (including
 the content script containing jQuery).
+
+### Message Events ###
+
+As an alternative to user-defined events content modules support the built-in
+`message` event. For most cases user-defined events are preferable to message
+events. However, the `context-menu` module does not support user-defined
+events, so to send messages from a content script to the add-on via a context
+menu object, you must use message events.
+
+#### Handling Message Events in the Content Script ####
+
+To send a message from a content script, you use the `postMessage` function of
+the global `self` object:
+
+    self.postMessage(contentScriptMessage);
+
+This takes a single parameter, the message payload, which may be any
+JSON-serializable value.
+
+To receive a message from the add-on script, use `self`'s `on` function:
+
+    self.on("message", function(addonMessage) {
+      // Handle the message
+    });
+
+Like all event-registration functions, this takes two parameters: the name
+of the event, and the handler function. The handler function is passed the
+message payload.
+
+#### Handling Message Events in the Add-on Script ####
+
+To send a message to a content script, use the worker's `postMessage`
+function. Again, `panel` and `page` integrate `worker` directly:
+
+    // Post a message to the panel's content scripts
+    panel.postMessage(addonMessage);
+
+However, for `page-mod` objects you need to listen to the `onAttach` event
+and use the worker supplied to that:
+
+    var pageMod = require('page-mod').PageMod({
+      include: ['*'],
+      contentScript: pageModScript,
+      onAttach: function(worker) {
+        worker.postMessage(addonMessage);
+      }
+    });
+
+To receive messages from a content script, use the worker's `on` function.
+To simplify this most content modules provide an `onMessage` property as an
+argument to the constructor:
+
+    panel = require("panel").Panel({
+      onMessage: function(contentScriptMessage) {
+        // Handle message from the content script
+      }
+    });
+
+#### Message Events Versus User-Defined Events ####
+
+You can use message events as an alternative to user-defined events:
+
+    var pageModScript = "window.addEventListener('mouseover', function(event) {" +
+                        "  self.postMessage(event.target.toString());" +
+                        "}, false);";
+
+    var pageMod = require('page-mod').PageMod({
+      include: ['*'],
+      contentScript: pageModScript,
+      onAttach: function(worker) {
+        worker.on('message', function(message) {
+          console.log('mouseover: ' + message);
+        });
+      }
+    });
+
+The reason to prefer user-defined events is that as soon as you need to send
+more than one type of message, then both sending and receiving messages gets
+more complex.
+
+Suppose the content script wants to send `mouseout` events as well as
+`mouseover`. Now we have to embed the event type in the message payload, and
+implement a switch function in the receiver to dispatch the message:
+
+    var pageModScript = "window.addEventListener('mouseover', function(event) {" +
+                        "  self.postMessage({" +
+                        "    kind: 'mouseover'," +
+                        "    element: event.target.toString()" +
+                        "  });" +
+                        "}, false);" +
+                        "window.addEventListener('mouseout', function(event) {" +
+                        "  self.postMessage({" +
+                        "    kind: 'mouseout'," +
+                        "    element: event.target.toString()" +
+                        "  });" +
+                        " }, false);"
+
+
+    var pageMod = require('page-mod').PageMod({
+      include: ['*'],
+      contentScript: pageModScript,
+      onAttach: function(worker) {
+        worker.on('message', function(message) {
+        switch(message.kind) {
+          case 'mouseover':
+            console.log('mouseover: ' + message.element);
+            break;
+          case 'mouseout':
+            console.log('mouseout: ' + message.element);
+            break;
+          }
+        });
+      }
+    });
+
+Implementing the same add-on with user-defined events is shorter and more
+readable:
+
+    var pageModScript = "window.addEventListener('mouseover', function(event) {" +
+                        "  self.port.emit('mouseover', event.target.toString());" +
+                        "}, false);" +
+                        "window.addEventListener('mouseout', function(event) {" +
+                        "  self.port.emit('mouseout', event.target.toString());" +
+                        "}, false);";
+
+    var pageMod = require('page-mod').PageMod({
+      include: ['*'],
+      contentScript: pageModScript,
+      onAttach: function(worker) {
+        worker.port.on('mouseover', function(message) {
+          console.log('mouseover :' + message);
+        });
+        worker.port.on('mouseout', function(message) {
+          console.log('mouseout :' + message);
+        });
+      }
+    });

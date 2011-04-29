@@ -4,7 +4,7 @@ var reddit_panel = require("panel").Panel({
   width: 240,
   height: 320,
   contentURL: "http://www.reddit.com/.mobile?keep_extension=True",
-  contentScriptFile: [data.url("jquery-1.4.2.min.js"),
+  contentScriptFile: [data.url("jquery-1.4.4.min.js"),
                       data.url("panel.js")]
 });
 
