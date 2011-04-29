@@ -221,7 +221,7 @@ worker API directly. So to receive events from a content script associated
 with a panel you use `panel.port.on()`:
 
     var panel = require("panel").Panel({
-      contentScript: "self.port.emit('log', 'panel is showing');"
+      contentScript: "self.port.emit('showing', 'panel is showing');"
     });
 
     panel.port.on("showing", function(text) {
@@ -235,7 +235,7 @@ To emit user-defined events from your add-on you can just call
 
     var panel = require("panel").Panel({
       contentScript: "self.port.on('alert', function(text) {" +
-                       "window.alert(text);" +
+                     "  console.log(text);" +
                      "});"
     });
 
@@ -301,7 +301,7 @@ This is the complete add-on script:
       width: 240,
       height: 320,
       contentURL: "http://www.reddit.com/.mobile?keep_extension=True",
-      contentScriptFile: [data.url("jquery-1.4.2.min.js"),
+      contentScriptFile: [data.url("jquery-1.4.4.min.js"),
                           data.url("panel.js")]
     });
 
@@ -334,16 +334,14 @@ This is the `panel.js` content script that intercepts link clicks:
         return;
 
       // Don't intercept the click if it was on one of the links in the header
-      // or next/previous footer, since those links should load in the panel
-      // itself.
+      // or next/previous footer, since those links should load in the panel itself.
       if ($(t).parents('#header').length || $(t).parents('.nextprev').length)
         return;
 
-      // Intercept the click, passing it to the addon, which will load it in
-      // a tab.
+      // Intercept the click, passing it to the addon, which will load it in a tab.
       event.stopPropagation();
       event.preventDefault();
-      self.port.emit("click", t.toString());
+      self.port.emit('click', t.toString());
     });
 
 This script uses jQuery to interact with the DOM of the page and the
