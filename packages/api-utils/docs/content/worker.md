@@ -37,14 +37,15 @@ that occurs in one of the content scripts.
     const workers = require("content/worker");
     let worker =  workers.Worker({
       window: require("window-utils").activeWindow,
-      contentScript: "onMessage = function(data) { " +
-                     "  postMessage(window.location + ': Hi ' + data.name); " +
-                     "};",
-      onMessage: function(msg) {
-        console.log(msg);
-      }
+      contentScript: 
+        "self.port.on('hello', function(name) { " +
+        "  self.port.emit('response', window.location); " +
+        "});"
     });
-    worker.postMessage({ name: 'worker'});
+    worker.port.emit("hello", { name: "worker"});
+    worker.port.on("response", function (location) {
+      console.log(location);
+    });
 
 [EventEmitter]:packages/api-utils/docs/events.html
 
@@ -67,6 +68,13 @@ Options for the constructor, with the following keys:
     Functions that will registered as a listener to a 'message' events.
   @prop [onError] {function}
     Functions that will registered as a listener to an 'error' events.
+</api>
+
+<api name="port">
+@property {EventEmitter}
+[EventEmitter](packages/api-utils/docs/events.html) object that allow to:<br>
+- send customized messages to the worker via `port.emit` function, <br>
+- observe events coming from the worker with `port.on` method.
 </api>
 
 <api name="postMessage">

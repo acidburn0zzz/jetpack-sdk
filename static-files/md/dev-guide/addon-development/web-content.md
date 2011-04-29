@@ -129,7 +129,7 @@ fires.
 
 The default value is "end".
 
-### <a name="content_script_access">Content Script Access</a>###
+### <a name="content_script_access">Content Script Access</a> ###
 
 Content scripts loaded into the same global execution context can interact
 with each other directly as well as with the web content itself. However,
@@ -153,7 +153,7 @@ to page B.
 The web content has no access to objects created by the content script, unless
 the content script explicitly makes them available.
 
-## Communicating with Content Scripts ##
+## <a name="content_script_events">Communicating with Content Scripts</a> ##
 
 To enable add-on scripts and content scripts to communicate with each other,
 each end of the conversation has access to a `port` object which defines two
