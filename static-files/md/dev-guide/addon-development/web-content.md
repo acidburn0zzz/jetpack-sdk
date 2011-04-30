@@ -27,7 +27,7 @@ add-on code will run in the add-on process and will not have direct access to
 any web content.
 
 This means that an add-on which needs to interact with web content needs to be
-structured in two parts: 
+structured in two parts:
 
 * the main script runs in the add-on process
 * any code that needs to interact with web content is loaded into the web
@@ -36,7 +36,7 @@ _content scripts_.
 
 A single add-on may use multiple content scripts, and content scripts loaded
 into the same context can interact directly with each other as well as with
-the web content itself. See the section below on 
+the web content itself. See the section below on
 <a href="dev-guide/addon-development/web-content.html#content_script_access">
 content script access</a>.
 

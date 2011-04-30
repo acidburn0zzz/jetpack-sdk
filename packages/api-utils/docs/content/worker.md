@@ -37,7 +37,7 @@ that occurs in one of the content scripts.
     const workers = require("content/worker");
     let worker =  workers.Worker({
       window: require("window-utils").activeWindow,
-      contentScript: 
+      contentScript:
         "self.port.on('hello', function(name) { " +
         "  self.port.emit('response', window.location); " +
         "});"
