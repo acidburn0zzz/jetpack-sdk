@@ -72,9 +72,11 @@ Options for the constructor, with the following keys:
 
 <api name="port">
 @property {EventEmitter}
-[EventEmitter](packages/api-utils/docs/events.html) object that allow to:<br>
-- send customized messages to the worker via `port.emit` function, <br>
-- observe events coming from the worker with `port.on` method.
+[EventEmitter](packages/api-utils/docs/events.html) object that allows you to:
+
+* send customized messages to the worker using the `port.emit` function
+* receive events from the worker using the `port.on` function
+
 </api>
 
 <api name="postMessage">

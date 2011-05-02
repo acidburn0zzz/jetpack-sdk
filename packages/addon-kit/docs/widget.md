@@ -366,7 +366,7 @@ Represents a widget object.
 [EventEmitter](packages/api-utils/docs/events.html) object that allows you to:
 
 * send events to the content script using the `port.emit` function
-* receive events from the content script using the `port.on`
+* receive events from the content script using the `port.on` function
 
 See
 <a href="dev-guide/addon-development/web-content.html#content_script_events">
