@@ -89,6 +89,11 @@ class WebDocs(object):
         package_content = self._create_package_detail(package_name)
         return self._create_page(package_content)
 
+    def create_examples_page(self):
+        examples_dir = os.path.join(self.root, 'examples')
+        examples_content = self._create_examples_listing(examples_dir)
+        return self._create_page(examples_content)
+
     def _create_page(self, page_content):
         page = self._insert_title(self.base_page, page_content)
         page = insert_after(page, CONTENT_ID, page_content)
@@ -183,6 +188,42 @@ class WebDocs(object):
                     package_json['readme']), 'p'), 'div', {'class':'docs'})
         return tag_wrap(package_title + table + description, 'div', \
                         {'class':'package-detail'})
+
+    def _create_examples_listing(self, examples_dir):
+        examples_title = tag_wrap('Examples', 'h1')
+        examples_listing = ''
+        for dirname in os.listdir(examples_dir):
+            if not dirname.startswith('.') and \
+               os.path.isfile(os.path.join(examples_dir, dirname, 'README.md')):
+                examples_listing += self._create_example_detail(dirname)
+        return examples_title + examples_listing
+
+    def _create_example_detail(self, example_name):
+        example_dir = os.path.join(self.root, 'examples', example_name)
+        readme_filename = os.path.join(example_dir, 'README.md')
+        readme_md = unicode(open(readme_filename, 'r').read(), 'utf8')
+        readme_content = tag_wrap(markdown.markdown(readme_md), 'div', \
+                                  {'class':'example-readme'})
+        example_files = self._create_example_files(example_dir, example_name)
+        example_files = tag_wrap(example_files, 'div', \
+                                 {'class':'example-files'})
+        examples_title = tag_wrap(example_name, 'h2')
+        example_detail = examples_title + readme_content + example_files
+        return tag_wrap(example_detail, 'div', {'class':'example'})
+
+    def _create_example_files(self, example_dir, example_name):
+        example_files = tag_wrap('Files:', 'h3')
+        for dirname, dirnames, filenames in os.walk(example_dir):
+            for filename in filenames:
+                if not filename.startswith('.'):
+                    link_name = os.path.join(dirname[len(example_dir):], filename)
+                    # ugly way to change possible '\' to '/' for URLs
+                    link_target = os.path.join(dirname[len(self.root):], filename)
+                    link_target_components = link_target.split(os.sep)
+                    link_target = '/'.join(link_target_components)[1:]
+                    link = tag_wrap(link_name, 'a', {'href': link_target})
+                    example_files += link + '<br>'
+        return example_files
 
     def _insert_title(self, target, content):
         match = re.search('<h1>.*</h1>', content)

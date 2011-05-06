@@ -36,7 +36,7 @@ strong {
 h1 {
   font-size: 2.571em;
   line-height: 1em;
-  margin-bottom: .5833em;
+  margin-bottom: 0.4em;
   margin-top: .1667em;
   font-family: georgia,serif;
   font-weight: normal;
@@ -59,7 +59,7 @@ h3 {
   font-weight: normal;
   line-height: 1.111em;
   margin-bottom: .778em;
-  margin-top: 1.556em;
+  margin-top: 1.0em;
   font-family: georgia,serif;
   font-style: italic;
 }

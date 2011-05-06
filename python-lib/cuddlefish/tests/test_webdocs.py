@@ -80,6 +80,28 @@ class WebDocTests(unittest.TestCase):
             '<p>Feed the aardvark.</p>'\
             in module)
 
+    def test_create_example_doc(self):
+        root = os.path.join(os.getcwd() + \
+                            '/python-lib/cuddlefish/tests/static-files')
+        web_docs = webdocs.WebDocs(root)
+        doc = web_docs.create_examples_page()
+        self.assertTrue(\
+            '<div class="example">' in doc)
+        self.assertTrue(\
+            '<h2>annotator</h2>' in doc)
+        self.assertTrue(\
+            '<div class="example-readme">' in doc)
+        self.assertTrue(\
+            '<h2>Usage</h2>' in doc)
+        self.assertTrue(\
+            '<div class="example-files">' in doc)
+        self.assertTrue(\
+            '<a href="examples/annotator/package.json">package.json</a>' in doc)
+        self.assertTrue(\
+            '<h2>reddit-panel</h2>' in doc)
+        self.assertTrue(\
+            '<a href="examples/reddit-panel/package.json">package.json</a>' in doc)
+
     def _test_common_contents(self, doc):
         self.assertTrue(\
             '<a href="packages/aardvark/aardvark.html"' in doc)

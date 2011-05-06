@@ -147,8 +147,13 @@ class Server(object):
                  else:
                      path = os.path.join(self.env_root, *parts)
                      response = self.web_docs.create_module_page(path)
+            elif parts[0] == 'examples.html':
+                 response = self.web_docs.create_examples_page()
             else:
-                path = os.path.join(self.root, *parts)
+                if parts[0] == 'examples':
+                    path = os.path.join(self.env_root, *parts)
+                else:
+                    path = os.path.join(self.root, *parts)
                 url = urllib.pathname2url(path)
                 mimetype = guess_mime_type(url)
                 response = open(path, 'r').read()
@@ -328,6 +333,14 @@ def generate_static_docs(env_root, tgz_filename, base_url = ''):
         for n in filenames:
             if n.endswith("~"):
                 os.unlink(os.path.join(dirpath, n))
+
+    # copy the examples
+    shutil.copytree(os.path.join(server.env_root, "examples"), \
+                    os.path.join(staging_dir, "examples"))
+
+    # generate and add 'examples.html'
+    examples_file = web_docs.create_examples_page()
+    open(os.path.join(staging_dir, "examples.html"), "w").write(examples_file)
 
     # then copy docs from each package
     os.mkdir(os.path.join(staging_dir, "packages"))
