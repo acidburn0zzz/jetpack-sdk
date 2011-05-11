@@ -2,13 +2,7 @@ function run(jQuery) {
   const IDLE_PING_DELAY = 5000;
 
   function highlightCode() {
-    $("code").parent("pre").addClass("brush: js");
-    //remove the inner <code> tags
-    $('pre>code').each(function() {
-      var inner = $(this).contents();
-      $(this).replaceWith(inner);
-    })
-    SyntaxHighlighter.highlight();
+    $('code[class!="xml-html"][class!="css"]').parent("pre").addClass("javascript");
   }
 
   function highlightCurrentPage() {

@@ -128,14 +128,15 @@ These files will live in a new subdirectory of `data` which we'll call
 
 ### Annotation panel HTML ###
 
-<script type="syntaxhighlighter" class="brush: html"><![CDATA[
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<pre>
+<code class="xml-html">
+&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot;
+	&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-	<title>Annotation</title>
-	<style type="text/css" media="all">
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;en&quot;&gt;
+&lt;head&gt;
+	&lt;title&gt;Annotation&lt;/title&gt;
+	&lt;style type=&quot;text/css&quot; media=&quot;all&quot;&gt;
 
 	body {
 		font: 100% arial, helvetica, sans-serif;
@@ -146,19 +147,19 @@ These files will live in a new subdirectory of `data` which we'll call
 		text-align:left;
 	}
 
-	</style>
+	&lt;/style&gt;
 
-</head>
+&lt;/head&gt;
 
-<body>
+&lt;body&gt;
 
-<div id = "annotation">
-</div>
+&lt;div id = &quot;annotation&quot;&gt;
+&lt;/div&gt;
 
-</body>
-</html>
-]]>
-</script>
+&lt;/body&gt;
+&lt;/html&gt;
+</code>
+</pre>
 
 Save this in `data/annotation` as `annotation.html`.
 

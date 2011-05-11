@@ -109,36 +109,37 @@ Save this file in `data/list` as `annotation-list.js`.
 
 Here's the HTML for the annotation list:
 
-<script type="syntaxhighlighter" class="brush: html"><![CDATA[
-<html>
-<head>
-  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-  <title>Saved annotations</title>
-  <link rel="stylesheet" type="text/css" href="annotation-list.css" />
-</head>
-<body>
+<pre>
+<code class="xml-html">
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta http-equiv=&quot;Content-type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt;
+  &lt;title&gt;Saved annotations&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;annotation-list.css&quot; /&gt;
+&lt;/head&gt;
+&lt;body&gt;
 
-<div id="annotation-list">
-</div>
+&lt;div id=&quot;annotation-list&quot;&gt;
+&lt;/div&gt;
 
-<div id="template">
-  <div class="annotation-details">
-    <a class="url"></a>
-    <div class="selection-text"></div>
-    <div class="annotation-text"></div>
-  </div>
-</div>
+&lt;div id=&quot;template&quot;&gt;
+  &lt;div class=&quot;annotation-details&quot;&gt;
+    &lt;a class=&quot;url&quot;&gt;&lt;/a&gt;
+    &lt;div class=&quot;selection-text&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;annotation-text&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
 
-</body>
+&lt;/body&gt;
 
-</html>
-
-]]>
-</script>
+&lt;/html&gt;
+</code>
+</pre>
 
 Here's the corresponding CSS:
 
-<script type="syntaxhighlighter" class="brush: css"><![CDATA[
+<pre>
+<code class="css">
 #annotation-list .annotation-details
   {
   padding: 10px;
@@ -175,8 +176,8 @@ h1
   font-size: 1.5em;
   text-align:center;
   }
-]]>
-</script>
+</code>
+</pre>
 
 Save these in `data/list` as `annotation-list.html` and `annotation-list.css`
 respectively.
