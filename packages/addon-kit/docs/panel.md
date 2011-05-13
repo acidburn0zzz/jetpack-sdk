@@ -237,11 +237,14 @@ The new height of the panel in pixels.
 
 <api name="message">
 @event
-This event is emitted when a panel's content script posts it a message.
+Subscribe to this event to receive message events from content scripts
+associated with this panel. When a content script posts a message using
+`self.postMessage()`, the message is delivered to the add-on code in the
+panel's `message` event.
 
 @argument {JSON}
-The message is passed as an argument to event listeners. It must be
-serializable to JSON.
+The message sent from the content script is passed as an argument to event
+listeners. It must be serializable to JSON.
 </api>
 
 <api name="show">

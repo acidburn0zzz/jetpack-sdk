@@ -278,14 +278,14 @@ Listeners are passed the `tab` object that has closed.
 <api name="ready">
 @event
 
-This event is emitted when the DOM for the tab's content is ready.
-
-This is equivalent to the `DOMContentLoaded` event for the given content page.
+This event is emitted when the DOM for the tab's content is ready. It is
+equivalent to the `DOMContentLoaded` event for the given content page.
 
 A single tab will emit this event every time the DOM is loaded: so it will be
 emitted again if the tab's location changes or the content is reloaded.
 
-At this point all properties relating to the tab's content can be used.
+After this event has been emitted, all properties relating to the tab's
+content can be used.
 
 @argument {Tab}
 Listeners are passed the `tab` object that has loaded.
@@ -314,15 +314,13 @@ Listeners are passed the `tab` object that has become inactive.
 <api name="open">
 @event
 
-The event is emitted when a new tab is opened.
+The event is emitted when a new tab is opened. This does not mean that
+the content has loaded, only that the browser tab itself is fully visible
+to the user.
 
-This does not mean that the content has loaded, only that the browser tab
-itself is fully visible to the user.
-
-Properties relating to the tab's content (for example: title, thumbnail,
-favicon, url) will not be correct at this point.
-
-If you need to access these properties, use the `ready` event listener:
+Properties relating to the tab's content (for example: `title`, `favicon`,
+and `url`) will not be correct at this point. If you need to access these
+properties, use the `ready` event listener:
 
     var tabs = require("tabs");
     tabs.on('open', function(tab){
@@ -349,13 +347,13 @@ Listeners are passed the `tab` object that has closed.
 @event
 
 This event is emitted when the DOM for the tab's content is ready.
-
-This is equivalent to the `DOMContentLoaded` event for the given content page.
+It is equivalent to the `DOMContentLoaded` event for the given content page.
 
 A single tab will emit this event every time the DOM is loaded: so it will be
 emitted again if the tab's location changes or the content is reloaded.
 
-At this point all properties relating to the tab's content can be used.
+After this event has been emitted, all properties relating to the tab's
+content can be used.
 
 @argument {Tab}
 Listeners are passed the `tab` object that has loaded.

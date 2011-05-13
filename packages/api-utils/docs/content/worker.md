@@ -97,9 +97,10 @@ Content workers may emit two types of events:
 
 <api name="message">
 @event
-This event allows the content worker to receive messages from the associated
-content scripts. Calling the `self.postMessage` function from a content
-script will asynchronously emit 'message' event on the corresponding worker.
+This event allows the content worker to receive messages from its associated
+content scripts. Calling the `self.postMessage()` function from a content
+script will asynchronously emit the `message` event on the corresponding
+worker.
 
 @argument {JSON}
 The event listener is passed the message, which must be serializable to JSON.
@@ -107,7 +108,7 @@ The event listener is passed the message, which must be serializable to JSON.
 
 <api name="error">
 @event
-This event allows the content worker to react on an uncaught runtime script
+This event allows the content worker to react to an uncaught runtime script
 error that occurs in one of the content scripts.
 
 @argument {Error}
