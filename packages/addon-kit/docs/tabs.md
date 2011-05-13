@@ -1,16 +1,28 @@
 <!-- contributed by Dietrich Ayala [dietrich@mozilla.com]  -->
 <!-- edited by Noelle Murata [fiveinchpixie@gmail.com]  -->
 
-
 The `tabs` module provides easy access to tabs and tab-related events.
 
-Events
-------
+### Enumerate the Set of Open Tabs ###
 
-Events represent common actions and state changes for tabs and their content.
-Event listeners are passed the `Tab` object that triggered the event.
+All tabs across all windows can be enumerated by using the `tabs` module itself
+like so:
 
-For example:
+    var tabs = require("tabs");
+    for each (var tab in tabs)
+      console.log(tab.title);
+
+### Open a New Tab ###
+
+You can open a new tab, specifying various properties including location:
+
+    var tabs = require("tabs");
+    tabs.open("http://www.example.com");
+
+### Get Notifications About Tab Events ###
+
+You can register event listeners to be notified when tabs open, close, finish
+loading DOM content, or are made active or inactive:
 
     var tabs = require("tabs");
 
@@ -24,45 +36,32 @@ For example:
       console.log('tab is loaded', tab.title, tab.url)
     });
 
-All `Tab` objects and the `tabs` module itself emit the following events:
+### Get and Set Tab Properties ###
 
-### open ###
-Event emitted when a new tab is open.
-This does not mean that the content has loaded, only that the browser tab
-itself is fully visible to the user.
-
-Tab content related properties (title, thumbnail, favicon, url) will not
-be correct at this point. Use `ready` event listener to be notified when the
-page has loaded.
-
-### close ###
-Event emitted when a tab is closed. In addition, when a window is closed,
-this event will be emitted for each of the open tabs in that window.
-
-### ready ###
-Event emitted when a tab's content's DOM is ready.
-
-This is equivalent to the `DOMContentLoaded` event for the given content page.
-This event will be emitted multiple times for the same tab, if different content
-is loaded into it.
-
-At this point all the tab content related properties can be used.
-
-### activate ###
-Event emitted when an inactive tab is made active.
-
-### deactivate ###
-Event emitted when the active tab is made inactive.
-
-Tab Enumeration
----------------
-
-All tabs across all windows can be enumerated by using the `tabs` module itself
-like so:
+You can get and set various properties of tabs. By setting the `url` property
+you can load a new page in the tab.
 
     var tabs = require("tabs");
-    for each (var tab in tabs)
-      console.log(tab.title);
+    tabs.on('activate', function(tab) {
+      tab.url = "http://www.example.com";
+    });
+
+### Manipulate Tab Content ###
+
+Although you can't access the tab's content directly using this module, you can
+attach a [page-mod](packages/addon-kit/docs/page-mod.html) to a tab, and use
+that to access and manipulate the content.
+
+    var tabs = require("tabs");
+
+    tabs.on('activate', function(tab) {
+      tab.attach({
+        contentScript: 'self.postMessage(document.body.innerHTML);',
+        onMessage: function (message) {
+          console.log(message);
+        }
+      });
+    });
 
 <api name="activeTab">
 @property {Tab}
@@ -266,4 +265,117 @@ Makes this tab active, which will bring this tab to the foreground.
 
 </api>
 
+<api name="close">
+@event
+
+This event is emitted when a tab is closed. When a window is closed
+this event will be emitted for each of the open tabs in that window.
+
+@argument {Tab}
+Listeners are passed the `tab` object that has closed.
 </api>
+
+<api name="ready">
+@event
+
+This event is emitted when the DOM for the tab's content is ready.
+
+This is equivalent to the `DOMContentLoaded` event for the given content page.
+
+A single tab will emit this event every time the DOM is loaded: so it will be
+emitted again if the tab's location changes or the content is reloaded.
+
+At this point all properties relating to the tab's content can be used.
+
+@argument {Tab}
+Listeners are passed the `tab` object that has loaded.
+</api>
+
+<api name="activate">
+@event
+
+This event is emitted when an inactive tab is made active.
+
+@argument {Tab}
+Listeners are passed the `tab` object that has become active.
+</api>
+
+<api name="deactivate">
+@event
+
+This event is emitted when the active tab is made inactive.
+
+@argument {Tab}
+Listeners are passed the `tab` object that has become inactive.
+</api>
+
+</api>
+
+<api name="open">
+@event
+
+The event is emitted when a new tab is opened.
+
+This does not mean that the content has loaded, only that the browser tab
+itself is fully visible to the user.
+
+Properties relating to the tab's content (for example: title, thumbnail,
+favicon, url) will not be correct at this point.
+
+If you need to access these properties, use the `ready` event listener:
+
+    var tabs = require("tabs");
+    tabs.on('open', function(tab){
+      tab.on('ready', function(tab){
+        console.log(tab.url);
+      });
+    });
+
+@argument {Tab}
+Listeners are passed the `tab` object that just opened.
+</api>
+
+<api name="close">
+@event
+
+This event is emitted when a tab is closed. When a window is closed
+this event will be emitted for each of the open tabs in that window.
+
+@argument {Tab}
+Listeners are passed the `tab` object that has closed.
+</api>
+
+<api name="ready">
+@event
+
+This event is emitted when the DOM for the tab's content is ready.
+
+This is equivalent to the `DOMContentLoaded` event for the given content page.
+
+A single tab will emit this event every time the DOM is loaded: so it will be
+emitted again if the tab's location changes or the content is reloaded.
+
+At this point all properties relating to the tab's content can be used.
+
+@argument {Tab}
+Listeners are passed the `tab` object that has loaded.
+</api>
+
+<api name="activate">
+@event
+
+This event is emitted when an inactive tab is made active.
+
+@argument {Tab}
+Listeners are passed the `tab` object that has become active.
+</api>
+
+<api name="deactivate">
+@event
+
+This event is emitted when the active tab is made inactive.
+
+@argument {Tab}
+Listeners are passed the `tab` object that has become inactive.
+</api>
+

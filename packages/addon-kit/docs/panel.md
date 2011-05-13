@@ -26,25 +26,6 @@ those scripts via an asynchronous event emitter API.  See
 [Working with Content Scripts](dev-guide/addon-development/web-content.html)
 for more information.
 
-Events
-------
-
-Panels emit the following types of
-[events](dev-guide/addon-development/events.html).
-
-### message ###
-
-This event is emitted when the panel's content scripts post a message.
-Listeners are passed the message as their first and only argument.
-
-### show ###
-
-This event is emitted when the panel is shown.
-
-### hide ###
-
-This event is emitted when the panel is hidden.
-
 Examples
 --------
 
@@ -252,4 +233,25 @@ The new height of the panel in pixels.
 @param listener {function}
   The listener function that was registered.
 </api>
+
+
+<api name="message">
+@event 
+This event is emitted when a panel's content script posts it a message.
+
+@argument {JSON}
+The message is passed as an argument to event listeners. It must be
+serializable to JSON.
+</api>
+
+<api name="show">
+@event 
+This event is emitted when the panel is shown.
+</api>
+
+<api name="hide">
+@event 
+This event is emitted when the panel is hidden.
+</api>
+
 </api>
