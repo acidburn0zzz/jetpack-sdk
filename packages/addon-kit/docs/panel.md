@@ -236,7 +236,7 @@ The new height of the panel in pixels.
 
 
 <api name="message">
-@event 
+@event
 This event is emitted when a panel's content script posts it a message.
 
 @argument {JSON}
@@ -245,12 +245,12 @@ serializable to JSON.
 </api>
 
 <api name="show">
-@event 
+@event
 This event is emitted when the panel is shown.
 </api>
 
 <api name="hide">
-@event 
+@event
 This event is emitted when the panel is hidden.
 </api>
 

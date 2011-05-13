@@ -378,4 +378,3 @@ This event is emitted when the active tab is made inactive.
 @argument {Tab}
 Listeners are passed the `tab` object that has become inactive.
 </api>
-
