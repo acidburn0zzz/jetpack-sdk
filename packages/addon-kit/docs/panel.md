@@ -19,12 +19,17 @@ and the content remains loaded when a panel is hidden, so it is possible
 to keep a panel around in the background, updating its content as appropriate
 in preparation for the next time it is shown.
 
+Your add-on can receive notifications when a panel is shown or hidden by
+listening to its `show` and `hide` events.
+
 Panels have associated content scripts, which are JavaScript scripts that have
 access to the content loaded into the panels.  An add-on can specify one or
 more content scripts to load for a panel, and the add-on can communicate with
-those scripts via an asynchronous event emitter API.  See
+those scripts either using the `message` event or by using user-defined
+events. See
 [Working with Content Scripts](dev-guide/addon-development/web-content.html)
 for more information.
+
 
 Examples
 --------

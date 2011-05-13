@@ -3,8 +3,6 @@
 
 The `tabs` module provides easy access to tabs and tab-related events.
 
-### Enumerate the Set of Open Tabs ###
-
 All tabs across all windows can be enumerated by using the `tabs` module itself
 like so:
 
@@ -12,14 +10,10 @@ like so:
     for each (var tab in tabs)
       console.log(tab.title);
 
-### Open a New Tab ###
-
 You can open a new tab, specifying various properties including location:
 
     var tabs = require("tabs");
     tabs.open("http://www.example.com");
-
-### Get Notifications About Tab Events ###
 
 You can register event listeners to be notified when tabs open, close, finish
 loading DOM content, or are made active or inactive:
@@ -36,8 +30,6 @@ loading DOM content, or are made active or inactive:
       console.log('tab is loaded', tab.title, tab.url)
     });
 
-### Get and Set Tab Properties ###
-
 You can get and set various properties of tabs. By setting the `url` property
 you can load a new page in the tab.
 
@@ -45,8 +37,6 @@ you can load a new page in the tab.
     tabs.on('activate', function(tab) {
       tab.url = "http://www.example.com";
     });
-
-### Manipulate Tab Content ###
 
 Although you can't access the tab's content directly using this module, you can
 attach a [page-mod](packages/addon-kit/docs/page-mod.html) to a tab, and use
