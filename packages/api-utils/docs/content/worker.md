@@ -93,8 +93,6 @@ If this worker is attached to a content document, returns the related
 [tab](packages/addon-kit/docs/tabs.html).
 </api>
 
-Content workers may emit two types of events:
-
 <api name="message">
 @event
 This event allows the content worker to receive messages from its associated

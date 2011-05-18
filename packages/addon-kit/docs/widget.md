@@ -191,19 +191,19 @@ Represents a widget object.
     used.
 
   @prop [onClick] {function}
-    An optional "click" event listener.  See Events above.
+    Include this to listen to the widget's `click` event.
 
   @prop [onMessage] {function}
-    An optional "message" event listener.  See Events above.
+    Include this to listen to the widget's `message` event.
 
   @prop [onMouseover] {function}
-    An optional "mouseover" event listener.  See Events above.
+    Include this to listen to the widget's `mouseover` event.
 
   @prop [onMouseout] {function}
-    An optional "mouseout" event listener.  See Events above.
+    Include this to listen to the widget's `mouseout` event.
 
   @prop [onAttach] {function}
-    An optional "attach" event listener.  See Events above.
+    Include this to listen to the widget's `attach` event.
 
   @prop [tooltip] {string}
     Optional text to show when the user's mouse hovers over the widget.  If not
@@ -386,8 +386,19 @@ This event is emitted when the widget is clicked.
 
 <api name="message">
 @event
-This event is emitted when the widget's content scripts post a message.
-Listeners are passed the message as their first argument.
+If you listen to this event you can receive message events from content
+scripts associated with this widget. When a content script posts a
+message using `self.postMessage()`, the message is delivered to the add-on
+code in the widget's `message` event.
+
+@argument {value}
+Listeners are passed a single argument which is the message posted
+from the content script.
+
+The message can be any JSON-serializable value. See
+[Working with Content Scripts](dev-guide/addon-development/web-content.html)
+for more details.
+
 </api>
 
 <api name="mouseover">
@@ -571,8 +582,24 @@ This event is emitted when the widget is clicked.
 
 <api name="message">
 @event
-This event is emitted when the widget's content scripts post a message.
-Listeners are passed the message as their first argument.
+If you listen to this event you can receive message events from content
+scripts associated with this widget. When a content script posts a
+message using `self.postMessage()`, the message is delivered to the add-on
+code in the widget's `message` event.
+
+@argument {value}
+Listeners are passed a single argument which is the message posted
+from the content script.
+
+The message is automatically serialized to JSON for transmission from
+the content script, and deserialized on reception in the widget before
+being passed to the listener. So you don't have to serialize
+the message to JSON yourself, but you must ensure that the message can be
+serialized to JSON.
+
+This means that, for example, you can send an array of strings, but you
+can't send a function.
+
 </api>
 
 <api name="mouseover">

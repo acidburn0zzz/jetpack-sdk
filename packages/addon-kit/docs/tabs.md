@@ -30,17 +30,19 @@ loading DOM content, or are made active or inactive:
       console.log('tab is loaded', tab.title, tab.url)
     });
 
-You can get and set various properties of tabs. By setting the `url` property
-you can load a new page in the tab.
+You can get and set various properties of tabs (but note that properties
+ relating to the tab's content, such as the URL, will not contain valid
+values until after the tab's `ready` event fires). By setting the `url`
+property you can load a new page in the tab:
 
     var tabs = require("tabs");
     tabs.on('activate', function(tab) {
       tab.url = "http://www.example.com";
     });
 
-Although you can't access the tab's content directly using this module, you can
-attach a [page-mod](packages/addon-kit/docs/page-mod.html) to a tab, and use
-that to access and manipulate the content.
+You can attach a [content script](dev-guide/addon-development/web-content.html)
+to the page hosted in a tab, and use that to access and manipulate the page's
+content:
 
     var tabs = require("tabs");
 
@@ -262,7 +264,7 @@ This event is emitted when a tab is closed. When a window is closed
 this event will be emitted for each of the open tabs in that window.
 
 @argument {Tab}
-Listeners are passed the `tab` object that has closed.
+Listeners are passed the tab object that has closed.
 </api>
 
 <api name="ready">
@@ -278,7 +280,7 @@ After this event has been emitted, all properties relating to the tab's
 content can be used.
 
 @argument {Tab}
-Listeners are passed the `tab` object that has loaded.
+Listeners are passed the tab object that has loaded.
 </api>
 
 <api name="activate">
@@ -287,7 +289,7 @@ Listeners are passed the `tab` object that has loaded.
 This event is emitted when an inactive tab is made active.
 
 @argument {Tab}
-Listeners are passed the `tab` object that has become active.
+Listeners are passed the tab object that has become active.
 </api>
 
 <api name="deactivate">
@@ -296,7 +298,7 @@ Listeners are passed the `tab` object that has become active.
 This event is emitted when the active tab is made inactive.
 
 @argument {Tab}
-Listeners are passed the `tab` object that has become inactive.
+Listeners are passed the tab object that has become inactive.
 </api>
 
 </api>
@@ -304,13 +306,13 @@ Listeners are passed the `tab` object that has become inactive.
 <api name="open">
 @event
 
-The event is emitted when a new tab is opened. This does not mean that
+This event is emitted when a new tab is opened. This does not mean that
 the content has loaded, only that the browser tab itself is fully visible
 to the user.
 
 Properties relating to the tab's content (for example: `title`, `favicon`,
 and `url`) will not be correct at this point. If you need to access these
-properties, use the `ready` event listener:
+properties, listen to the `ready` event:
 
     var tabs = require("tabs");
     tabs.on('open', function(tab){
@@ -320,7 +322,7 @@ properties, use the `ready` event listener:
     });
 
 @argument {Tab}
-Listeners are passed the `tab` object that just opened.
+Listeners are passed the tab object that just opened.
 </api>
 
 <api name="close">
@@ -330,13 +332,13 @@ This event is emitted when a tab is closed. When a window is closed
 this event will be emitted for each of the open tabs in that window.
 
 @argument {Tab}
-Listeners are passed the `tab` object that has closed.
+Listeners are passed the tab object that has closed.
 </api>
 
 <api name="ready">
 @event
 
-This event is emitted when the DOM for the tab's content is ready.
+This event is emitted when the DOM for a tab's content is ready.
 It is equivalent to the `DOMContentLoaded` event for the given content page.
 
 A single tab will emit this event every time the DOM is loaded: so it will be
@@ -346,7 +348,7 @@ After this event has been emitted, all properties relating to the tab's
 content can be used.
 
 @argument {Tab}
-Listeners are passed the `tab` object that has loaded.
+Listeners are passed the tab object that has loaded.
 </api>
 
 <api name="activate">
@@ -355,7 +357,7 @@ Listeners are passed the `tab` object that has loaded.
 This event is emitted when an inactive tab is made active.
 
 @argument {Tab}
-Listeners are passed the `tab` object that has become active.
+Listeners are passed the tab object that has become active.
 </api>
 
 <api name="deactivate">
@@ -364,5 +366,5 @@ Listeners are passed the `tab` object that has become active.
 This event is emitted when the active tab is made inactive.
 
 @argument {Tab}
-Listeners are passed the `tab` object that has become inactive.
+Listeners are passed the tab object that has become inactive.
 </api>

@@ -104,11 +104,11 @@ Creates a panel.
     This property is optional and defaults to "end".
 
   @prop [onMessage] {function}
-    An optional "message" event listener.  See Events above.
+    Include this to listen to the panel's `message` event.
   @prop [onShow] {function}
-    An optional "show" event listener.  See Events above.
+    Include this to listen to the panel's `show` event.
   @prop [onHide] {function}
-    An optional "hide" event listener.  See Events above.
+    Include this to listen to the panel's `hide` event.
 </api>
 
 <api name="port">
@@ -239,19 +239,6 @@ The new height of the panel in pixels.
   The listener function that was registered.
 </api>
 
-
-<api name="message">
-@event
-Subscribe to this event to receive message events from content scripts
-associated with this panel. When a content script posts a message using
-`self.postMessage()`, the message is delivered to the add-on code in the
-panel's `message` event.
-
-@argument {JSON}
-The message sent from the content script is passed as an argument to event
-listeners. It must be serializable to JSON.
-</api>
-
 <api name="show">
 @event
 This event is emitted when the panel is shown.
@@ -260,6 +247,34 @@ This event is emitted when the panel is shown.
 <api name="hide">
 @event
 This event is emitted when the panel is hidden.
+</api>
+
+<api name="message">
+@event
+If you listen to this event you can receive message events from content
+scripts associated with this panel. When a content script posts a
+message using `self.postMessage()`, the message is delivered to the add-on
+code in the panel's `message` event.
+
+@argument {value}
+Listeners are passed a single argument which is the message posted
+from the content script.
+
+The message can be any JSON-serializable value. See
+[Working with Content Scripts](dev-guide/addon-development/web-content.html)
+for more details.
+
+</api>
+
+<api name="error">
+@event
+This event is emitted when an uncaught runtime error occurs in one of the
+panel's content scripts.
+
+@argument {Error}
+Listeners are passed a single argument, the
+[Error](https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Error)
+object.
 </api>
 
 </api>
