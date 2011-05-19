@@ -88,4 +88,3 @@ Surround HTML selections with delimiters:
 @event
   This event is emitted whenever the user makes a new selection in a page.
 </api>
-
