@@ -429,9 +429,8 @@ code in the menu item's `message` event.
 Listeners are passed a single argument which is the message posted
 from the content script.
 
-The message can be any JSON-serializable value. See
-[Working with Content Scripts](dev-guide/addon-development/web-content.html)
-for more details.
+The message can be any
+<a href = "dev-guide/addon-development/web-content.html#json_serializable">JSON-serializable value</a>.
 
 </api>
 
@@ -523,9 +522,8 @@ code in the menu item's `message` event.
 Listeners are passed a single argument which is the message posted
 from the content script.
 
-The message can be any JSON-serializable value. See
-[Working with Content Scripts](dev-guide/addon-development/web-content.html)
-for more details.
+The message can be any
+<a href = "dev-guide/addon-development/web-content.html#json_serializable">JSON-serializable value</a>.
 
 </api>
 

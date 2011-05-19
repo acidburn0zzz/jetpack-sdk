@@ -253,7 +253,9 @@ Represents a widget object.
 @method
   Sends a message to the widget's content scripts.
 @param data {value}
-  The message to send.  Must be JSON-able.
+  The message to send.
+  The message can be any
+<a href = "dev-guide/addon-development/web-content.html#json_serializable">JSON-serializable value</a>.
 </api>
 
 <api name="on">
@@ -395,9 +397,8 @@ code in the widget's `message` event.
 Listeners are passed a single argument which is the message posted
 from the content script.
 
-The message can be any JSON-serializable value. See
-[Working with Content Scripts](dev-guide/addon-development/web-content.html)
-for more details.
+The message can be any
+<a href = "dev-guide/addon-development/web-content.html#json_serializable">JSON-serializable value</a>.
 
 </api>
 
@@ -459,7 +460,8 @@ In this example `WidgetView` is used to display different content for
 @method
   Sends a message to the widget's content scripts.
 @param data {value}
-  The message to send.  Must be JSON-able.
+  The message to send. The message can be any
+<a href = "dev-guide/addon-development/web-content.html#json_serializable">JSON-serializable value</a>.
 </api>
 
 <api name="on">
@@ -591,14 +593,8 @@ code in the widget's `message` event.
 Listeners are passed a single argument which is the message posted
 from the content script.
 
-The message is automatically serialized to JSON for transmission from
-the content script, and deserialized on reception in the widget before
-being passed to the listener. So you don't have to serialize
-the message to JSON yourself, but you must ensure that the message can be
-serialized to JSON.
-
-This means that, for example, you can send an array of strings, but you
-can't send a function.
+The message can be any
+<a href = "dev-guide/addon-development/web-content.html#json_serializable">JSON-serializable value</a>.
 
 </api>
 

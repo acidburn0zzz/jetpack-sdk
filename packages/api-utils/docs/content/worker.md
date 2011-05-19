@@ -100,8 +100,9 @@ content scripts. Calling the `self.postMessage()` function from a content
 script will asynchronously emit the `message` event on the corresponding
 worker.
 
-@argument {JSON}
-The event listener is passed the message, which must be serializable to JSON.
+@argument {value}
+The event listener is passed the message, which must be
+<a href = "dev-guide/addon-development/web-content.html#json_serializable">serializable to JSON</a>.
 </api>
 
 <api name="error">

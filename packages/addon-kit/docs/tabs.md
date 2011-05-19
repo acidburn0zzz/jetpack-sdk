@@ -312,7 +312,7 @@ to the user.
 
 Properties relating to the tab's content (for example: `title`, `favicon`,
 and `url`) will not be correct at this point. If you need to access these
-properties, listen to the `ready` event:
+properties, listen for the `ready` event:
 
     var tabs = require("tabs");
     tabs.on('open', function(tab){
