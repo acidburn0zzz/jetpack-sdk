@@ -9,8 +9,8 @@ called `package.json`. This file is also referred to as the
 `package.json` may contain the following keys:
 
 * `name` - the name of the package. The package system will only load
-  one package with a given name. This name cannot contain spaces. The
-  name defaults to the name of the parent directory. If the package is
+  one package with a given name. This name cannot contain spaces or periods.
+  The name defaults to the name of the parent directory. If the package is
   ever built as an XPI and the `fullName` key is not present, this is
   used as the extension's `em:name` element in its `install.rdf`.
 
@@ -58,12 +58,11 @@ called `package.json`. This file is also referred to as the
 * `dependencies` - a String or Array of Strings representing package
   names that this package requires in order to function properly.
 
-* `lib` - a String or Array of Strings representing top-level module
-  directories provided in this package. Defaults to `"lib"`.
+* `lib` - a String representing the top-level module directory provided in
+  this package. Defaults to `"lib"`.
 
-* `tests` - a String or Array of Strings representing top-level module
-  directories containing test suites for this package. Defaults to
-  `"tests"`.
+* `tests` - a String representing the top-level module directory containing
+  test suites for this package. Defaults to `"tests"`.
 
 * `packages` - a String or Array of Strings representing paths to
   directories containing additional packages, defaults to
