@@ -260,11 +260,11 @@ Makes this tab active, which will bring this tab to the foreground.
 <api name="close">
 @event
 
-This event is emitted when a tab is closed. When a window is closed
-this event will be emitted for each of the open tabs in that window.
+This event is emitted when the tab is closed.  It's also emitted when the
+tab's window is closed.
 
 @argument {Tab}
-Listeners are passed the tab object that has closed.
+Listeners are passed the tab object.
 </api>
 
 <api name="ready">
@@ -280,25 +280,25 @@ After this event has been emitted, all properties relating to the tab's
 content can be used.
 
 @argument {Tab}
-Listeners are passed the tab object that has loaded.
+Listeners are passed the tab object.
 </api>
 
 <api name="activate">
 @event
 
-This event is emitted when an inactive tab is made active.
+This event is emitted when the tab is made active.
 
 @argument {Tab}
-Listeners are passed the tab object that has become active.
+Listeners are passed the tab object.
 </api>
 
 <api name="deactivate">
 @event
 
-This event is emitted when the active tab is made inactive.
+This event is emitted when the tab is made inactive.
 
 @argument {Tab}
-Listeners are passed the tab object that has become inactive.
+Listeners are passed the tab object.
 </api>
 
 </api>

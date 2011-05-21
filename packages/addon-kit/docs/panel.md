@@ -258,11 +258,8 @@ code in the panel's `message` event.
 
 @argument {value}
 Listeners are passed a single argument which is the message posted
-from the content script.
-
-The message can be any
+from the content script. The message can be any
 <a href = "dev-guide/addon-development/web-content.html#json_serializable">JSON-serializable value</a>.
-
 </api>
 
 <api name="error">

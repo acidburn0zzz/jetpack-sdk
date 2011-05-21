@@ -281,15 +281,15 @@ element in the page
 
 ### <a name="json_serializable">JSON-Serializable Values</a> ###
 
-The payload for an event can be any JSON-serializable value. The code that
-sends the event serializes the payload to JSON automatically, and the code
-that receives the event deserializes the payload automatically. So you don't
-have to serialize/deserialize the payload yourself.
+The payload for an event can be any JSON-serializable value. When events are
+sent their payloads are automatically serialized, and when events are received
+their payloads are automatically deserialized, so you don't need to worry
+about serialization.
 
 However, you _do_ have to ensure that the payload can be serialized to JSON.
-This means that it needs to be a string, number, boolean, array of
+This means that it needs to be a string, number, boolean, null, array of
 JSON-serializable values, or an object whose property values are themselves
-JSON-serializable. However, you can't send functions, and if the object
+JSON-serializable. This means you can't send functions, and if the object
 contains methods they won't be encoded.
 
 For example, to include an array of strings in the payload:
