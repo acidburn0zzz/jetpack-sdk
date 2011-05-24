@@ -8,9 +8,12 @@
   <script type="text/javascript" src="syntaxhighlighter/scripts/shBrushCss.js"></script>
   <script type="text/javascript" src="syntaxhighlighter/scripts/shBrushXml.js"></script>
   <script type="text/javascript" src="syntaxhighlighter/scripts/shBrushJScript.js"></script>
+  <link media="screen" type="text/css" href="css/reset.min.css" rel="stylesheet">
+  <link media="screen" type="text/css" href="css/style.min.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="syntaxhighlighter/styles/shCore.css">
   <link rel="stylesheet" type="text/css" href="syntaxhighlighter/styles/shThemeDefault.css">
   <link rel="stylesheet" type="text/css" media="all" href="css/base.css">
+  <link rel="stylesheet" type="text/css" media="all" href="css/footer.css">
   <link rel="stylesheet" type="text/css" media="all" href="css/sdk-docs.css">
   <link rel="stylesheet" type="text/css" media="all" href="css/api-reference.css">
   <link rel="shortcut icon" type="image/x-icon" href="media/favicon.png">
@@ -18,6 +21,18 @@
 </head>
 <body>
   <div id="container">
+  <header id="global-header"><div class="funnel">
+    <a id="mozilla-tab" href="#">Mozilla</a>
+
+    <div class="menu">
+      <p>
+        <a href="#">Register</a>
+        or
+        <a href="#">Log in</a>
+      </p>
+
+  </div></header>
+  <div id="columns">
 
   <div id="main-content-column" class="column">
     <div id="toc"></div>
@@ -134,16 +149,40 @@
         <h3><a href="dev-guide/appendices/credits.html">Credits</a></h3>
 
     </div>
-<!--end of left column-->
+<!--end of sidebar column-->
   </div>
+<!--end of 'columns'-->
+<div class="clearfooter"></div>
+</div>
+</div>
 
+<div role="contentinfo" id="footer">
+  <div class="section">
+    <img alt="" src="media/footer-logo-med.png" class="footerlogo">
+    <div id="social-footer">
+      <ul>
+        <li>get to know <b>add-ons</b></li>
+        <li><a href="/z/en-US/firefox/about">About</a></li>
+        <li><a href="http://blog.mozilla.com/addons">Blog</a></li>
+        <li class="footer-devhub-link"><a href="/z/en-US/developers/">Developer Hub</a></li>
+        <li><a href="/z/en-US/firefox/faq">FAQ</a></li>
+        <li><a href="https://forums.addons.mozilla.org">Forum</a></li>
+      </ul>
+    </div>
 
+    <div id="copyright">
+      <p id="footer-links">
+        <a href="http://mozilla.com/privacy-policy.html">Privacy Policy</a> &nbsp;|&nbsp;
+        <a href="http://mozilla.com/about/legal.html">Legal Notices</a> &nbsp;|&nbsp;
+        <a href="http://mozilla.com/legal/fraud-report/index.html">Report Trademark Abuse</a>
+    &nbsp;|&nbsp;<a href="https://addons.mozilla.org/z/en-US/developers/" class="mobile-link">View Mobile Site</a>
+      </p>
+      <p>
+      Except where otherwise <a href="http://mozilla.com/about/legal.html#site">noted</a>, content on this site is licensed under the <br> <a href="http://creativecommons.org/licenses/by-sa/3.0/"> Creative Commons Attribution Share-Alike License v3.0 </a> or any later version.
+      </p>
+    </div>
   </div>
-
-  <div id="footer">
-    <span class="full-name">Add-on SDK Documentation v1.0b6pre</span>
-  </div>
-
+</div>
 
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/main.js"></script>

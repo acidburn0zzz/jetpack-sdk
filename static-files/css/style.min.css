@@ -1,0 +1,39 @@
+
+.funnel {
+position: relative;
+width: 960px;
+margin: 0 auto;
+}
+
+/* Global Elements */
+#global-header {
+border-top: 2px solid #686868;
+}
+
+#global-header #mozilla-tab {
+position: absolute;
+right: 0;
+top: 0;
+width: 118px;
+height: 50px;
+background: url(../media/mozilla-tab.png) no-repeat;
+text-indent: -10000em;
+z-index: 1;
+}
+
+#global-header .menu {
+position: absolute;
+right: 118px;
+top: 0;
+font-size: 12px;
+z-index: 1;
+}
+
+#global-header .menu p {
+display: inline-block;
+height: 32px;
+padding: 0 1em;
+line-height: 32px;
+border-left: 1px solid #9fa7af;
+}
+
