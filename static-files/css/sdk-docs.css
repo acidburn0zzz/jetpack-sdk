@@ -20,6 +20,14 @@ html, body {
   position: relative;
 }
 
+.funnel .menu {
+  padding-right: 40px;     /* main-content padding*/
+}
+
+#mozilla-tab {
+  padding-right: 40px;     /* main-content padding*/
+}
+
 #footer {
   height: 170px;
   position: relative;
