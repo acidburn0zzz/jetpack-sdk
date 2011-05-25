@@ -309,7 +309,7 @@ table.meta-table {
   color: white;
 }
 
-.current-section h2 a {
+.sidebar-section h2.current-page a {
   color: #3B69B1;
 }
 
