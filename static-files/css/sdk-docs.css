@@ -5,27 +5,35 @@ body {
  background-repeat: repeat-x;
 }
 
-
 html, body {
-  min-width: 530px;         /* 2 x sidebar fullwidth + main-content padding */
+  min-width: 570px;         /* 2 x sidebar fullwidth + main-content padding */
   height:100%;
 }
 
 #columns {
-  padding-left: 235px;      /* sidebar fullwidth -5(?) */
+  padding-left: 250px;      /* sidebar fullwidth -5(?) */
   padding-right: 65px;     /* main-content padding*/
-  padding-top: 40px;
+  padding-top: 20px;
   min-height: 100%;
   margin-bottom: 170px;
   position: relative;
 }
 
 .funnel .menu {
-  padding-right: 40px;     /* main-content padding*/
+  padding-right: 50px;     /* main-content padding*/
 }
 
 #mozilla-tab {
-  padding-right: 40px;     /* main-content padding*/
+  padding-right: 50px;     /* main-content padding*/
+}
+
+#site-header h1 a span {
+top:25px;
+left:45px;
+}
+
+#site-header h1 a {
+padding-left:45px;
 }
 
 #footer {
@@ -50,8 +58,8 @@ html, body {
 
 #sidebar {
   width: 200px;        /* sidebar usable width (fullwidth - padding) */
-  right: 280px;        /* sidebar fullwidth + main-content padding */
-  padding-left: 10px;
+  right: 300px;        /* sidebar fullwidth + main-content padding */
+  padding-left: 30px;
   padding-right: 20px;
   margin-left: -100%;
 }
@@ -66,7 +74,7 @@ html, body {
   float: right;
   font-size: 0.9em;
   overflow: hidden;
-  margin-top: 40px;         /* to line up with sidebar: title-height + title padding */
+  margin-top: 0;         /* to line up with sidebar: title-height + title padding */
   margin-left: 20px;
   margin-bottom: 1em;
 }
@@ -247,7 +255,7 @@ table.meta-table {
 
 .sidebar-subsection-contents {
   display: none;
-  background: #F0F8FF;
+  background-color: #F0F8FF;
 }
 
 .always-show {
@@ -273,11 +281,10 @@ table.meta-table {
 }
 
 .sidebar-section h2, .sidebar-section h3 {
-  background: #d1e8fd;
   padding-top: 5px;
   padding-bottom: 5px;
   margin: 0px;
-  background: #d1e8fd;
+  background-color: #d1e8fd;
   font-weight: bold;
   font-style: normal;
   font-family: arial, helvetica, sans-serif;
@@ -312,11 +319,11 @@ table.meta-table {
 }
 
 .current-section, #toc {
-  background: #F0F8FF;
+  background-color: #F0F8FF;
 }
 
 .sidebar-section .current-page {
-  background: white;
+  background-color: white;
 }
 
 .image-center {
