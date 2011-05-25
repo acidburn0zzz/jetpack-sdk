@@ -13,7 +13,7 @@ html, body {
 #columns {
   padding-left: 250px;      /* sidebar fullwidth -5(?) */
   padding-right: 65px;     /* main-content padding*/
-  padding-top: 20px;
+  padding-top: 40px;
   min-height: 100%;
   margin-bottom: 170px;
   position: relative;
@@ -79,6 +79,12 @@ padding-left:45px;
   margin-bottom: 1em;
 }
 
+#toc a {
+  font-family: georgia,serif;
+  font-weight:normal;
+  font-style:italic;
+}
+
 .title {
   height: 30px;
   margin-bottom: 10px;
@@ -95,7 +101,7 @@ padding-left:45px;
 }
 
 .sidebar-section {
-  background-color: #d1e8fd;
+  background: #E0EFFD;
   margin-bottom: 1.0em;
 }
 
@@ -127,6 +133,7 @@ padding-left:45px;
 #toc a[class = H4] {
   margin-left: 1.5em;
   font-family: "andale mono", monospace;
+  font-style:normal;
 }
 
 #toc a[class = H5] {
@@ -137,6 +144,7 @@ padding-left:45px;
 #toc a[class = H6] {
   margin-left: 3em;
   font-family: "andale mono", monospace;
+  font-style:normal;
 }
 
 .warning {
@@ -255,7 +263,10 @@ table.meta-table {
 
 .sidebar-subsection-contents {
   display: none;
-  background-color: #F0F8FF;
+}
+
+.sidebar-subsection {
+  margin:1px;
 }
 
 .always-show {
@@ -276,25 +287,27 @@ table.meta-table {
   padding-left: 25px;
 }
 
-.sidebar-section h2, .sidebar-section h3, .sidebar-section h4 {
+.sidebar-section h2,.sidebar-section h4 {
   padding-left: 10px;
+}
+
+.sidebar-section h3 {
+  padding-left: 5px;
 }
 
 .sidebar-section h2, .sidebar-section h3 {
   padding-top: 5px;
   padding-bottom: 5px;
   margin: 0px;
-  background-color: #d1e8fd;
-  font-weight: bold;
   font-style: normal;
   font-family: arial, helvetica, sans-serif;
-  border-bottom-style: solid;
-  border-color: #a0d0fb;
-  border-width: 1px;
 }
 
 .sidebar-section h2 {
-  font-size: 1.2em;
+  background-color: #3B69B1;
+  font-family: georgia,serif;
+  font-style: italic;
+  font-size: 1.4em;
   -moz-border-radius-topleft: 5px;
   -moz-border-radius-topright: 5px;
   -webkit-border-radius-topleft: 5px;
@@ -305,21 +318,42 @@ table.meta-table {
   border-radius-topright: 5px;
 }
 
+.sidebar-section h2 a {
+  color: white;
+}
+
 .sidebar-section h3 {
-  font-size: 1.0em;
-  border-top-style: solid;
+  font-family: georgia,serif;
+  font-style:italic;
+  font-size: 1.2em;
+  border-style: solid;
+  border-top-width: 1px;
+  border-color: #3B69B1;
+  margin-left:5px;
+  margin-right:5px;
+}
+
+.sidebar-section .first-item {
+  border-top-width: 0px;
 }
 
 .sidebar-section h4 {
   font-weight: normal;
+  font-family: georgia,serif;
+
 }
 
 .sidebar-section li {
+  font-family: georgia,serif;
   margin-left: 0;
 }
 
 .current-section, #toc {
-  background-color: #F0F8FF;
+  background-color: #E0EFFD;
+}
+
+.current-section a {
+  color: #003595;
 }
 
 .sidebar-section .current-page {
