@@ -1,17 +1,17 @@
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td {
- background: transparent;
- border: 0;
- font-size: 100%;
- margin: 0;
- padding: 0;
- vertical-align: baseline;
+* {
+  background: transparent;
+  border: 0;
+  font-size: 100%;
+  margin: 0;
+  padding: 0;
+  vertical-align: baseline;
 }
 
 html {
- background-color: #fff;
- background-image: url(../media/bg-header.png);
- background-position: left top;
- background-repeat: repeat-x;
+  background-color: #fff;
+  background-image: url(../media/bg-header.png);
+  background-position: left top;
+  background-repeat: repeat-x;
 }
 
 html, body {
@@ -19,19 +19,51 @@ html, body {
 }
 
 body {
- color: #444;
- font-size: 13px;
- line-height: 1.538em;
- margin: 0 auto;
- min-width: 780px;
- position: relative;
- font-family: "helvetica neue",arial,helvetica,sans-serif;
- font-style: normal;
+  color: #444;
+  font-size: 13px;
+  line-height: 1.538em;
+  margin: 0 auto;
+  min-width: 780px;
+  position: relative;
+  font-family: "helvetica neue", arial, helvetica,sans-serif;
+  font-style: normal;
 }
 
 table {
- border-collapse: collapse;
- border-spacing: 0;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table, td, tr {
+  border: 1px black solid;
+}
+
+td {
+  padding: 0.5em;
+}
+
+/* Rule to fix quirks-mode inheritance behavior */
+
+table, caption {
+  font-size: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  font-variant: inherit;
+}
+
+table.meta-table, .meta-table td, .meta-table tr {
+  vertical-align: top;
+  border: none;
+  padding: 0;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+  padding-right: 5em;
+}
+
+table.meta-table {
+  margin-top: 0.5em;
+  border-top: 1px dotted gray;
+  border-bottom: 1px dotted gray;
 }
 
 a:link {
@@ -50,7 +82,7 @@ a:hover, a:focus, a:active {
 }
 
 pre,code,kbd,tt,samp,tt {
- font-family: "andale mono",monospace;
+  font-family: "andale mono",monospace;
 }
 
 h1 {
@@ -90,7 +122,7 @@ h4 {
 }
 
 h5,h6 {
- font-size: 1em;
+  font-size: 1em;
 }
 
 li {
@@ -98,31 +130,31 @@ li {
 }
 
 ol {
- list-style-type: decimal;
- margin-left: 2em;
+  list-style-type: decimal;
+  margin-left: 2em;
 }
 
 dt {
- font-weight: bold;
- margin-top: 1.5em;
+  font-weight: bold;
+  margin-top: 1.5em;
 }
 
 ul ul,ol ol,ol ul,ul ol {
- margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 p,ul,ol,dl,address,table,pre,form,fieldset {
- font-size: 1em;
- margin-bottom: 1.5em;
+  font-size: 1em;
+  margin-bottom: 1.5em;
 }
 
 th,td {
- text-align: left;
+  text-align: left;
 }
 
 @font-face {
- font-family: 'MetaBlack';
- font-style: normal;
- font-weight: bold;
- src: url('https://www.mozilla.com/img/fonts/MetaWebPro-Black.woff') format('woff');
+  font-family: 'MetaBlack';
+  font-style: normal;
+  font-weight: bold;
+  src: url('https://www.mozilla.com/img/fonts/MetaWebPro-Black.woff') format('woff');
 }
