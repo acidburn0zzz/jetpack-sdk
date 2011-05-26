@@ -1,10 +1,3 @@
-body {
- background-color: #fff;
- background-image: url(../media/bg-header.png);
- background-position: left top;
- background-repeat: repeat-x;
-}
-
 html, body {
   min-width: 570px;         /* 2 x sidebar fullwidth + main-content padding */
   height:100%;
@@ -28,22 +21,12 @@ html, body {
 }
 
 #site-header h1 a span {
-top:25px;
-left:45px;
+  top:25px;
+  left:45px;
 }
 
 #site-header h1 a {
-padding-left:45px;
-}
-
-#footer {
-  height: 170px;
-  position: relative;
-}
-
-.clearfooter {
-  height: 170px;
-  clear: both;
+  padding-left:45px;
 }
 
 #columns .column {
@@ -201,43 +184,6 @@ padding-left:45px;
   font-family: Monaco, Lucida Console, monospace;
   font-size: 0.8em;
   white-space: pre;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-table, td, tr {
-  border: 1px black solid;
-}
-
-td {
-  padding: 0.5em;
-}
-
-/* Rule to fix quirks-mode inheritance behavior */
-
-table, caption {
-  font-size: inherit;
-  font-weight: inherit;
-  font-style: inherit;
-  font-variant: inherit;
-}
-
-table.meta-table, .meta-table td, .meta-table tr {
-  vertical-align: top;
-  border: none;
-  padding: 0;
-  padding-top: 0.25em;
-  padding-bottom: 0.25em;
-  padding-right: 5em;
-}
-
-table.meta-table {
-  margin-top: 0.5em;
-  border-top: 1px dotted gray;
-  border-bottom: 1px dotted gray;
 }
 
 #main-content h1 {
