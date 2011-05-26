@@ -3,23 +3,10 @@
  color: #476fbe;
  display: block;
  font-family: Georgia,serif;
- min-width: 978px;
+ min-width: 1000px;
  padding: 115px 0 5px;
-}
-
-#footer-logo a,#footer-logo a:link,#footer-logo a:visited {
- background: url("../global/header-logos.png") no-repeat scroll 15px 0 transparent;
- display: block;
- height: 57px;
- moz-transition: background .2s ease-in-out;
- overflow: hidden;
- text-indent: -200px;
- width: 110px;
-}
-
-#footer-logo a:hover,#footer-logo a:active {
- background: -moz-radial-gradient(center 45deg,ellipse closest-side,rgba(255,255,255,0.3) 0,rgba(255,255,255,0) 100%),url(../global/header-logos.png) 15px 0 no-repeat;
- moz-transition: background .2s ease-in-out;
+ background: #33559b url(../media/bg-footer.png) 0 0 repeat-x;
+ padding: 123px 0 5px 0;
 }
 
 #footer a:link,#footer a:visited {
@@ -30,47 +17,15 @@
  color: #fff;
  text-decoration: underline;
 }
-#footer-contents {
- margin: auto;
- text-align: left;
- width: 980px;
-}
-#footer-contents[dir="rtl"] {
- text-align: right;
-}
-#footer-logo {
- display: inline;
- float: left;
- margin: 0 50px 0 10px;
-}
-#footer-logo a,#footer-logo a:link,#footer-logo a:visited {
- font-size: 28px;
- padding: 0;
-}
-#footer-menu,#footer-menu ul {
- left: auto;
- list-style: none;
- margin: 0;
- padding: 0;
-}
-#footer-menu li {
- background: 0;
- display: inline;
- float: left;
- font-weight: bold;
- list-style-type: none;
- margin: 15px 10px 0 0;
- padding: 0;
- position: relative;
- width: 115px;
-}
-#footer-menu li a,#footer-menu li a:link,#footer-menu li a:visited,#footer #lang_form label {
+
+#footer #lang_form label {
  color: #fff;
  font-family: MetaBlack,"Trebuchet MS",sans-serif;
  font-size: 14px;
  font-weight: bold;
  text-transform: uppercase;
 }
+
 #footer li li a:link,#footer li li a:visited {
  color: #669be1;
  font-family: Georgia,serif;
@@ -78,113 +33,70 @@
  font-weight: normal;
  text-transform: none;
 }
+
 #footer li li a:hover,#footer li li a:active {
  color: #fff;
 }
-#footer-menu ul li ul {
- margin: 4px 0 15px;
-}
-#footer-menu li.last {
- margin-right: 0;
-}
-#footer-menu ul ul li {
- display: block;
- float: none;
- font-weight: normal;
- margin: 0;
- padding: 0 0 .3em;
- width: auto;
-}
-#footer #footer-right {
- float: right;
- width: 180px;
-}
+
 #footer #lang_form {
  margin: 0 0 15px 27px;
 }
+
 #footer #lang_form label {
  display: block;
  margin: 10px 0 4px;
 }
+
 #footer #lang_form select {
  font-family: sans-serif;
  font-size: 11px;
  width: 140px;
 }
+
 #footer #lang_form div {
  display: inline;
 }
+
 #footer #copyright {
  clear: both;
 }
+
 #footer #copyright p {
  font-size: 85%;
  margin-bottom: .5em;
 }
+
 #footer #copyright a:hover,#footer #copyright a:active {
  text-decoration: underline;
 }
+
 #footer #footer-links {
  font-size: 85%;
 }
 
-.sunbird #footer #copyright,.seamonkey #footer #copyright,.thunderbird #footer #copyright,.developer-hub #footer #copyright {
- clear: none;
- padding-top: 20px;
-}
-
-#copyright {
-  display:inline;
-}
-
-.sunbird #footer #footer-logo,.seamonkey #footer #footer-logo,.thunderbird #footer #footer-logo,.editor-tools #footer #footer-logo,.developer-hub #footer #footer-logo {
- display: none;
-}
-
-#footer {
- background: #33559b url(../media/bg-footer.png) 0 0 repeat-x;
- padding: 123px 0 5px 0;
-}
-#footer-logo a,#footer-logo a:link,#footer-logo a:visited {
- background: url(../../img/zamboni/global/header-logos.png) 15px 0 no-repeat;
-}
-#footer-logo a:hover,#footer-logo a:active {
- background: -moz-radial-gradient(center 45deg,ellipse closest-side,rgba(255,255,255,0.3) 0,rgba(255,255,255,0) 100%),url(../../img/zamboni/global/header-logos.png) 15px 0 no-repeat;
-}
-#footer-contents[dir="rtl"] {
- text-align: right;
-}
 .footerlogo {
-float:right;
+ position: absolute;
+ right: 25px;
+ top: -64px;
 }
 
 #footer .section {
+ margin: 0 auto;
+ max-width: 90em;
+ min-height: 55em;
+ min-width: 960px;
+ overflow: visible;
+ padding: 0 2%;
+ position: relative;
+ width: 90%;
  min-height: 0;
  padding-bottom: 20px;
 }
-#footer-content {
- margin-top: 10px;
-}
-#footer-logo {
- margin-left: 3px;
- width: 10%;
-}
-#footer-menu {
- display: table;
- width: 70%;
-}
-#footer-menu ul {
- display: table-row;
-}
-#footer-menu li {
- display: table-cell;
- float: none;
- padding: 11px 16px 0 0;
- width: 10%;
-}
+
 .footer-devhub-link {
  width: 25%;
 }
+
 #social-footer {
  color: white;
  display: table;
@@ -194,33 +106,35 @@ float:right;
  margin-bottom: 4px;
  width: 80%;
 }
+
 #social-footer a:after {
  content: ' \00bb';
 }
+
 #social-footer a:link,#social-footer a:visited {
  color: white;
 }
+
 #social-footer ul {
  display: table-row;
 }
+
 #social-footer ul li {
  display: table-cell;
  text-align: center;
  vertical-align: middle;
 }
+
 #social-footer ul li:first-child {
  font-size: 17px;
  line-height: 1.2em;
  width: 128px;
 }
+
 #social-footer ul li:first-child b {
  display: block;
  font-family: MetaBlack;
  font-size: 22px;
  font-style: normal;
  text-transform: uppercase;
-}
-
-#footer {
-padding-left:70px;
 }
