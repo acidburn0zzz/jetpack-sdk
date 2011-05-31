@@ -1,10 +1,10 @@
 html, body {
   min-width: 570px;         /* 2 x sidebar fullwidth + main-content padding */
-  height:100%;
+  height: 100%;
 }
 
 #columns {
-  padding-left: 250px;      /* sidebar fullwidth -5(?) */
+  padding-left: 250px;      /* sidebar width + sidebar padding */
   padding-right: 65px;     /* main-content padding*/
   padding-top: 40px;
   min-height: 100%;
@@ -21,12 +21,12 @@ html, body {
 }
 
 #site-header h1 a span {
-  top:25px;
-  left:45px;
+  top: 25px;
+  left: 45px;
 }
 
 #site-header h1 a {
-  padding-left:45px;
+  padding-left: 45px;
 }
 
 #columns .column {
@@ -49,7 +49,7 @@ html, body {
 
 .api_reference h3, .api_reference  h4,
 .api_reference  h5, .api_reference  h6 {
-  overflow:auto;
+  overflow: auto;
  }
 
 #toc {
@@ -57,15 +57,15 @@ html, body {
   float: right;
   font-size: 0.9em;
   overflow: hidden;
-  margin-top: 0;         /* to line up with sidebar: title-height + title padding */
+  margin-top: 0;
   margin-left: 20px;
   margin-bottom: 1em;
 }
 
 #toc a {
-  font-family: georgia,serif;
-  font-weight:normal;
-  font-style:italic;
+  font-family: Georgia, serif;
+  font-weight: normal;
+  font-style: italic;
 }
 
 .title {
@@ -81,7 +81,7 @@ html, body {
   -webkit-border-radius: 5px;
   -khtml-border-radius: 5px;
   border-radius: 5px;
-  background: #E0EFFD;
+  background: #e0effd;
   margin-bottom: 1.0em;
 }
 
@@ -113,7 +113,7 @@ html, body {
 #toc a[class = H4] {
   margin-left: 1.5em;
   font-family: "andale mono", monospace;
-  font-style:normal;
+  font-style: normal;
 }
 
 #toc a[class = H5] {
@@ -124,7 +124,7 @@ html, body {
 #toc a[class = H6] {
   margin-left: 3em;
   font-family: "andale mono", monospace;
-  font-style:normal;
+  font-style: normal;
 }
 
 .warning {
@@ -136,13 +136,13 @@ html, body {
   padding: 1em;
   border: solid 2px black;
   width: 75%;
-  background-color: #C63717;
+  background-color: #c63717;
   color: white;
 }
 
 .logo {
   margin-left: 5px;
-  float:left;
+  float: left;
 }
 
 .meta-header {
@@ -199,7 +199,7 @@ html, body {
 }
 
 .sidebar-subsection {
-  margin:1px;
+  margin: 1px;
 }
 
 .always-show {
@@ -220,7 +220,7 @@ html, body {
   padding-left: 25px;
 }
 
-.sidebar-section h2,.sidebar-section h4 {
+.sidebar-section h2, .sidebar-section h4 {
   padding-left: 10px;
 }
 
@@ -237,8 +237,8 @@ html, body {
 }
 
 .sidebar-section h2 {
-  background-color: #3B69B1;
-  font-family: georgia,serif;
+  background-color: #3b69b1;
+  font-family: Georgia, serif;
   font-style: italic;
   font-size: 1.4em;
   -moz-border-radius-topleft: 5px;
@@ -256,12 +256,12 @@ html, body {
 }
 
 .sidebar-section h2.current-page a {
-  color: #3B69B1;
+  color: #3b69b1;
 }
 
 .sidebar-section h3 {
-  font-family: georgia,serif;
-  font-style:italic;
+  font-family: Georgia, serif;
+  font-style: italic;
   font-size: 1.2em;
 }
 
@@ -269,18 +269,18 @@ html, body {
   border-style: solid;
   border-top-width: 1px;
   border-color: #a0d0fb;
-  margin-left:5px;
-  margin-right:5px;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .sidebar-section h4 {
   font-weight: normal;
-  font-family: georgia,serif;
+  font-family: Georgia, serif;
 
 }
 
 .sidebar-section li {
-  font-family: georgia,serif;
+  font-family: Georgia, serif;
   margin-left: 0;
 }
 

@@ -26,7 +26,7 @@ header {
 }
 
 #global-header .menu p {
-  border-left: 1px solid #9FA7AF;
+  border-left: 1px solid #9Fa7aF;
   display: inline-block;
   height: 32px;
   line-height: 32px;
@@ -68,8 +68,8 @@ header {
 }
 
 #site-header h1 a:hover, #site-header h1 a:focus {
-  color: #043B84;
-  text-shadow: 0 0 40px #FFFFFF, 0 0 20px #FFFFFF, 0 0 10px #FFFFFF, 0 0 10px #FFFFFF, 0 0 10px #FFFFFF;
+  color: #043b84;
+  text-shadow: 0 0 40px #ffffff, 0 0 20px #ffffff, 0 0 10px #ffffff, 0 0 10px #ffffff, 0 0 10px #ffffff;
 }
 
 #site-header #site-search {
