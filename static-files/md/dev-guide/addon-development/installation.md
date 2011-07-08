@@ -37,7 +37,7 @@ Your command prompt should now have a new prefix containing the name of the
 SDK's root directory:
 
 <pre>
-  (addon-sdk-1.0)~/mozilla/addon-sdk-1.0 > 
+  (addon-sdk-1.0)~/mozilla/addon-sdk-1.0 >
 </pre>
 
 ## Installation on Windows ##
@@ -57,7 +57,7 @@ Then run:
   C:\Users\mozilla\sdk\addon-sdk-1.0>bin\activate
 </pre>
 
-You might see an error like this: 
+You might see an error like this:
 
 <pre>
   ERROR: The system was unable to find the specified registry key or value.
