@@ -312,9 +312,6 @@ def start(env_root=None, host=DEFAULT_HOST, port=DEFAULT_PORT,
     except KeyboardInterrupt:
         print "Ctrl-C received, exiting."
 
-def generate_static_docs(env_root, tgz_filename, base_url = ''):
-    generatedocs.generate_docs(env_root, base_url)
-
 def run_app(harness_root_dir, harness_options,
             app_type, binary=None, profiledir=None, verbose=False,
             timeout=None, logfile=None, addons=None, args=None, norun=None,

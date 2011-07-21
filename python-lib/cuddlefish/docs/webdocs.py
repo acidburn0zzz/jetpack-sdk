@@ -4,8 +4,8 @@ import simplejson as json
 
 from cuddlefish import packaging
 from cuddlefish import Bunch
-from cuddlefish import apiparser
-from cuddlefish import apirenderer
+from cuddlefish.docs import apiparser
+from cuddlefish.docs import apirenderer
 
 INDEX_PAGE = '/static-files/base.html'
 BASE_URL_INSERTION_POINT = '<base '

@@ -1,32 +1,44 @@
 import os
 import shutil
 import hashlib
+import tarfile
 
 from cuddlefish import packaging
 from cuddlefish import Bunch
-from cuddlefish import apiparser
-from cuddlefish import apirenderer
-from cuddlefish import webdocs
+from cuddlefish.docs import apiparser
+from cuddlefish.docs import apirenderer
+from cuddlefish.docs import webdocs
 import simplejson as json
 
-SDOCS_DIR = "addon-sdk-docs"
+SDOCS_DIR = "addon-sdk-docs/"
 DIGEST = "status.md5"
+
+def generate_static_docs(env_root, tgz_filename, base_url = ''):
+    generate_docs(env_root, base_url)
+    tgz = tarfile.open(tgz_filename, 'w:gz')
+    tgz.add('addon-sdk-docs', 'addon-sdk-docs')
+    tgz.close()
 
 def generate_docs(env_root, base_url=''):
     sdocs_dir = os.path.join(env_root, SDOCS_DIR)
     if base_url == '':
-        base_url = sdocs_dir
+        sdocs_pieces = sdocs_dir.split(os.sep)
+        base_url = "file://" + "/".join(sdocs_pieces) + "/"
     # if the static docs dir doesn't exist, generate everything
     if not os.path.exists(sdocs_dir):
         generate_docs_from_scratch(env_root, base_url)
     else:
         current_status = calculate_current_status(env_root)
-        docs_are_up_to_date = current_status == open(os.path.join(env_root, SDOCS_DIR, DIGEST), "r").read()
+        previous_status_file = os.path.join(env_root, SDOCS_DIR, DIGEST)
+        docs_are_up_to_date = False
+        if os.path.exists(previous_status_file):
+            docs_are_up_to_date = current_status == open(previous_status_file, "r").read()
         # if the docs are not up to date, generate everything
         if not docs_are_up_to_date:
             shutil.rmtree(sdocs_dir)
             generate_docs_from_scratch(env_root, base_url)
             open(os.path.join(env_root, SDOCS_DIR, DIGEST), "w").write(current_status)
+    return base_url + "index.html"
 
 # this function builds a hash of the name and last modification date of:
 # * every file in "packages" which ends in ".md"
@@ -48,9 +60,11 @@ def calculate_current_status(env_root):
     return current_status.digest()
 
 def generate_docs_from_scratch(env_root, base_url):
+    print "(Re-)generating documentation..."
     sdocs_dir = os.path.join(env_root, SDOCS_DIR)
     web_docs = webdocs.WebDocs(env_root, base_url)
-    assert not os.path.exists(sdocs_dir)
+    if os.path.exists(sdocs_dir):
+        shutil.rmtree(sdocs_dir)
 
     # first, copy static-files
     shutil.copytree(os.path.join(env_root, 'static-files'), sdocs_dir)
@@ -99,11 +113,11 @@ def generate_docs_from_scratch(env_root, base_url):
     # generate all the guide docs
     dev_guide_src = os.path.join(env_root, 'static-files', 'md', 'dev-guide')
     dev_guide_dest = os.path.join(sdocs_dir, 'dev-guide')
-    generate_file_tree(dev_guide_src, dev_guide_dest, web_docs, generate_api_doc)
+    generate_file_tree(dev_guide_src, dev_guide_dest, web_docs, generate_guide_doc)
 
     # make /md/dev-guide/welcome.html the top level index file
     shutil.copy(os.path.join(dev_guide_dest, 'welcome.html'), \
-                os.path.join(staging_dir, 'index.html'))
+                os.path.join(sdocs_dir, 'index.html'))
 
 def generate_file_tree(src_dir, dest_dir, web_docs, generate_file):
     if not os.path.exists(dest_dir):
@@ -125,7 +139,6 @@ def generate_file_tree(src_dir, dest_dir, web_docs, generate_file):
 def generate_api_doc(src_dir, dest_dir, web_docs):
     shutil.copyfile(src_dir, dest_dir)
     if src_dir.endswith(".md"):
-        print src_dir
         # parse and JSONify the API docs
         docs_md = open(src_dir, 'r').read()
         docs_parsed = list(apiparser.parse_hunks(docs_md))
