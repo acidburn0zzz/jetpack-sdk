@@ -26,6 +26,7 @@ def generate_docs(env_root, base_url=''):
         base_url = "file://" + "/".join(sdocs_pieces) + "/"
     # if the static docs dir doesn't exist, generate everything
     if not os.path.exists(sdocs_dir):
+        print "Generating documentation..."
         generate_docs_from_scratch(env_root, base_url)
     else:
         current_status = calculate_current_status(env_root)
@@ -35,6 +36,7 @@ def generate_docs(env_root, base_url=''):
             docs_are_up_to_date = current_status == open(previous_status_file, "r").read()
         # if the docs are not up to date, generate everything
         if not docs_are_up_to_date:
+            print "Regenerating documentation..."
             shutil.rmtree(sdocs_dir)
             generate_docs_from_scratch(env_root, base_url)
             open(os.path.join(env_root, SDOCS_DIR, DIGEST), "w").write(current_status)
@@ -60,7 +62,6 @@ def calculate_current_status(env_root):
     return current_status.digest()
 
 def generate_docs_from_scratch(env_root, base_url):
-    print "(Re-)generating documentation..."
     sdocs_dir = os.path.join(env_root, SDOCS_DIR)
     web_docs = webdocs.WebDocs(env_root, base_url)
     if os.path.exists(sdocs_dir):
@@ -100,14 +101,12 @@ def generate_docs_from_scratch(env_root, base_url):
             package_doc_html = web_docs.create_package_page(src_dir)
             open(package_filename, "w").write(package_doc_html)
 
-        # are the api docs in "docs" or "doc"?
+        # generate all the API docs
         docs_src_dir = os.path.join(src_dir, "doc")
         docs_dest_dir = os.path.join(dest_dir, "doc")
         if os.path.isdir(os.path.join(src_dir, "docs")):
             docs_src_dir = os.path.join(src_dir, "docs")
             docs_dest_dir = os.path.join(dest_dir, "docs")
-
-        # generate all the API docs
         generate_file_tree(docs_src_dir, docs_dest_dir, web_docs, generate_api_doc)
 
     # generate all the guide docs
