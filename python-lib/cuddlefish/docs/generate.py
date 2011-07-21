@@ -10,7 +10,7 @@ from cuddlefish.docs import apirenderer
 from cuddlefish.docs import webdocs
 import simplejson as json
 
-SDOCS_DIR = "addon-sdk-docs/"
+SDOCS_DIR = "addon-sdk-docs"
 DIGEST = "status.md5"
 
 def generate_static_docs(env_root, tgz_filename, base_url = ''):
@@ -22,6 +22,8 @@ def generate_static_docs(env_root, tgz_filename, base_url = ''):
 def generate_docs(env_root, base_url=''):
     sdocs_dir = os.path.join(env_root, SDOCS_DIR)
     if base_url == '':
+        if not sdocs_dir.startswith("/"):
+            sdocs_dir = "/" + sdocs_dir
         sdocs_pieces = sdocs_dir.split(os.sep)
         base_url = "file://" + "/".join(sdocs_pieces) + "/"
     # if the static docs dir doesn't exist, generate everything
