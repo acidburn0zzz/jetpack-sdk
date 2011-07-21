@@ -22,10 +22,14 @@ def generate_static_docs(env_root, tgz_filename, base_url = ''):
 def generate_docs(env_root, base_url=''):
     sdocs_dir = os.path.join(env_root, SDOCS_DIR)
     if base_url == '':
+        base_url_path = sdocs_dir
+        # this is to ensure the path starts with "/"
+        # whether or not it's on Windows
+        # there might be a better way
         if not sdocs_dir.startswith("/"):
-            sdocs_dir = "/" + sdocs_dir
-        sdocs_pieces = sdocs_dir.split(os.sep)
-        base_url = "file://" + "/".join(sdocs_pieces) + "/"
+            base_url_path = "/" + base_url_path
+        base_url_path_pieces = base_url_path.split(os.sep)
+        base_url = "file://" + "/".join(base_url_path_pieces) + "/"
     # if the static docs dir doesn't exist, generate everything
     if not os.path.exists(sdocs_dir):
         print "Generating documentation..."
