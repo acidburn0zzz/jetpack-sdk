@@ -14,6 +14,8 @@ SDOCS_DIR = "addon-sdk-docs"
 DIGEST = "status.md5"
 
 def generate_static_docs(env_root, tgz_filename, base_url = ''):
+    sdocs_dir = os.path.join(env_root, SDOCS_DIR)
+    shutil.rmtree(sdocs_dir)
     generate_docs(env_root, base_url, silent=True)
     tgz = tarfile.open(tgz_filename, 'w:gz')
     tgz.add('addon-sdk-docs', 'addon-sdk-docs')
