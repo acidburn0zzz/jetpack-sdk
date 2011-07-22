@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from cuddlefish import webdocs
+from cuddlefish.docs import webdocs
 from cuddlefish import server
 from cuddlefish.tests import env_root
 

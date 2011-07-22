@@ -1,7 +1,7 @@
 import os, re
 import unittest
 
-from cuddlefish import webdocs
+from cuddlefish.docs import webdocs
 from cuddlefish.tests import env_root
 
 class WebDocTests(unittest.TestCase):
