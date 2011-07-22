@@ -19,7 +19,7 @@ def generate_static_docs(env_root, tgz_filename, base_url = ''):
     tgz.add('addon-sdk-docs', 'addon-sdk-docs')
     tgz.close()
 
-def generate_docs(env_root, base_url=''):
+def generate_docs(env_root, base_url='', silent=False):
     sdocs_dir = os.path.join(env_root, SDOCS_DIR)
     if base_url == '':
         base_url_path = sdocs_dir
@@ -32,8 +32,11 @@ def generate_docs(env_root, base_url=''):
         base_url = "file://" + "/".join(base_url_path_pieces) + "/"
     # if the static docs dir doesn't exist, generate everything
     if not os.path.exists(sdocs_dir):
-        print "Generating documentation..."
+        if not silent:
+            print "Generating documentation..."
         generate_docs_from_scratch(env_root, base_url)
+        current_status = calculate_current_status(env_root)
+        open(os.path.join(env_root, SDOCS_DIR, DIGEST), "w").write(current_status)
     else:
         current_status = calculate_current_status(env_root)
         previous_status_file = os.path.join(env_root, SDOCS_DIR, DIGEST)
@@ -42,7 +45,8 @@ def generate_docs(env_root, base_url=''):
             docs_are_up_to_date = current_status == open(previous_status_file, "r").read()
         # if the docs are not up to date, generate everything
         if not docs_are_up_to_date:
-            print "Regenerating documentation..."
+            if not silent:
+                print "Regenerating documentation..."
             shutil.rmtree(sdocs_dir)
             generate_docs_from_scratch(env_root, base_url)
             open(os.path.join(env_root, SDOCS_DIR, DIGEST), "w").write(current_status)

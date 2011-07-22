@@ -1,0 +1,73 @@
+import os
+import shutil
+import unittest
+
+from cuddlefish.docs import generate
+from cuddlefish.tests import env_root
+
+INITIAL_FILESET = [ ["base.html"], \
+                    ["dev-guide", "welcome.html"], \
+                    ["packages", "aardvark", "aardvark.html"] ]
+
+EXTENDED_FILESET = [ ["base.html"], \
+                    ["dev-guide", "extra.html"], \
+                    ["dev-guide", "welcome.html"], \
+                    ["packages", "aardvark", "aardvark.html"] ]
+
+EXTRAFILE = ["dev-guide", "extra.html"]
+
+class Generate_Docs_Tests(unittest.TestCase):
+    def test_generate_static_docs_does_not_smoke(self):
+        filename = 'testdocs.tgz'
+        if os.path.exists(filename):
+            os.remove(filename)
+        generate.generate_static_docs(env_root, tgz_filename=filename)
+        self.assertTrue(os.path.exists(filename))
+        os.remove(filename)
+
+    def test_generate_docs_does_not_smoke(self):
+        test_root = os.path.join(env_root, "python-lib", "cuddlefish", "tests", "static-files")
+        docs_root = os.path.join(test_root, "addon-sdk-docs")
+        if os.path.exists(docs_root):
+            shutil.rmtree(docs_root)
+        new_digest = self.check_generate_regenerate_cycle(test_root, INITIAL_FILESET)
+        # touching an MD file under packages **does** cause a regenerate
+        os.utime(os.path.join(test_root, "packages", "aardvark", "doc", "main.md"), None)
+        new_digest = self.check_generate_regenerate_cycle(test_root, INITIAL_FILESET, new_digest)
+        # touching a non MD file under packages **does not** cause a regenerate
+        os.utime(os.path.join(test_root, "packages", "aardvark", "lib", "main.js"), None)
+        self.check_generate_is_skipped(test_root, INITIAL_FILESET, new_digest)
+        # touching a non MD file under static-files **does** cause a regenerate
+        os.utime(os.path.join(test_root, "static-files", "base.html"), None)
+        new_digest = self.check_generate_regenerate_cycle(test_root, INITIAL_FILESET, new_digest)
+        # adding a file **does** cause a regenerate
+        open(os.path.join(test_root, "static-files", "md", "dev-guide", "extra.md"), "w").write("some content")
+        new_digest = self.check_generate_regenerate_cycle(test_root, EXTENDED_FILESET, new_digest)
+        # deleting a file **does** cause a regenerate
+        os.remove(os.path.join(test_root, "static-files", "md", "dev-guide", "extra.md"))
+        new_digest = self.check_generate_regenerate_cycle(test_root, INITIAL_FILESET, new_digest)
+        # remove the files
+        shutil.rmtree(docs_root)
+
+    def check_generate_is_skipped(self, test_root, files_to_expect, initial_digest):
+        generate.generate_docs(test_root, silent=True)
+        docs_root = os.path.join(test_root, "addon-sdk-docs")
+        for file_to_expect in files_to_expect:
+            self.assertTrue(os.path.exists(os.path.join(docs_root, *file_to_expect)))
+        self.assertTrue(initial_digest == open(os.path.join(docs_root, "status.md5"), "r").read())
+
+    def check_generate_regenerate_cycle(self, test_root, files_to_expect, initial_digest = None):
+        # test that if we generate, files are getting generated
+        generate.generate_docs(test_root, silent=True)
+        docs_root = os.path.join(test_root, "addon-sdk-docs")
+        for file_to_expect in files_to_expect:
+            self.assertTrue(os.path.exists(os.path.join(docs_root, *file_to_expect)))
+        if initial_digest:
+            self.assertTrue(initial_digest != open(os.path.join(docs_root, "status.md5"), "r").read())
+        # and that if we regenerate, nothing changes...
+        new_digest = open(os.path.join(docs_root, "status.md5"), "r").read()
+        self.check_generate_is_skipped(test_root, files_to_expect, new_digest)
+        return new_digest
+
+if __name__ == '__main__':
+    unittest.main()

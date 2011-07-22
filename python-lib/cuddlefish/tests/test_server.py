@@ -5,15 +5,6 @@ from cuddlefish import webdocs
 from cuddlefish import server
 from cuddlefish.tests import env_root
 
-class ServerTests(unittest.TestCase):
-    def test_generate_static_docs_does_not_smoke(self):
-        filename = 'testdocs.tgz'
-        if os.path.exists(filename):
-            os.remove(filename)
-        server.generate_static_docs(env_root, tgz_filename=filename)
-        self.assertTrue(os.path.exists(filename))
-        os.remove(filename)
-
 class UnprivilegedServerTests(unittest.TestCase):
     def request(self, path, method='GET'):
         web_docs = webdocs.WebDocs(env_root)

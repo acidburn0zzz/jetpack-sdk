@@ -17,10 +17,10 @@ import errno
 
 from cuddlefish import packaging
 from cuddlefish import Bunch
-from cuddlefish import apiparser
-from cuddlefish import apirenderer
-from cuddlefish import webdocs
-from cuddlefish import generatedocs
+from cuddlefish.docs import apiparser
+from cuddlefish.docs import apirenderer
+from cuddlefish.docs import webdocs
+from cuddlefish.docs import generate
 import simplejson as json
 
 try:
