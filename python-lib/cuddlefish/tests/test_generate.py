@@ -1,6 +1,7 @@
 import os
 import shutil
 import unittest
+import StringIO
 
 from cuddlefish.docs import generate
 from cuddlefish.tests import env_root
@@ -21,7 +22,7 @@ class Generate_Docs_Tests(unittest.TestCase):
         filename = 'testdocs.tgz'
         if os.path.exists(filename):
             os.remove(filename)
-        generate.generate_static_docs(env_root, tgz_filename=filename)
+        filename = generate.generate_static_docs(env_root)
         self.assertTrue(os.path.exists(filename))
         os.remove(filename)
 
@@ -40,17 +41,20 @@ class Generate_Docs_Tests(unittest.TestCase):
         # touching a non MD file under static-files **does** cause a regenerate
         os.utime(os.path.join(test_root, "static-files", "base.html"), None)
         new_digest = self.check_generate_regenerate_cycle(test_root, INITIAL_FILESET, new_digest)
+        # touching an MD file under dev-guide **does** cause a regenerate
+        os.utime(os.path.join(test_root, "dev-guide", "welcome.md"), None)
+        new_digest = self.check_generate_regenerate_cycle(test_root, INITIAL_FILESET, new_digest)
         # adding a file **does** cause a regenerate
-        open(os.path.join(test_root, "static-files", "md", "dev-guide", "extra.md"), "w").write("some content")
+        open(os.path.join(test_root, "dev-guide", "extra.md"), "w").write("some content")
         new_digest = self.check_generate_regenerate_cycle(test_root, EXTENDED_FILESET, new_digest)
         # deleting a file **does** cause a regenerate
-        os.remove(os.path.join(test_root, "static-files", "md", "dev-guide", "extra.md"))
+        os.remove(os.path.join(test_root, "dev-guide", "extra.md"))
         new_digest = self.check_generate_regenerate_cycle(test_root, INITIAL_FILESET, new_digest)
         # remove the files
         shutil.rmtree(docs_root)
 
     def check_generate_is_skipped(self, test_root, files_to_expect, initial_digest):
-        generate.generate_docs(test_root, silent=True)
+        generate.generate_docs(test_root, stdout=StringIO.StringIO())
         docs_root = os.path.join(test_root, "addon-sdk-docs")
         for file_to_expect in files_to_expect:
             self.assertTrue(os.path.exists(os.path.join(docs_root, *file_to_expect)))
@@ -58,7 +62,7 @@ class Generate_Docs_Tests(unittest.TestCase):
 
     def check_generate_regenerate_cycle(self, test_root, files_to_expect, initial_digest = None):
         # test that if we generate, files are getting generated
-        generate.generate_docs(test_root, silent=True)
+        generate.generate_docs(test_root, stdout=StringIO.StringIO())
         docs_root = os.path.join(test_root, "addon-sdk-docs")
         for file_to_expect in files_to_expect:
             self.assertTrue(os.path.exists(os.path.join(docs_root, *file_to_expect)))

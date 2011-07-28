@@ -28,7 +28,7 @@ class WebDocTests(unittest.TestCase):
             '/python-lib/cuddlefish/tests/static-files')
         web_docs = webdocs.WebDocs(root)
         guide = web_docs.create_guide_page(os.path.join(\
-            root + '/static-files/md/dev-guide/welcome.blah'))
+            root + '/dev-guide/welcome.blah'))
         self._test_common_contents(guide)
         self.assertTrue(\
             '<title>An Imposing Title - Add-on SDK Documentation</title>'\
@@ -41,7 +41,7 @@ class WebDocTests(unittest.TestCase):
             '/python-lib/cuddlefish/tests/static-files')
         web_docs = webdocs.WebDocs(root)
         guide = web_docs.create_guide_page(os.path.join(\
-            root + '/static-files/md/dev-guide/no_h1.blah'))
+            root + '/dev-guide/no_h1.blah'))
         self._test_common_contents(guide)
         self.assertTrue('<title>Add-on SDK Documentation</title>'\
             in guide)

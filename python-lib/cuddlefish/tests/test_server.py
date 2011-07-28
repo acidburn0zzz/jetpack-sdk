@@ -30,33 +30,5 @@ class UnprivilegedServerTests(unittest.TestCase):
         self.assertEqual(self.request('/api/task-queue'),
                          '501 Not Implemented')
 
-    def test_404(self):
-        self.assertEqual(self.request('/bleh'), '404 Not Found')
-
-    def test_api_404(self):
-        self.assertEqual(self.request('/api/bleh'), '404 Not Found')
-
-    def test_unknown_package_404(self):
-        self.assertEqual(self.request('/packages/bleh'), '404 Not Found')
-
-    def test_package_file_404(self):
-        self.assertEqual(self.request('/packages/api-utils/bleh'),
-                         '404 Not Found')
-
-    def test_package_file_200(self):
-        readme = self.request('/packages/api-utils/README.md')
-        self.assertTrue('API Utils' in readme)
-
-    def test_packages_index_json_200(self):
-        info = server.json.loads(self.request('/packages/index.json'))
-        self.assertEqual(type(info), dict)
-        self.assertTrue('api-utils' in info)
-
-    def test_404_on_blank_path(self):
-        self.assertEqual(self.request(''), '404 Not Found')
-
-    def test_ensure_index_returned_on_root_path(self):
-        self.assertTrue('<html' in self.request('/'))
-
 if __name__ == '__main__':
     unittest.main()

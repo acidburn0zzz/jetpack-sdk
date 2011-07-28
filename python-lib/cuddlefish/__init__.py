@@ -496,16 +496,15 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
         test_cfx(env_root, options.verbose)
         return
     elif command == "docs":
-        import cuddlefish.docs.generate
-        docs_home = cuddlefish.docs.generate.generate_docs(env_root, filename=options.docfile)
+        from cuddlefish.docs import generate
+        docs_home = generate.generate_docs(env_root, filename=options.docfile)
         webbrowser.open(docs_home)
         return
     elif command == "sdocs":
-        import cuddlefish.docs.generate
+        from cuddlefish.docs import generate
 
         # TODO: Allow user to change this filename via cmd line.
-        filename = 'addon-sdk-docs.tgz'
-        cuddlefish.docs.generate.generate_static_docs(env_root, filename, options.baseurl)
+        filename = generate.generate_static_docs(env_root, base_url=options.baseurl)
         print >>stdout, "Wrote %s." % filename
         return
 
