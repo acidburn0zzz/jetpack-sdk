@@ -65,6 +65,11 @@ def calculate_base_url(base_url, docs_dir):
         base_url = "file://" + "/".join(base_url_path_pieces) + "/"
     return base_url
 
+# this is nasty, and would be much easier if we kept all the 'static-files'
+# (that is, template HTML, JS, CSS, images) in a single top-level directory,
+# then we could just replace them in that one place.
+#
+# But doing that means changing the links in the files.
 def copy_static_files(env_root, docs_root):
     for docs_dir in os.listdir(docs_root):
         if docs_dir == "packages" or docs_dir == "dev-guide":
