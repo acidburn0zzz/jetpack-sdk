@@ -11,6 +11,7 @@ from cuddlefish.docs import webdocs
 import simplejson as json
 
 SDOCS_DIR = "addon-sdk-docs"
+DEVGUIDE_SRC_PREFIX = "static-files/md/"
 DIGEST = "status.md5"
 
 def generate_static_docs(env_root, tgz_filename, base_url = ''):
@@ -21,7 +22,7 @@ def generate_static_docs(env_root, tgz_filename, base_url = ''):
     tgz.add('addon-sdk-docs', 'addon-sdk-docs')
     tgz.close()
 
-def generate_docs(env_root, base_url='', silent=False):
+def generate_docs(env_root, filename='', base_url='', silent=False):
     sdocs_dir = os.path.join(env_root, SDOCS_DIR)
     if base_url == '':
         base_url_path = sdocs_dir
@@ -32,6 +33,10 @@ def generate_docs(env_root, base_url='', silent=False):
             base_url_path = "/" + base_url_path
         base_url_path_pieces = base_url_path.split(os.sep)
         base_url = "file://" + "/".join(base_url_path_pieces) + "/"
+    # if we were given a filename, just generate the named file
+    # and return its URL
+    if filename:
+        return generate_named_file(env_root, base_url, filename)
     # if the static docs dir doesn't exist, generate everything
     if not os.path.exists(sdocs_dir):
         if not silent:
@@ -53,6 +58,16 @@ def generate_docs(env_root, base_url='', silent=False):
             generate_docs_from_scratch(env_root, base_url)
             open(os.path.join(env_root, SDOCS_DIR, DIGEST), "w").write(current_status)
     return base_url + "index.html"
+
+def generate_named_file(env_root, base_url, filename):
+    web_docs = webdocs.WebDocs(env_root, base_url)
+    abs_path = os.path.abspath(filename)
+    if abs_path.startswith(os.path.join(env_root, 'packages')):
+        return generate_api_doc(env_root, abs_path, web_docs)
+    elif abs_path.startswith(os.path.join(env_root, 'static-files')):
+        return generate_guide_doc(env_root, abs_path, web_docs)
+    else:
+        raise ValueError("Not a valid path to a documentation file")
 
 # this function builds a hash of the name and last modification date of:
 # * every file in "packages" which ends in ".md"
@@ -115,55 +130,83 @@ def generate_docs_from_scratch(env_root, base_url):
 
         # generate all the API docs
         docs_src_dir = os.path.join(src_dir, "doc")
-        docs_dest_dir = os.path.join(dest_dir, "doc")
         if os.path.isdir(os.path.join(src_dir, "docs")):
             docs_src_dir = os.path.join(src_dir, "docs")
-            docs_dest_dir = os.path.join(dest_dir, "docs")
-        generate_file_tree(docs_src_dir, docs_dest_dir, web_docs, generate_api_doc)
+        generate_file_tree(env_root, docs_src_dir, web_docs, generate_api_doc)
 
     # generate all the guide docs
     dev_guide_src = os.path.join(env_root, 'static-files', 'md', 'dev-guide')
-    dev_guide_dest = os.path.join(sdocs_dir, 'dev-guide')
-    generate_file_tree(dev_guide_src, dev_guide_dest, web_docs, generate_guide_doc)
+    generate_file_tree(env_root, dev_guide_src, web_docs, generate_guide_doc)
 
     # make /md/dev-guide/welcome.html the top level index file
-    shutil.copy(os.path.join(dev_guide_dest, 'welcome.html'), \
-                os.path.join(sdocs_dir, 'index.html'))
+    shutil.copy(os.path.join(env_root, SDOCS_DIR, 'dev-guide', 'welcome.html'), \
+                 os.path.join(sdocs_dir, 'index.html'))
 
-def generate_file_tree(src_dir, dest_dir, web_docs, generate_file):
-    if not os.path.exists(dest_dir):
-        os.mkdir(dest_dir)
+def generate_file_tree(env_root, src_dir, web_docs, generate_file):
     for (dirpath, dirnames, filenames) in os.walk(src_dir):
         assert dirpath.startswith(src_dir) # what is this for??
-        relpath = dirpath[len(src_dir) + 1:]
-        for dirname in dirnames:
-            dest_path = os.path.join(dest_dir, relpath, dirname)
-            if not os.path.exists(dest_path):
-                os.mkdir(dest_path)
         for filename in filenames:
             if filename.endswith("~"):
                 continue
             src_path = os.path.join(dirpath, filename)
-            dest_path = os.path.join(dest_dir, relpath, filename)
-            generate_file(src_path, dest_path, web_docs)
+            generate_file(env_root, src_path, web_docs)
 
-def generate_api_doc(src_dir, dest_dir, web_docs):
-    shutil.copyfile(src_dir, dest_dir)
+def generate_api_doc(env_root, src_dir, web_docs):
     if src_dir.endswith(".md"):
+        dest_dir, filename = get_api_doc_dest_path(env_root, src_dir)
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
+
         # parse and JSONify the API docs
         docs_md = open(src_dir, 'r').read()
         docs_parsed = list(apiparser.parse_hunks(docs_md))
         docs_json = json.dumps(docs_parsed)
-        open(dest_dir + ".json", "w").write(docs_json)
+        dest_file_json = os.path.join(dest_dir, filename) + ".json"
+        if os.path.exists(dest_file_json):
+            os.remove(dest_file_json)
+        open(dest_file_json, "w").write(docs_json)
+
         # write the HTML div files
         docs_div = apirenderer.json_to_div(docs_parsed, src_dir)
-        open(dest_dir + ".div", "w").write(docs_div)
+        dest_file_div = os.path.join(dest_dir, filename) + ".div"
+        if os.path.exists(dest_file_div):
+            os.remove(dest_file_div)
+        open(dest_file_div, "w").write(docs_div)
+
         # write the standalone HTML files
         docs_html = web_docs.create_module_page(src_dir)
-        open(dest_dir[:-3] + ".html", "w").write(docs_html)
+        dest_file_html = os.path.join(dest_dir, filename) + ".html"
+        if os.path.exists(dest_file_html):
+            os.remove(dest_file_html)
+        open(dest_file_html, "w").write(docs_html)
+        print dest_file_html
+        return dest_file_html
 
-def generate_guide_doc(src_dir, dest_dir, web_docs):
+def generate_guide_doc(env_root, src_dir, web_docs):
     if src_dir.endswith(".md"):
+        dest_dir, filename = get_guide_doc_dest_path(env_root, src_dir)
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
         # write the standalone HTML files
         docs_html = web_docs.create_guide_page(src_dir)
-        open(dest_dir[:-3] + ".html", "w").write(docs_html)
+        dest_file_html = os.path.join(dest_dir, filename) + ".html"
+        if os.path.exists(dest_file_html):
+            os.remove(dest_file_html)
+        open(dest_file_html, "w").write(docs_html)
+        return dest_file_html
+
+# Given the full path to an API source file, and the root,
+# return a tuple of:
+# 1) the full path to the corresponding HTML file, without the filename
+# 2) the filename without the extension
+def get_api_doc_dest_path(env_root, src_dir):
+    src_dir_relative = src_dir[len(env_root) + 1:]
+    return os.path.split(os.path.join(env_root, SDOCS_DIR, src_dir_relative)[:-3])
+
+# Given the full path to a dev guide source file, and the root,
+# return a tuple of:
+# 1) the full path to the corresponding HTML file, without the filename
+# 2) the filename without the extension
+def get_guide_doc_dest_path(env_root, src_dir):
+    src_dir_relative = src_dir[len(env_root) + 1:]
+    return os.path.split(os.path.join(env_root, SDOCS_DIR, src_dir_relative[len(DEVGUIDE_SRC_PREFIX):])[:-3])
