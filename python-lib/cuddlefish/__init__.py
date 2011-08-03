@@ -185,11 +185,6 @@ parser_groups = (
                                  metavar=None,
                                  default='',
                                  cmds=['sdocs'])),
-        (("", "--docfile",), dict(dest="docfile",
-                                 help=("name of a single documentation file to generate"),
-                                 metavar=None,
-                                 default='',
-                                 cmds=['docs'])),
         (("", "--test-runner-pkg",), dict(dest="test_runner_pkg",
                                           help=("name of package "
                                                 "containing test runner "
@@ -502,7 +497,11 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
         return
     elif command == "docs":
         from cuddlefish.docs import generate
-        docs_home = generate.generate_docs(env_root, filename=options.docfile)
+        print args[0]
+        if len(args) > 1:
+            docs_home = generate.generate_docs(env_root, filename=args[1])
+        else:
+            docs_home = generate.generate_docs(env_root)
         webbrowser.open(docs_home)
         return
     elif command == "sdocs":

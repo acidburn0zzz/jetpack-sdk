@@ -12,12 +12,13 @@ from cuddlefish.docs import apirenderer
 from cuddlefish.docs import webdocs
 import simplejson as json
 
-DOCS_DIR = "addon-sdk-docs"
+DOCS_DIR = "doc"
 DIGEST = "status.md5"
 TGZ_FILENAME = "addon-sdk-docs.tgz"
 
-def generate_static_docs(env_root, base_url=''):
+def generate_static_docs(env_root, base_url=None):
     docs_dir = os.path.join(env_root, DOCS_DIR)
+    print docs_dir
     if os.path.exists(docs_dir):
         shutil.rmtree(docs_dir)
     generate_docs(env_root, base_url=base_url, stdout=StringIO.StringIO())
@@ -26,8 +27,9 @@ def generate_static_docs(env_root, base_url=''):
     tgz.close()
     return TGZ_FILENAME
   
-def generate_docs(env_root, filename='', base_url='', stdout=sys.stdout):
+def generate_docs(env_root, base_url=None, filename=None, stdout=sys.stdout):
     docs_dir = os.path.join(env_root, DOCS_DIR)
+    print docs_dir
     base_url = calculate_base_url(base_url, docs_dir)
     # if we were given a filename, just generate the named file
     # and return its URL
@@ -54,7 +56,7 @@ def generate_docs(env_root, filename='', base_url='', stdout=sys.stdout):
     return base_url + "index.html"
 
 def calculate_base_url(base_url, docs_dir):
-    if base_url == '':
+    if base_url == None:
         base_url_path = docs_dir
         # this is to ensure the path starts with "/"
         # whether or not it's on Windows
