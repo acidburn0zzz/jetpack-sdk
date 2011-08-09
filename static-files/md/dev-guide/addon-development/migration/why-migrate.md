@@ -1,14 +1,12 @@
-# Why Migrate? #
+# Should You Migrate From XUL? #
 
 This guide aims to explain the benefits and limitations of SDK-based add-ons compared to XUL-based add-ons, and help you decide whether migrating from XUL is the right choice for you.
 
-The most obvious advantage of the Add-on SDK is that it provides a simpler environment for developing add-ons than the traditional approach. With the SDK you can write add-ons with standard Web tools like JavaScript, HTML and CSS, rather than having to learn the nonstandard XUL and XPCOM technologies. Also, the SDK provides tools which make is easy to package an add-on as an XPI file. For someone new to Firefox add-on development, these advantages might seem compelling.
+The most obvious advantage of the Add-on SDK is that it provides a simpler environment for developing add-ons than the traditional approach. With the SDK you can write add-ons using standard Web tools like JavaScript, HTML and CSS, rather than having to learn the nonstandard XUL and XPCOM technologies. Also, the SDK provides tools which make it easy to package an add-on as an XPI file. For someone new to Firefox add-on development, these advantages might seem compelling.
 
 But if you've already learned XUL and XPCOM, and been through the process of building an XPI file, why should you migrate to the SDK, and have to learn a whole new set of APIs and tools?
 
-## The Summary ##
-
-A simplistic way to explain this is to say that the SDK:
+The simplest way to explain this is to say that the SDK:
 
 * offers APIs that will not change with new releases of Firefox
 * makes it easier to secure add-ons
@@ -27,7 +25,7 @@ In reality, SDK-based add-ons:
 
 * can be made to do most of the things that XUL-based add-ons can do
 * can be just as insecure
-* can use just as unstable APIs.
+* can be as vulnerable to changes in the underlying platform.
 
 The SDK provides a set of ["supported" APIs](packages/addon-kit/addon-kit.html). If you stick to these APIs you get the benefits listed above, but also have to live with the constraints.
 
@@ -55,7 +53,7 @@ alt="Add-on use of supported and low-level modules">
 
 <tr>
 <td> <strong><a name="security">Security</a></strong></td>
-<td><p>If they're not carefully designed Firefox add-ons can open the browser to attack by malicious web pages. Although it's possible to write insecure add-ons using the SDK, it's not as easy, and the damage that a compromised add-on can do is more limited.</p>
+<td><p>If they're not carefully designed, Firefox add-ons can open the browser to attack by malicious web pages. Although it's possible to write insecure add-ons using the SDK, it's not as easy, and the damage that a compromised add-on can do is more limited.</p>
 <p>There are two main reasons for this. 
   <ul>
     <li>First, SDK-based modules don't run with full browser privileges: they can only use the APIs they explicitly import. Of course, modules that <a href="dev-guide/module-development/chrome.html"><code>require("chrome")</code></a> run with full privileges.</li><br>
@@ -88,7 +86,7 @@ alt="Add-on use of supported and low-level modules">
 <tr>
 <td><strong><a name="ui_flexibility">User interface flexibility</a></strong></td>
 <td><p>XUL overlays offer a great deal of options for building a UI and integrating it into the browser. Using only the SDK's supported APIs you have much more limited options for your UI.</p>
-<p>If the supported APIs doesn't provide the UI you need, you can manipulate the DOM directly as in a traditional <a href="https://developer.mozilla.org/en/Extensions/Bootstrapped_extensions">bootstrapped extension</a>. We'll discuss how to do this, but it's complex, and gives up the compatibility benefit of using the SDK.</p></td>
+<p>If the supported APIs doesn't provide the UI you need, you can manipulate the DOM directly as in a traditional <a href="https://developer.mozilla.org/en/Extensions/Bootstrapped_extensions">bootstrapped extension</a>: but this is complex, and gives up the compatibility benefit of using the SDK.</p></td>
 </tr>
 
 <tr>
@@ -111,4 +109,4 @@ Whether you should migrate a particular add-on is largely a matter of how well t
 
 * If your add-on needs a lot of help from the low-level APIs, then you won't see much benefit from migrating.
 
-* If your needs a fairly limited amount of help from low-level APIs, then it might still be worth migrating: we'll add more supported APIs in future releases to meet important use cases, and eventually hope to have a comprehensive collection of third party modules filling many of the gaps.
+* If your add-on needs a fairly limited amount of help from low-level APIs, then it might still be worth migrating: we'll add more supported APIs in future releases to meet important use cases, and eventually hope to have a comprehensive collection of third party modules filling many of the gaps.
