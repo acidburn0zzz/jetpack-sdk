@@ -71,9 +71,17 @@ maintained as a separate file at all.
 
 The next few chapters explain content scripts in detail:
 
-* [Loading Content Scripts](dev-guide/addon-development/content-scripts/loading.html): how to attach content scripts to web pages, and how to control the point at which they are executed
-* [Content Script Access](dev-guide/addon-development/content-scripts/access.html): detail about the access content scripts get to the DOM, to other content scripts, and to scripts loaded by the page itself
-* [Communicating Using <code>port</code>](dev-guide/addon-development/content-scripts/using-port.html): how to communicate between your add-on and its content scripts using the <code>port</code> object
-* [Communicating using <code>postMessage()</code>](dev-guide/addon-development/content-scripts/using-postmessage.html): how to communicate between your 
-add-on and its content scripts using the <code>postMessage()</code> API
-* [Example](dev-guide/addon-development/content-scripts/reddit-example.html): a simple example add-on using content scripts
+* [Loading Content Scripts](dev-guide/addon-development/content-scripts/loading.html):
+how to attach content scripts to web pages, and how to control the point at
+which they are executed
+* [Content Script Access](dev-guide/addon-development/content-scripts/access.html):
+detail about the access content scripts get to the DOM, to other content scripts,
+and to scripts loaded by the page itself
+* [Communicating Using <code>port</code>](dev-guide/addon-development/content-scripts/using-port.html):
+how to communicate between your add-on and its content scripts using the
+<code>port</code> object
+* [Communicating using <code>postMessage()</code>](dev-guide/addon-development/content-scripts/using-postmessage.html):
+how to communicate between your add-on and its content scripts using the
+<code>postMessage()</code> API
+* [Example](dev-guide/addon-development/content-scripts/reddit-example.html):
+a simple example add-on using content scripts
