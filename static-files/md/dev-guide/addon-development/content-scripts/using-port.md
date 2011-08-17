@@ -18,6 +18,23 @@ an optional payload. The payload can be any value that is
       // Handle the event
     });
 
+Here's  simple add-on that sends a message to a content script using `port`:
+
+    var tabs = require("tabs");
+
+    var alertContentScript = "self.port.on('alert', function(message) {" +
+                             "  window.alert(message);" +
+                             "})";
+
+    tabs.on("ready", function(tab) {
+      worker = tab.attach({
+        contentScript: alertContentScript
+      });
+      worker.port.emit("alert", "Message from the add-on");
+    });
+
+    tabs.open("http://www.mozilla.org");
+
 We could depict the interface between add-on code and content script code like
 this:
 

@@ -1,7 +1,7 @@
 # Communicating using "postMessage()" #
 
 As an alternative to user-defined events content modules support the built-in
-`message` event. For most cases user-defined events are preferable to message
+`message` event. In most cases user-defined events are preferable to message
 events. However, the `context-menu` module does not support user-defined
 events, so to send messages from a content script to the add-on via a context
 menu object, you must use message events.
