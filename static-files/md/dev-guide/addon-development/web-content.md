@@ -36,8 +36,8 @@ _content scripts_.
 
 A single add-on may use multiple content scripts, and content scripts loaded
 into the same context can interact directly with each other as well as with
-the web content itself. See the section below on
-<a href="dev-guide/addon-development/web-content.html#content_script_access">
+the web content itself. See the chapter on
+<a href="dev-guide/addon-development/content-scripts/access.html">
 content script access</a>.
 
 The add-on script and content script can't directly access each other's state.

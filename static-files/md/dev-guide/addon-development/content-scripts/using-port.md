@@ -1,5 +1,5 @@
 
-# <a name="content_script_events">Communicating using <code>port</code></a> #
+# Communicating using "port" #
 
 To enable add-on scripts and content scripts to communicate with each other,
 each end of the conversation has access to a `port` object which defines two
@@ -8,8 +8,7 @@ functions:
 **`emit()`** is used to emit an event. It may be called with any number of
 parameters, but is most likely to be called with a name for the event and
 an optional payload. The payload can be any value that is
-<a href = "dev-guide/addon-development/web-content.html#json_serializable">serializable to JSON</a>.
-It is used to emit an event:
+<a href = "dev-guide/addon-development/content-scripts/using-port.html#json_serializable">serializable to JSON</a>
 
     port.emit("myEvent", myEventPayload);
 

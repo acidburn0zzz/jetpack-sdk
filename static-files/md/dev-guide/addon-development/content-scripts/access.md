@@ -1,6 +1,6 @@
-# <a name="content_script_access">Content Script Access</a> #
+# Content Script Access #
 
-This page  details the access content scripts have to:
+This page talks about the access content scripts have to:
 
 * DOM objects in the pages they are attached to
 * other content scripts
@@ -65,7 +65,7 @@ You can try this example at: [https://builder.addons.mozilla.org/addon/1013777/r
 
 The proxy is transparent to content scripts: as far as the content script is concerned, it is accessing the DOM directly. But because it's not, some things that you might expect to work, won't. For example, if the page includes a library like [jQuery](http://www.jquery.com), or any other page script adds any other objects to the window, they won't be visible to the content script.
 
-###unsafeWindow###
+### unsafeWindow ###
 
 If you really need direct access to the underlying DOM, you can use the global `unsafeWindow` object. Try editing the example at [https://builder.addons.mozilla.org/addon/1013777/revision/4/](https://builder.addons.mozilla.org/addon/1013777/revision/4/) so the content script uses `unsafeWindow.confirm()` instead of `window.confirm()` and see the difference.
 
@@ -96,7 +96,7 @@ to page B.
 The web content has no access to objects created by the content script, unless
 the content script explicitly makes them available.
 
-##Access to Page Scripts###
+## Access to Page Scripts ##
 
 You can communicate between the content script and page scripts using [`postMessage()`](https://developer.mozilla.org/en/DOM/window.postMessage), but there's a twist: in early versions of the SDK, the global `postMessage()` function in content scripts was used for communicating between the content script and the main add-on code. Although this has been [deprecated in favor of `self.postMessage`](https://wiki.mozilla.org/Labs/Jetpack/Release_Notes/1.0b5#Major_Changes), the old globals are still supported, so you can't currently use `window.postMessage()`. You must use `document.defaultView.postMessage()` instead.
 

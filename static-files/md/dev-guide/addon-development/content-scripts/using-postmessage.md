@@ -1,4 +1,4 @@
-# Communicating using <code>postMessage()</code> #
+# Communicating using "postMessage()" #
 
 As an alternative to user-defined events content modules support the built-in
 `message` event. For most cases user-defined events are preferable to message
@@ -14,7 +14,7 @@ the global `self` object:
     self.postMessage(contentScriptMessage);
 
 This takes a single parameter, the message payload, which may be any
-<a href = "dev-guide/addon-development/web-content.html#json_serializable">JSON-serializable value</a>.
+<a href = "dev-guide/addon-development/content-scripts/using-port.html#json_serializable">JSON-serializable value</a>.
 
 To receive a message from the add-on script, use `self`'s `on` function:
 
