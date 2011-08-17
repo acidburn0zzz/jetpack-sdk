@@ -58,4 +58,3 @@ has been loaded, at the time the
 fires.
 
 The default value is "end".
-
