@@ -9,10 +9,10 @@ This page talks about the access content scripts have to:
 ## Access to the DOM ##
 
 Content scripts need to be able to access DOM objects in arbitrary web
-pages, but this gives rise to two potential security problems:
+pages, but this causes two potential security problems:
 
-1. changes the add-on made to the DOM would be visible to the page, making
-it obvious to the page that an add-on was modifying it.
+1. JavaScript values from the content script could be accessed by the page,
+enabling a malicious page to steal data or call privileged methods.
 2. a malicious page could redefine standard functions and properties of DOM
 objects so they don't do what the add-on expects.
 
@@ -37,7 +37,7 @@ For example: the page below redefines `window.confirm()` to return
     window.confirm = function(message) {
       return true;
     }
-    </script>
+    &lt;/script>
   </head>
 </html>
 
@@ -65,23 +65,27 @@ But thanks to the content proxy, a content script which calls
 
     tabs.open(data.url("xray.html"));
 
-You can try this example at:
-[https://builder.addons.mozilla.org/addon/1013777/revision/4/](https://builder.addons.mozilla.org/addon/1013777/revision/4/).
+You can try out this example [using the builder](https://builder.addons.mozilla.org/addon/1013777/revision/4/).
 
 The proxy is transparent to content scripts: as far as the content script
 is concerned, it is accessing the DOM directly. But because it's not, some
 things that you might expect to work, won't. For example, if the page includes
 a library like [jQuery](http://www.jquery.com), or any other page script
-adds any other objects to the window, they won't be visible to the content
+adds other objects to any DOM nodes, they won't be visible to the content
 script. So to use jQuery you'll typically have to add it as a content script,
 as in [this example](dev-guide/addon-development/content-scripts/reddit-example.html).
 
 ### unsafeWindow ###
 
 If you really need direct access to the underlying DOM, you can use the
-global `unsafeWindow` object. Try editing the example at [https://builder.addons.mozilla.org/addon/1013777/revision/4/](https://builder.addons.mozilla.org/addon/1013777/revision/4/)
+global `unsafeWindow` object.
+
+To see the difference, try editing the
+[example in the builder](https://builder.addons.mozilla.org/addon/1013777/revision/4/)
 so the content script uses `unsafeWindow.confirm()` instead of
-`window.confirm()` to see the difference.
+`window.confirm()` (to edit the example, you'll need to create an account
+with the Add-on Builder and clone the original add-on). Alternatively, try out
+[the example here](https://builder.addons.mozilla.org/addon/1015979/revision/3/).
 
 Avoid using `unsafeWindow` if possible: it is the same concept as
 Greasemonkey's unsafeWindow, and the
@@ -92,9 +96,9 @@ changed in a future version of the SDK.
 
 ## Access to Other Content Scripts ##
 
-Content scripts loaded into the same global execution context can interact
+Content scripts loaded into the same document can interact
 with each other directly as well as with the web content itself. However,
-content scripts which have been loaded into different execution contexts
+content scripts which have been loaded into different documents
 cannot interact with each other.
 
 For example:
@@ -140,7 +144,7 @@ to listen for messages:
       window.addEventListener("message", function(event) {
         window.alert(event.data);
       }, false);
-    </script>
+    &lt;/script>
 
   </head>
 
