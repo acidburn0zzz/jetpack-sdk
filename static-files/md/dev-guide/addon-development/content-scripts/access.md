@@ -9,7 +9,7 @@ This page talks about the access content scripts have to:
 ## Access to the DOM ##
 
 Content scripts need to be able to access DOM objects in arbitrary web
-pages, but this causes two potential security problems:
+pages, but this could cause two potential security problems:
 
 1. JavaScript values from the content script could be accessed by the page,
 enabling a malicious page to steal data or call privileged methods.
