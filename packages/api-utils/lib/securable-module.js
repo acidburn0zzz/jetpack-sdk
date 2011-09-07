@@ -136,7 +136,11 @@
                                         this._defaultPrincipal);
 
        return {
-         _sandbox: new Cu.Sandbox(principal),
+         _sandbox: new Cu.Sandbox(principal,
+                                  options.filename ?
+                                    { sandboxName: options.filename } :
+                                    { }
+                                 ),
          _principal: principal,
          get globalScope() {
            return this._sandbox;
@@ -267,7 +271,7 @@
           */
 
          if (self.getModuleExports) {
-           /* this currently handles 'chrome' and 'parent-loader' */
+           /* this currently handles 'chrome' */
            let exports = self.getModuleExports(basePath, moduleName);
            if (exports)
              return exports;
@@ -367,8 +371,16 @@
          var preeval_exports = sandbox.getProperty("exports");
          self.modules[path] = sandbox.getProperty("exports");
          sandbox.evaluate(moduleContents);
-         sandbox.evaluate("if (typeof module.exports === 'object')\n" +
-                          "Object.freeze(module.exports);");
+
+         // We need to duplicate `exports` as Object.freeze throws an exception
+         // on objects coming from another sandbox. Bug 677768.
+         sandbox.evaluate(
+           "if (typeof module.exports === 'object')\n" +
+           "  module.exports = " +
+           "    Object.prototype.isPrototypeOf(module.exports) ? " +
+           "    Object.freeze(module.exports) : " +
+           "    Object.freeze(Object.create(module.exports));");
+
          var posteval_exports = sandbox.getProperty("module").exports;
          if (posteval_exports !== preeval_exports) {
            /* if they used module.exports= or module.setExports(), get
@@ -395,7 +407,12 @@
        // of dependency string names to fetch. An optional function callback can
        // be specified to execute when all of those dependencies are available.
        function asyncRequire(deps, callback) {
-         if (typeof deps === "string" && !callback) {
+         if (typeof deps === "undefined" && typeof callback === "undefined") {
+           // If we could require() the traceback module here, we could
+           // probably show the source linenumber. But really that should be
+           // part of the stack trace.
+           throw new Error("you must provide a module name when calling require() from "+basePath);
+         } else if (typeof deps === "string" && !callback) {
            // Just return the module wanted via sync require.
            return syncRequire(deps);
          } else {

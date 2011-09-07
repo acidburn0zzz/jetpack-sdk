@@ -1,5 +1,4 @@
-/* vim:st=2:sts=2:sw=2:
- * ***** BEGIN LICENSE BLOCK *****
+/* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
@@ -15,12 +14,11 @@
  * The Original Code is Jetpack.
  *
  * The Initial Developer of the Original Code is Mozilla.
- * Portions created by the Initial Developer are Copyright (C) 2011
+ * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Brian Warner <warner@mozilla.com>
- *   Erik Vold <erikvvold@gmail.com>
+ *   Shane Tomlinson <stomlinson@mozilla.com> (Original author)
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,47 +33,12 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+const timers = require("timers");
 
-"use strict";
-
-let file = require("./file");
-let url = require("./url");
-
-let jid = packaging.jetpackID;
-let name = packaging.options.name;
-
-// Some XPCOM APIs require valid URIs as an argument for certain operations (see
-// `nsILoginManager` for example). This property represents add-on associated
-// unique URI string that can be used for that.
-let uri = "addon:" + jid;
-
-exports.makeSelfModule = function (reqdata) {
-  // a module loaded from URI has called require(MODULE)
-  // URI is like resource://jid0-$JID/$PACKAGE-$SECTION/$SUBDIR/$FILENAME
-  // resource://jid0-abc123/reading-data-lib/main.js
-  // and we want resource://jid0-abc123/reading-data-data/
-
-  var data_url = function(name) {
-    name = name || "";
-    // dataURIPrefix ends with a slash
-    var x = reqdata.dataURIPrefix + name;
-    return x;
-  };
-  var data_load = function(name) {
-    let fn = url.toFilename(data_url(name));
-    return file.read(fn);
-  };
-
-  var self = {
-    id: jid,
-    uri: uri,
-    name: name,
-    version: packaging.options.metadata[name].version,
-    data: {
-      load: data_load,
-      url: data_url
-    }
-  };
-  return self;
-};
-
+exports.testTimeout = function (test) {
+  test.waitUntilDone();
+  timers.setTimeout(function () {
+    test.pass("timers.setTimeout works");
+    test.done();
+  }, 0);
+}
