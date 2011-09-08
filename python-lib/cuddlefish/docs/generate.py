@@ -16,17 +16,26 @@ DOCS_DIR = "doc"
 DIGEST = "status.md5"
 TGZ_FILENAME = "addon-sdk-docs.tgz"
 
+def clean_generated_docs(docs_dir):
+    index_file = os.path.join(docs_dir, "index.html")
+    if os.path.exists(index_file):
+        os.remove(index_file)
+    dev_guide_dir = os.path.join(docs_dir, "dev-guide")
+    if os.path.exists(dev_guide_dir):
+        shutil.rmtree(dev_guide_dir)
+    api_doc_dir = os.path.join(docs_dir, "packages")
+    if os.path.exists(api_doc_dir):
+        shutil.rmtree(api_doc_dir)
+
 def generate_static_docs(env_root, base_url=None):
     docs_dir = os.path.join(env_root, DOCS_DIR)
-    print docs_dir
-    if os.path.exists(docs_dir):
-        shutil.rmtree(docs_dir)
+    clean_generated_docs(docs_dir)
     generate_docs(env_root, base_url=base_url, stdout=StringIO.StringIO())
     tgz = tarfile.open(TGZ_FILENAME, 'w:gz')
     tgz.add(docs_dir, DOCS_DIR)
     tgz.close()
     return TGZ_FILENAME
-  
+
 def generate_docs(env_root, base_url=None, filename=None, stdout=sys.stdout):
     docs_dir = os.path.join(env_root, DOCS_DIR)
     print docs_dir
@@ -36,7 +45,7 @@ def generate_docs(env_root, base_url=None, filename=None, stdout=sys.stdout):
     if filename:
         return generate_named_file(env_root, base_url, filename)
     # if the static docs dir doesn't exist, generate everything
-    if not os.path.exists(docs_dir):
+    if not os.path.exists(os.path.join(docs_dir, "index.html")):
         print >>stdout, "Generating documentation..."
         generate_docs_from_scratch(env_root, base_url, docs_dir)
         current_status = calculate_current_status(env_root)
@@ -50,7 +59,7 @@ def generate_docs(env_root, base_url=None, filename=None, stdout=sys.stdout):
         # if the docs are not up to date, generate everything
         if not docs_are_up_to_date:
             print >>stdout, "Regenerating documentation..."
-            shutil.rmtree(docs_dir)
+            clean_generated_docs(docs_dir)
             generate_docs_from_scratch(env_root, base_url, docs_dir)
             open(os.path.join(env_root, DOCS_DIR, DIGEST), "w").write(current_status)
     return base_url + "index.html"
@@ -67,31 +76,15 @@ def calculate_base_url(base_url, docs_dir):
         base_url = "file://" + "/".join(base_url_path_pieces) + "/"
     return base_url
 
-# this is nasty, and would be much easier if we kept all the 'static-files'
-# (that is, template HTML, JS, CSS, images) in a single top-level directory,
-# then we could just replace them in that one place.
-#
-# But doing that means changing the links in the files.
-def copy_static_files(env_root, docs_root):
-    for docs_dir in os.listdir(docs_root):
-        if docs_dir == "packages" or docs_dir == "dev-guide":
-            continue
-        if os.path.isdir(os.path.join(docs_root, docs_dir)):
-            shutil.rmtree(os.path.join(docs_root, docs_dir))
-            shutil.copytree(os.path.join(env_root, "static-files", docs_dir), os.path.join(docs_root, docs_dir));
-
 def generate_named_file(env_root, base_url, filename):
     docs_dir = os.path.join(env_root, DOCS_DIR)
     web_docs = webdocs.WebDocs(env_root, base_url)
-
-    # first, copy static-files, so CSS and JS and images are available
-    copy_static_files(env_root, docs_dir)
 
     # next, generate api doc or guide doc
     abs_path = os.path.abspath(filename)
     if abs_path.startswith(os.path.join(env_root, 'packages')):
         return generate_api_doc(env_root, abs_path, web_docs)
-    elif abs_path.startswith(os.path.join(env_root, 'dev-guide')):
+    elif abs_path.startswith(os.path.join(env_root, DOCS_DIR, 'dev-guide-source')):
         return generate_guide_doc(env_root, abs_path, web_docs)
     else:
         raise ValueError("Not a valid path to a documentation file")
@@ -107,27 +100,18 @@ def calculate_current_status(env_root):
             if filename.endswith(".md"):
                 current_status.update(filename)
                 current_status.update(str(os.path.getmtime(os.path.join(dirpath, filename))))
-    guide_src_dir = os.path.join(env_root, "dev-guide")
+    guide_src_dir = os.path.join(env_root, DOCS_DIR, "dev-guide-source")
     for (dirpath, dirnames, filenames) in os.walk(guide_src_dir):
         for filename in filenames:
             if filename.endswith(".md"):
-                current_status.update(filename)
-                current_status.update(str(os.path.getmtime(os.path.join(dirpath, filename))))
-    guide_src_dir = os.path.join(env_root, "static-files")
-    for (dirpath, dirnames, filenames) in os.walk(guide_src_dir):
-        for filename in filenames:
-            if not filename.startswith("."):
                 current_status.update(filename)
                 current_status.update(str(os.path.getmtime(os.path.join(dirpath, filename))))
     return current_status.digest()
 
 def generate_docs_from_scratch(env_root, base_url, docs_dir):
     web_docs = webdocs.WebDocs(env_root, base_url)
-    if os.path.exists(docs_dir):
-        shutil.rmtree(docs_dir)
+    clean_generated_docs(docs_dir)
 
-    # first, copy static-files
-    shutil.copytree(os.path.join(env_root, 'static-files'), docs_dir)
     # py2.5 doesn't have ignore=, so we delete tempfiles afterwards. If we
     # required >=py2.6, we could use ignore=shutil.ignore_patterns("*~")
     for (dirpath, dirnames, filenames) in os.walk(docs_dir):
@@ -167,7 +151,7 @@ def generate_docs_from_scratch(env_root, base_url, docs_dir):
         generate_file_tree(env_root, docs_src_dir, web_docs, generate_api_doc)
 
     # generate all the guide docs
-    dev_guide_src = os.path.join(env_root, "dev-guide")
+    dev_guide_src = os.path.join(env_root, DOCS_DIR, "dev-guide-source")
     generate_file_tree(env_root, dev_guide_src, web_docs, generate_guide_doc)
 
     # make /md/dev-guide/welcome.html the top level index file
@@ -185,7 +169,7 @@ def generate_file_tree(env_root, src_dir, web_docs, generate_file):
 
 def generate_api_doc(env_root, src_dir, web_docs):
     if src_dir.endswith(".md"):
-        dest_dir, filename = get_dest_path(env_root, src_dir)
+        dest_dir, filename = get_api_doc_dest_path(env_root, src_dir)
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
 
@@ -210,7 +194,7 @@ def generate_api_doc(env_root, src_dir, web_docs):
 
 def generate_guide_doc(env_root, src_dir, web_docs):
     if src_dir.endswith(".md"):
-        dest_dir, filename = get_dest_path(env_root, src_dir)
+        dest_dir, filename = get_guide_doc_dest_path(env_root, src_dir)
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
         # write the standalone HTML files
@@ -228,7 +212,14 @@ def replace_file(dest_path, file_contents):
 # return a tuple of:
 # 1) the full path to the corresponding HTML file, without the filename
 # 2) the filename without the extension
-def get_dest_path(env_root, src_dir):
+def get_guide_doc_dest_path(env_root, src_dir):
+    src_dir_relative = src_dir[len(os.path.join(env_root, DOCS_DIR, "dev-guide-source")) + 1:]
+    return os.path.split(os.path.join(env_root, DOCS_DIR, "dev-guide", src_dir_relative)[:-3])
+
+# Given the full path to a dev guide source file, and the root,
+# return a tuple of:
+# 1) the full path to the corresponding HTML file, without the filename
+# 2) the filename without the extension
+def get_api_doc_dest_path(env_root, src_dir):
     src_dir_relative = src_dir[len(env_root) + 1:]
     return os.path.split(os.path.join(env_root, DOCS_DIR, src_dir_relative)[:-3])
-
