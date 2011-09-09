@@ -38,7 +38,6 @@ def generate_static_docs(env_root, base_url=None):
 
 def generate_docs(env_root, base_url=None, filename=None, stdout=sys.stdout):
     docs_dir = os.path.join(env_root, DOCS_DIR)
-    print docs_dir
     base_url = calculate_base_url(base_url, docs_dir)
     # if we were given a filename, just generate the named file
     # and return its URL
