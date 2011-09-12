@@ -497,7 +497,6 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
         return
     elif command == "docs":
         from cuddlefish.docs import generate
-        print args[0]
         if len(args) > 1:
             docs_home = generate.generate_docs(env_root, filename=args[1])
         else:
