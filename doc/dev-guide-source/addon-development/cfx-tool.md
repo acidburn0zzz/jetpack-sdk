@@ -60,6 +60,35 @@ own add-on development, with the following file structure:
       main.md
 </pre>
 
+#### Experimental Options ####
+
+<table>
+<colgroup>
+<col width="30%">
+<col width="70%">
+</colgroup>
+
+<tr>
+  <td>
+    <code>--template=TEMPLATE</code>
+  </td>
+  <td>
+    <p>If this option is not specified, <code>cfx init</code> creates the
+    familiar skeleton structure for your add-on, including <code>data</code>,
+    <code>lib</code>, <code>test</code> directories, and so on.</p>
+    <p>Use this option to make <code>cfx init</code> create a different
+    skeleton structure for the add-on. At the moment the only alternative
+    structure, and thus the only value for TEMPLATE, is "XUL", which makes
+    <code>cfx init</code> create a structure suitable for XUL add-ons which
+    want to use SDK modules.</p>
+    <p>See
+    <a href="Using the SDK with XUL Add-ons">Using the SDK with XUL Add-ons</a>
+    for more details.</p>
+  </td>
+</tr>
+
+</table>
+
 ### cfx run ###
 
 This command is used to run the add-on. Called with no options it looks for a
