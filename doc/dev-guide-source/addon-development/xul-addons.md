@@ -256,11 +256,11 @@ It just adds an item to the "Tools" menu labeled "Say Hello".
 
 
 When the user selects the menu item the add-on displays an alert message.
-We'll change it to use the SDK's [notifications](packages/addon-kit/docs/notifications.html) module instead.
+We'll change it to use the SDK's [`notifications`](packages/addon-kit/docs/notifications.html) module instead.
 
 ### Initializing the Add-on ###
 
-So to begin with we'll create a new directory, change into it, and run:
+So to begin with we'll create a new directory, change into it, and run `cfx init`:
 
 <pre>
 mkdir helloworld
@@ -270,7 +270,7 @@ cfx init --template xul
 
 ### Adding the XUL Files ###
 
-Copy the contents of your `chrome` directory into `extension`, to get a
+Copy the contents of the `chrome` directory into `extension`, to get a
 directory structure like this:
 
 <pre>
