@@ -110,18 +110,37 @@ the gaps.
 
 ## Content Scripts ###
 
-In a XUL-based add-on, code that uses XPCOM objects and manipulates the
-browser chrome runs in the same context as code that interacts with web
-pages. But the SDK makes a distinction between:
+In a XUL-based add-on, code that uses XPCOM objects, code that manipulates
+the browser chrome, and code that interacts with web pages all runs in the
+same context. But the SDK makes a distinction between:
 
-* add-on scripts, which can use the SDK APIs, but is not able to interact with 
-web pages
-
-* content scripts, which can access web pages, but do not have access to the
+* **add-on scripts**, which can use the SDK APIs, but are not able to interact
+with web pages
+* **content scripts**, which can access web pages, but do not have access to the
 SDK's APIs
 
 Content scripts and add-on scripts communicate by sending each other JSON
 messages: in fact, the ability to communicate with the add-on scripts is the
 only extra privilege a content script is granted over a normal remote web
 page script.
+
+So, for example, suppose an add-on wants to make a cross-domain XMLHttpRequest
+based on some data extracted from a web page. In a XUL-based extension you
+would implement all this in a single script. An SDK-based add-on would need
+to be structured like this:
+
+* the main add-on code attaches a content script to the page, and registers
+a listener function for messages from the content script
+* the content script extracts the data from the page and sends it to the
+main add-on code in a message
+* the main add-on code receives the message and sends the request.
+
+A XUL-based add-on will need to be reorganized to respect this distinction.
+
+This design is motivated by two related concerns. First is security: it
+reduces the risk that a malicious web page will be able to access privileged
+APIs. Second is the need to be compatible with the multi-process architecture
+planned for Firefox and already partly implemented in Firefox Mobile. Note that
+all mobile add-ons already need to use
+[a similar design](https://wiki.mozilla.org/Mobile/Fennec/Extensions/Electrolysis).
 
