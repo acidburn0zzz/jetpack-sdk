@@ -14,7 +14,7 @@ and working with XPCOM.
 
 Finally, we'll walk through a simple example.
 
-## [Benefits and Limitations of the SDK](dev-guide/addon-development/migration/why-migrate.html) ##
+## Benefits and Limitations of the SDK ##
 
 For developers already familiar with XUL and XPCOM development, the main
 advantages of the SDK are:
@@ -72,4 +72,56 @@ functionality.</p></td>
 
 </table>
 
-That's not 
+### Low-level APIs and Third-party Modules ###
+
+That's not the whole story. If you need more flexibility than the SDK's
+["supported" APIs](packages/addon-kit/addon-kit.html) provide, you can
+use its ["low-level" APIs](packages/api-utils/api-utils.html) to load
+XPCOM objects directly or to manipulate the DOM directly as in a
+traditional
+<a href="https://developer.mozilla.org/en/Extensions/Bootstrapped_extensions">bootstrapped extension</a>
+
+Alternatively, you can load third-party modules, which extend the SDK's
+core APIs.
+
+In this guide we'll look at all these techniques, but note that by
+doing this you lose some of the benefits of programming with the SDK
+including simplicity, compatibility, and to a lesser extent security.
+
+Note, though, that all SDK-based add-ons are restartless, so you can't
+use XUL overlays in SDK-based add-ons.
+
+### Should You Migrate? ###
+
+Whether you should migrate a particular add-on is largely a matter of
+how well the SDK's supported APIs meet its needs.
+
+* If your add-on can accomplish everything it needs using only the
+supported APIs, it's a good candidate for migration.
+
+* If your add-on needs a lot of help from the low-level APIs, then you
+won't see much benefit from migrating.
+
+* If your add-on needs a fairly limited amount of help from low-level
+APIs, then it might still be worth migrating: we'll add more supported
+APIs in future releases to meet important use cases, and eventually hope
+to have a comprehensive collection of third party modules filling many of
+the gaps.
+
+## Content Scripts ###
+
+In a XUL-based add-on, code that uses XPCOM objects and manipulates the
+browser chrome runs in the same context as code that interacts with web
+pages. But the SDK makes a distinction between:
+
+* add-on scripts, which can use the SDK APIs, but is not able to interact with 
+web pages
+
+* content scripts, which can access web pages, but do not have access to the
+SDK's APIs
+
+Content scripts and add-on scripts communicate by sending each other JSON
+messages: in fact, the ability to communicate with the add-on scripts is the
+only extra privilege a content script is granted over a normal remote web
+page script.
+
