@@ -4,9 +4,9 @@
 This guide aims to help you migrate a traditional XUL-based add-on
 to the SDK.
 
-First, we'll look at the benefits and limitations of
-using the SDK, to help decide whether your add-on is a good candidate
-for porting.
+First, we'll look at the [benefits and limitations of
+using the SDK](/dev-guide/addon-development/migration/benefits_limitations.html),
+to help decide whether your add-on is a good candidate for porting.
 
 Next, we'll look at each of the three main tasks involved in migrating
 to the SDK: working with content scripts, UI development without XUL overlays,
@@ -26,20 +26,34 @@ advantages of the SDK are:
 </colgroup>
 <tr>
 <td> <strong><a name="compatibility">Compatibility</a></strong></td>
-<td><p>Although we can't promise we'll never break a <a href="packages/addon-kit/addon-kit.html">supported API</a>, maintaining compatibility across Firefox versions is a top priority for us.</p>
-<p>We've designed the APIs to be forward-compatible with the new <a href="https://wiki.mozilla.org/Electrolysis/Firefox">multiple process architecture</a> (codenamed Electrolysis) planned for Firefox.</p>
-<p>We also expect to support both desktop and mobile Firefox using a single edition of the SDK: so you'll be able to write one extension and have it work on both products.</p></td>
+<td><p>Although we can't promise we'll never break a
+<a href="packages/addon-kit/addon-kit.html">supported API</a>,
+maintaining compatibility across Firefox versions is a top priority for us.</p>
+<p>We've designed the APIs to be forward-compatible with the new
+<a href="https://wiki.mozilla.org/Electrolysis/Firefox">multiple process architecture</a>
+(codenamed Electrolysis) planned for Firefox.</p>
+<p>We also expect to support both desktop and mobile Firefox using a single
+edition of the SDK: so you'll be able to write one extension and have it work
+on both products.</p></td>
 </tr>
 
 <tr>
 <td> <strong><a name="security">Security</a></strong></td>
-<td><p>If they're not carefully designed, Firefox add-ons can open the browser to attack by malicious web pages. Although it's possible to write insecure add-ons using the SDK, it's not as easy, and the damage that a compromised add-on can do is usually more limited.</p></td>
+<td><p>If they're not carefully designed, Firefox add-ons can open the browser
+to attack by malicious web pages. Although it's possible to write insecure
+add-ons using the SDK, it's not as easy, and the damage that a compromised
+add-on can do is usually more limited.</p></td>
 </tr>
 
 <tr>
 <td> <strong><a name="restartlessness">Restartlessness</a></strong></td>
-<td><p>Add-ons built with the SDK are can be installed without having to restart Firefox.</p>
-<p>Although you can write <a href="https://developer.mozilla.org/en/Extensions/Bootstrapped_extensions">traditional add-ons that are restartless</a>, you can't use XUL overlays in them, so most traditional add-ons would have to be substantially rewritten anyway.</p></td>
+<td><p>Add-ons built with the SDK are can be installed without having
+to restart Firefox.</p>
+<p>Although you can write
+<a href="https://developer.mozilla.org/en/Extensions/Bootstrapped_extensions">
+traditional add-ons that are restartless</a>, you can't use XUL overlays in
+them, so most traditional add-ons would have to be substantially rewritten
+anyway.</p></td>
 </tr>
 
 </table>
@@ -79,7 +93,7 @@ That's not the whole story. If you need more flexibility than the SDK's
 use its ["low-level" APIs](packages/api-utils/api-utils.html) to load
 XPCOM objects directly or to manipulate the DOM directly as in a
 traditional
-<a href="https://developer.mozilla.org/en/Extensions/Bootstrapped_extensions">bootstrapped extension</a>
+<a href="https://developer.mozilla.org/en/Extensions/Bootstrapped_extensions">bootstrapped extension</a>.
 
 Alternatively, you can load third-party modules, which extend the SDK's
 core APIs.
@@ -87,9 +101,6 @@ core APIs.
 In this guide we'll look at all these techniques, but note that by
 doing this you lose some of the benefits of programming with the SDK
 including simplicity, compatibility, and to a lesser extent security.
-
-Note, though, that all SDK-based add-ons are restartless, so you can't
-use XUL overlays in SDK-based add-ons.
 
 ### Should You Migrate? ###
 
@@ -116,8 +127,8 @@ same context. But the SDK makes a distinction between:
 
 * **add-on scripts**, which can use the SDK APIs, but are not able to interact
 with web pages
-* **content scripts**, which can access web pages, but do not have access to the
-SDK's APIs
+* **content scripts**, which can access web pages, but do not have access to
+the SDK's APIs
 
 Content scripts and add-on scripts communicate by sending each other JSON
 messages: in fact, the ability to communicate with the add-on scripts is the
@@ -144,7 +155,8 @@ planned for Firefox and already partly implemented in Firefox Mobile. Note
 that all mobile add-ons already need to use
 [a similar design](https://wiki.mozilla.org/Mobile/Fennec/Extensions/Electrolysis).
 
-There's much more information on content scripts in the [Working With Content Scripts](dev-guide/addon-development/web-content.html) guide.
+There's much more information on content scripts in the
+[Working With Content Scripts](dev-guide/addon-development/web-content.html) guide.
 
 ## UI Development Without XUL Overlays ##
 
@@ -157,7 +169,8 @@ alternative ways to modify the browser chrome. There are three options:
 
 ### SDK APIs ###
 
-The APIs the SDK provides for building user interfaces are summarized in the table below.
+The APIs the SDK provides for building user interfaces are summarized in the
+table below.
 
 <table>
 <colgroup>
@@ -185,17 +198,17 @@ as an icon you can create a toolbar button:</p>
 <img class="image-center" src="static-files/media/screenshots/modules/widget-icon-osx.png"
 alt="Mozilla widget icon">
 <br>
-<p>By specifying it as HTML you can create a toolbar, or any other kind of compact
-user interface content:
-</p>
+<p>By specifying it as HTML you can create a toolbar, or any other kind of
+compact user interface content:</p>
 <img class="image-center" src="static-files/media/screenshots/modules/widget-content-osx.png"
 alt="Mozilla widget content">
 <br>
 
 <p>Widgets always appear by default in the
-<a href="https://developer.mozilla.org/en/The_add-on_bar">add-on bar</a>, although users may
-relocate them by
+<a href="https://developer.mozilla.org/en/The_add-on_bar">add-on bar</a>,
+although users may relocate them by
 <a href="http://support.mozilla.com/en-US/kb/how-do-i-customize-toolbars">toolbar customization</a>.
+
 </p>
 
 </td>
@@ -203,12 +216,15 @@ relocate them by
 
 <tr>
 <td> <strong><a href="packages/addon-kit/docs/context-menu.html">context-menu</a></strong></td>
-<td><p>The <code>context-menu</code> module lets you add items and submenus to the browser's
-context menu.</p>
+<td><p>The <code>context-menu</code> module lets you add items and submenus
+to the browser's context menu.</p>
 
 <img class="image-center" src="static-files/media/screenshots/modules/context-menu-image-osx.png"
 alt="Context-menu">
 <br>
+<p>Note that there is currently no way to add items to the browser's main menus
+using the SDK's supported APIs.</p>
+
 </td>
 </tr>
 
@@ -226,4 +242,23 @@ alt="Growl notification">
 
 </table>
 
-[dev-guide/addon-development/api-modules.html#ui_modules_
+APIs like `widget` and `panel` are very generic, and with the right content
+can be used to replace many particular XUL elements.
+
+But there are some notable limitations in the SDK APIs, and even a fairly
+simple UI may need some degree of redesign to work with them. In particular,
+the default placement of widgets and the inability to add main menu items are
+commonly encountered as obstacles in migrating to the SDK. These are
+intentional design choices, the belief being that it makes for a better user
+experience for add-ons to expose their interfaces in a consistent way. So
+it's worth considering changing your user interface to align with the SDK
+APIs.
+
+Having said that, add-ons which make drastic changes to the appearance
+of the browser chrome will certainly need more than the SDK's supported APIs
+can offer.
+
+### Third-party Modules ###
+
+The SDK is extensible by design: it's possible for developers to use its
+low-level APIs to expose 
