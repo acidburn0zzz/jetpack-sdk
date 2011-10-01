@@ -140,7 +140,90 @@ A XUL-based add-on will need to be reorganized to respect this distinction.
 This design is motivated by two related concerns. First is security: it
 reduces the risk that a malicious web page will be able to access privileged
 APIs. Second is the need to be compatible with the multi-process architecture
-planned for Firefox and already partly implemented in Firefox Mobile. Note that
-all mobile add-ons already need to use
+planned for Firefox and already partly implemented in Firefox Mobile. Note
+that all mobile add-ons already need to use
 [a similar design](https://wiki.mozilla.org/Mobile/Fennec/Extensions/Electrolysis).
 
+There's much more information on content scripts in the [Working With Content Scripts](dev-guide/addon-development/web-content.html) guide.
+
+## UI Development Without XUL Overlays ##
+
+Since you can use XUL overlays in SDK-based add-ons, you need to find
+alternative ways to modify the browser chrome. There are three options:
+
+* use the SDK's supported APIs
+* use third-party modules
+* use the SDK's low-level APIs to manipulate the XUL dynamically
+
+### SDK APIs ###
+
+The APIs the SDK provides for building user interfaces are summarized in the table below.
+
+<table>
+<colgroup>
+<col width="20%">
+<col width="80%">
+</colgroup>
+<tr>
+<td> <strong><a href="packages/addon-kit/docs/panel.html">panel</a></strong></td>
+<td><p>A panel is the SDK's version of a dialog. Its content and appearance
+is specified using HTML, CSS and JavaScript.
+
+You can build or load the content locally or load it from a remote server.</p>
+<img class="image-center" src="static-files/media/screenshots/modules/panel-tabs-osx.png"
+alt="List open tabs panel">
+<br>
+</td>
+</tr>
+
+<tr>
+<td> <strong><a href="packages/addon-kit/docs/widget.html">widget</a></strong></td>
+<td><p>The widget is the SDK's replacement for toolbars and toolbar buttons.
+Its content is specified using HTML, or as an icon. By specifying the content
+as an icon you can create a toolbar button:</p>
+
+<img class="image-center" src="static-files/media/screenshots/modules/widget-icon-osx.png"
+alt="Mozilla widget icon">
+<br>
+<p>By specifying it as HTML you can create a toolbar, or any other kind of compact
+user interface content:
+</p>
+<img class="image-center" src="static-files/media/screenshots/modules/widget-content-osx.png"
+alt="Mozilla widget content">
+<br>
+
+<p>Widgets always appear by default in the
+<a href="https://developer.mozilla.org/en/The_add-on_bar">add-on bar</a>, although users may
+relocate them by
+<a href="http://support.mozilla.com/en-US/kb/how-do-i-customize-toolbars">toolbar customization</a>.
+</p>
+
+</td>
+</tr>
+
+<tr>
+<td> <strong><a href="packages/addon-kit/docs/context-menu.html">context-menu</a></strong></td>
+<td><p>The <code>context-menu</code> module lets you add items and submenus to the browser's
+context menu.</p>
+
+<img class="image-center" src="static-files/media/screenshots/modules/context-menu-image-osx.png"
+alt="Context-menu">
+<br>
+</td>
+</tr>
+
+<tr>
+<td> <strong><a href="packages/addon-kit/docs/notifications.html">notifications</a></strong></td>
+<td>
+<p>This module enables an add-on to display transient messages to the user.
+On Mac OS X a notification will look something like this:</p>
+
+<img class="image-center" src="static-files/media/screenshots/modules/notification-growl-osx.png"
+alt="Growl notification">
+<br>
+</td>
+</tr>
+
+</table>
+
+[dev-guide/addon-development/api-modules.html#ui_modules_
