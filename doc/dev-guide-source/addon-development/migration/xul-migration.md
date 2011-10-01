@@ -208,7 +208,6 @@ alt="Mozilla widget content">
 <a href="https://developer.mozilla.org/en/The_add-on_bar">add-on bar</a>,
 although users may relocate them by
 <a href="http://support.mozilla.com/en-US/kb/how-do-i-customize-toolbars">toolbar customization</a>.
-
 </p>
 
 </td>
@@ -243,7 +242,7 @@ alt="Growl notification">
 </table>
 
 APIs like `widget` and `panel` are very generic, and with the right content
-can be used to replace many particular XUL elements.
+can be used to replace many specific XUL elements.
 
 But there are some notable limitations in the SDK APIs, and even a fairly
 simple UI may need some degree of redesign to work with them. In particular,
@@ -255,10 +254,21 @@ it's worth considering changing your user interface to align with the SDK
 APIs.
 
 Having said that, add-ons which make drastic changes to the appearance
-of the browser chrome will certainly need more than the SDK's supported APIs
-can offer.
+of the browser chrome will very probably need more than the SDK's supported
+APIs can offer.
 
 ### Third-party Modules ###
 
-The SDK is extensible by design: it's possible for developers to use its
-low-level APIs to expose 
+The SDK is extensible by design: any developer can build reusable modules
+which fill gaps in the SDK's supported APIs, and these modules can be used
+by other add-on developers in exactly the same way they use supported APIs.
+
+Eventually we expect the availability of a rich set of third party modules
+will be one of the most valuable aspects of the SDK, but our support for
+third party modules is still fairly immature. In particular, it's not always
+obvious where to find third-party modules, although some are collected in the
+[Jetpack Wiki](https://wiki.mozilla.org/Jetpack/Modules). For example, this
+collection includes modules enabling you to add toolbar buttons and menu
+items.
+
+In this example we'll use Erik Vold's
