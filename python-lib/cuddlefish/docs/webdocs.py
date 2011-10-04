@@ -119,6 +119,7 @@ class WebDocs(object):
                 continue
             package_path = self.pkg_cfg["packages"][package_name]["root_dir"]
             package_directory = package_path[len(self.root) + 1:]
+            package_directory = "/".join(package_directory.split(os.sep))
             package_link = tag_wrap(package_name, 'a', {'href': \
                                     package_directory + "/" \
                                     + package_name + '.html'})
