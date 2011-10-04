@@ -84,6 +84,8 @@ class WebDocTests(unittest.TestCase):
         self.assertTrue(\
             '<a href="packages/aardvark/aardvark.html"' in doc)
         self.assertTrue(\
+            '<a href="packages/anteater_files/anteater.html"' in doc)
+        self.assertTrue(\
             '<a href="packages/aardvark/doc/main.html">main</a>' in doc)
 
 if __name__ == "__main__":
