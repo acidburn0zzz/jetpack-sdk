@@ -278,4 +278,14 @@ item to Firefox's Tools menu.
 First we'll download `menuitems` from
 https://github.com/erikvold/menuitems-jplib. Like
 [addon-kit](packages/addon-kit/addon-kit.html) and
-[api-utils](packages/api-utils/api-utils.html), it's a [CommonJS package](dev-guide/addon-development/commonjs.html), so we'll extract it under the SDK's `packages` directory.
+[api-utils](packages/api-utils/api-utils.html), it's a [CommonJS package](dev-guide/addon-development/commonjs.html), so we'll extract it under the SDK's `packages` directory:
+
+<pre>
+
+(addon-sdk)~/mozilla/addon-sdk > cd packages
+(addon-sdk)~/mozilla/addon-sdk/packages > tar -xf tar -xf ../erikvold-menuitems-jplib-d80630c.zip
+
+</pre>
+
+
+
