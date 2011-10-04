@@ -272,3 +272,10 @@ collection includes modules enabling you to add toolbar buttons and menu
 items.
 
 In this example we'll use Erik Vold's
+[`menuitems`](https://github.com/erikvold/menuitems-jplib) module to add a menu
+item to Firefox's Tools menu.
+
+First we'll download `menuitems` from
+https://github.com/erikvold/menuitems-jplib. Like
+[addon-kit](packages/addon-kit/addon-kit.html) and
+[api-utils](packages/api-utils/api-utils.html), it's a [CommonJS package](dev-guide/addon-development/commonjs.html), so we'll extract it under the SDK's `packages` directory.
