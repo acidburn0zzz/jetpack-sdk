@@ -278,14 +278,26 @@ item to Firefox's Tools menu.
 First we'll download `menuitems` from
 https://github.com/erikvold/menuitems-jplib. Like
 [addon-kit](packages/addon-kit/addon-kit.html) and
-[api-utils](packages/api-utils/api-utils.html), it's a [CommonJS package](dev-guide/addon-development/commonjs.html), so we'll extract it under the SDK's `packages` directory:
+[api-utils](packages/api-utils/api-utils.html), it's a
+[CommonJS package](dev-guide/addon-development/commonjs.html),
+so we'll extract it under the SDK's `packages` directory:
 
 <pre>
-
-(addon-sdk)~/mozilla/addon-sdk > cd packages
-(addon-sdk)~/mozilla/addon-sdk/packages > tar -xf tar -xf ../erikvold-menuitems-jplib-d80630c.zip
-
+(addon-sdk)~/addon-sdk > cd packages
+(addon-sdk)~/addon-sdk/packages > tar -xf tar -xf ../erikvold-menuitems-jplib-d80630c.zip
 </pre>
+
+Now if you run `cfx docs` you'll see the `menuitems` package appearing
+in the sidebar alongside `addon-kit`. Click on it and you'll see basic
+information about the package, and any documentation that the package
+author has provided.
+
+The `menuitems` module doesn't have any documentation, so we'll have to
+figure out how to use it by looking at
+[the source](https://github.com/erikvold/menuitems-jplib/blob/master/lib/menuitems.js):
+luckily, it's pretty simple:
+
+* create a menu item using 
 
 
 
