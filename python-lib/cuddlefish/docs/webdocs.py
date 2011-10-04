@@ -95,7 +95,9 @@ class WebDocs(object):
     def _create_module_list(self, package_json):
         package_name = package_json['name']
         libs = package_json['files'][1]['lib'][1]
-        doc_path = package_json['doc']
+        doc_path = package_json.get('doc', None)
+        if not doc_path:
+            return ''
         modules = get_documented_modules(package_name,
                                                      libs, doc_path)
         modules.sort()
