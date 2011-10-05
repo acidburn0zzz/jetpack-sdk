@@ -4,13 +4,18 @@
 This guide aims to help you migrate a traditional XUL-based add-on
 to the SDK.
 
-First, we'll look at the [benefits and limitations of
-using the SDK](/dev-guide/addon-development/migration/benefits_limitations.html),
-to help decide whether your add-on is a good candidate for porting.
+First, we'll look at the benefits and limitations of
+using the SDK, to help decide whether your add-on is a good candidate
+for porting.
 
-Next, we'll look at each of the three main tasks involved in migrating
-to the SDK: working with content scripts, UI development without XUL overlays,
-and working with XPCOM.
+Next, we'll look at some of the main tasks involved in migrating
+to the SDK:
+
+* working with content scripts
+* using the SDK's supported APIs
+* how to go beyond the SDK's supported APIs when necessary, by using third
+party modules or using the SDK's low-level APIs to perform dynamic XUL
+manipulation or to access XPCOM objects directly.
 
 Finally, we'll walk through a simple example.
 
@@ -81,7 +86,9 @@ functionality.</p></td>
 
 <tr>
 <td><strong><a name="localization">Localization Support</a></strong></td>
-<td><p>The SDK doesn't yet support localization.</p></td>
+<td><p>The SDK doesn't yet support localization, although this is
+<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=691782">coming soon</a>.
+</p></td>
 </tr>
 
 </table>
@@ -119,7 +126,7 @@ APIs in future releases to meet important use cases, and eventually hope
 to have a comprehensive collection of third party modules filling many of
 the gaps.
 
-## Content Scripts ###
+## Content Scripts ##
 
 In a XUL-based add-on, code that uses XPCOM objects, code that manipulates
 the browser chrome, and code that interacts with web pages all runs in the
@@ -146,6 +153,9 @@ a listener function for messages from the content script
 main add-on code in a message
 * the main add-on code receives the message and sends the request.
 
+<img class="image-center" src="static-files/media/xul-migration-cs.png"
+alt="Content script organization">
+
 A XUL-based add-on will need to be reorganized to respect this distinction.
 
 This design is motivated by two related concerns. First is security: it
@@ -158,204 +168,52 @@ that all mobile add-ons already need to use
 There's much more information on content scripts in the
 [Working With Content Scripts](dev-guide/addon-development/web-content.html) guide.
 
-## UI Development Without XUL Overlays ##
+## Using the SDK APIs ##
 
-Since you can use XUL overlays in SDK-based add-ons, you need to find
-alternative ways to modify the browser chrome. There are three options:
+### Use the SDK's "supported" APIs ###
 
-* use the SDK's supported APIs
-* use third-party modules
-* use the SDK's low-level APIs to manipulate the XUL dynamically
+See this
+[quick overview](dev-guide/addon-development/api-modules.html) and
+[links to detailed API documentation](packages/addon-kit/addon-kit.html).
+If the supported APIs do what you need, they're the best option: you get the
+benefit of compatibility across Firefox releases, and of the SDK's security
+model.
 
-### SDK APIs ###
+APIs like [`widget`](packages/addon-kit/docs/widget.html) and
+[`panel`](packages/addon-kit/docs/panel.html) are very generic, and with the
+right content can be used to replace many specific XUL elements. But there are
+some notable limitations in the SDK APIs, and even a fairly simple UI may need
+some degree of redesign to work with them. In particular:
 
-The APIs the SDK provides for building user interfaces are summarized in the
-table below.
-
-<table>
-<colgroup>
-<col width="20%">
-<col width="80%">
-</colgroup>
-<tr>
-<td> <strong><a href="packages/addon-kit/docs/panel.html">panel</a></strong></td>
-<td><p>A panel is the SDK's version of a dialog. Its content and appearance
-is specified using HTML, CSS and JavaScript.
-
-You can build or load the content locally or load it from a remote server.</p>
-<img class="image-center" src="static-files/media/screenshots/modules/panel-tabs-osx.png"
-alt="List open tabs panel">
-<br>
-</td>
-</tr>
-
-<tr>
-<td> <strong><a href="packages/addon-kit/docs/widget.html">widget</a></strong></td>
-<td><p>The widget is the SDK's replacement for toolbars and toolbar buttons.
-Its content is specified using HTML, or as an icon. By specifying the content
-as an icon you can create a toolbar button:</p>
-
-<img class="image-center" src="static-files/media/screenshots/modules/widget-icon-osx.png"
-alt="Mozilla widget icon">
-<br>
-<p>By specifying it as HTML you can create a toolbar, or any other kind of
-compact user interface content:</p>
-<img class="image-center" src="static-files/media/screenshots/modules/widget-content-osx.png"
-alt="Mozilla widget content">
-<br>
-
-<p>Widgets always appear by default in the
-<a href="https://developer.mozilla.org/en/The_add-on_bar">add-on bar</a>,
+* widgets always appear by default in the
+[add-on bar](https://developer.mozilla.org/en/The_add-on_bar),
 although users may relocate them by
-<a href="http://support.mozilla.com/en-US/kb/how-do-i-customize-toolbars">toolbar customization</a>.
-</p>
+[toolbar customization](http://support.mozilla.com/en-US/kb/how-do-i-customize-toolbars)
+* there's currently no way to add items to the browser's main menus using the
+SDK's supported APIs.
 
-</td>
-</tr>
-
-<tr>
-<td> <strong><a href="packages/addon-kit/docs/context-menu.html">context-menu</a></strong></td>
-<td><p>The <code>context-menu</code> module lets you add items and submenus
-to the browser's context menu.</p>
-
-<img class="image-center" src="static-files/media/screenshots/modules/context-menu-image-osx.png"
-alt="Context-menu">
-<br>
-<p>Note that there is currently no way to add items to the browser's main menus
-using the SDK's supported APIs.</p>
-
-</td>
-</tr>
-
-<tr>
-<td> <strong><a href="packages/addon-kit/docs/notifications.html">notifications</a></strong></td>
-<td>
-<p>This module enables an add-on to display transient messages to the user.
-On Mac OS X a notification will look something like this:</p>
-
-<img class="image-center" src="static-files/media/screenshots/modules/notification-growl-osx.png"
-alt="Growl notification">
-<br>
-</td>
-</tr>
-
-</table>
-
-APIs like `widget` and `panel` are very generic, and with the right content
-can be used to replace many specific XUL elements.
-
-But there are some notable limitations in the SDK APIs, and even a fairly
-simple UI may need some degree of redesign to work with them. In particular,
-the default placement of widgets and the inability to add main menu items are
-commonly encountered as obstacles in migrating to the SDK. These are
-intentional design choices, the belief being that it makes for a better user
-experience for add-ons to expose their interfaces in a consistent way. So
-it's worth considering changing your user interface to align with the SDK
-APIs.
+These are intentional design choices, the belief being that it makes for a
+better user experience for add-ons to expose their interfaces in a consistent
+way. So it's worth considering changing your user interface to align with the
+SDK APIs.
 
 Having said that, add-ons which make drastic changes to the appearance
 of the browser chrome will very probably need more than the SDK's supported
 APIs can offer.
 
-### Third-party Modules ###
+Similarly, the supported APIs expose only a small fraction of the full range
+of XPCOM functionality.
 
-The SDK is extensible by design: any developer can build reusable modules
-which fill gaps in the SDK's supported APIs, and these modules can be used
-by other add-on developers in exactly the same way they use supported APIs.
+### Use a Third Party Module ###
 
-Eventually we expect the availability of a rich set of third party modules
-will be one of the most valuable aspects of the SDK, but our support for
-third party modules is still fairly immature. In particular, it's not always
-obvious where to find third-party modules, although some are collected in the
-[Jetpack Wiki](https://wiki.mozilla.org/Jetpack/Modules). For example, this
-collection includes modules enabling you to add toolbar buttons and menu
-items.
+See the [guide to using third party modules](dev-guide/addon-development/migration/third-party-modules.html).
+If you can find a third party module to do what you want, this is a great way
+to use features not supported in the SDK without having to use the low-level
+APIs.
 
-In this example we'll use Erik Vold's
-[`menuitems`](https://github.com/erikvold/menuitems-jplib) module to add a menu
-item to Firefox's Tools menu.
+However, you're still indirectly dependent on the low-level APIs, so there's
+no guarantee that future versions of Firefox won't break your add-on.
 
-#### Installing `menuitems` ####
+### Use the "low-level" APIs ###
 
-First we'll download `menuitems` from
-[https://github.com/erikvold/menuitems-jplib](https://github.com/erikvold/menuitems-jplib). Like [addon-kit](packages/addon-kit/addon-kit.html) and
-[api-utils](packages/api-utils/api-utils.html), it's a
-[CommonJS package](dev-guide/addon-development/commonjs.html),
-so we'll extract it under the SDK's `packages` directory:
-
-<pre>
-(addon-sdk)~/addon-sdk > cd packages
-(addon-sdk)~/addon-sdk/packages > tar -xf ../erikvold-menuitems-jplib-d80630c.zip
-</pre>
-
-Now if you run `cfx docs` you'll see the `menuitems` package appearing
-in the sidebar alongside `addon-kit`. Click on it and you'll see basic
-information about the package, and any documentation that the package
-author has provided.
-
-The basic information is taken from the package's
-[`package.json`](dev-guide/addon-development/package-spec.html) file. The page
-for `menuitems` includes one especially interesting line:
-
-<pre>
-Dependencies             api-utils, vold-utils
-</pre>
-
-This tells us that we need to find the `vold-utils` package and install it.
-We find that [here](https://github.com/erikvold/vold-utils-jplib),
-download it, and add it under the `packages` directory alongside `menuitems`.
-
-#### Using `menuitems` ####
-
-We can use the `menuitems` module in exactly the same way we use built-in
-modules.
-
-The `menuitems` module doesn't have any documentation, so we'll have to
-figure out how to use it by looking at
-[the source](https://github.com/erikvold/menuitems-jplib/blob/master/lib/menuitems.js):
-luckily, it's pretty simple: we create a menu item using `MenuItem()`.
-
-Of the options accepted by `MenuItem()`, we'll use this minimal set:
-
-* `id`: identifier for this menu item
-* `label`: text the item displays
-* `command`: function called when the user selects the item
-* `menuid`: identifier for the item's parent element
-* `insertbefore`: identifier for the item before which we want our item to
-appear
-
-Create a new directory and run `cfx init` in it. Open `lib/main.js` and
-replace its contents with this:
-
-    var menuitem = require("menuitems").Menuitem({
-      id: "clickme",
-      menuid: "menu_ToolsPopup",
-      label: "Click Me!",
-      onCommand: function() {
-        console.log("clicked");
-      },
-      insertbefore: "menu_pageInfo"
-    });
-
-Next, we have to declare our dependency on the `menuitems` package.
-In your add-on's `package.json` add the line:
-
-<pre>
-"dependencies": "menuitems"
-</pre>
-
-Note that due to
-[bug 663480](https://bugzilla.mozilla.org/show_bug.cgi?id=663480), if you
-add a `dependencies` line to `package.json`, and you use any modules from
-built-in packages like [addon-kit](packages/addon-kit/addon-kit.html), then
-you must also declare your dependency on `addon-kit`, like this:
-
-<pre>
-"dependencies": ["menuitems", "addon-kit"]
-</pre>
-
-
-Finally, we're done. Run the add-on and you'll see the new item appear in the
-`Tools` menu: select the item and you'll see `info: clicked` appear in the
-console.
-
+If you can't find a suitable third party module you can support 
