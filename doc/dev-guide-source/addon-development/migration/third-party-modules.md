@@ -94,9 +94,18 @@ console.
 ## Caveats ##
 
 Eventually we expect the availability of a rich set of third party modules
-will be one of the most valuable aspects of the SDK, but our support for
-third party modules is still fairly immature. In particular, it's not always
-obvious where to find third-party modules, although some are collected in the
-[Jetpack Wiki](https://wiki.mozilla.org/Jetpack/Modules). For example, this
-collection includes modules enabling you to add toolbar buttons and menu
-items.
+will be one of the most valuable aspects of the SDK. Right now they're a great
+way to use features not supported by the core APIs without the
+complexity of using the low-level APIs, but our support for third party
+modules is still fairly immature.
+
+* It's not always obvious where to find third-party modules, although some
+are collected in the [Jetpack Wiki](https://wiki.mozilla.org/Jetpack/Modules).
+* Third party modules typically require high security privileges, which
+increases the damage a malicious web site could do if it were able to
+compromise your add-on.
+* Because third party modules typically use low-level APIs, they may be broken
+by new releases of Firefox. In particular, many third party modules will be
+broken by the
+[multiple process architecture](https://wiki.mozilla.org/Electrolysis/Firefox)
+(Electrolysis) planned for Firefox.
