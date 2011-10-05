@@ -38,7 +38,7 @@ This tells us that we need to find the `vold-utils` package and install it.
 We find that [here](https://github.com/erikvold/vold-utils-jplib),
 download it, and add it under the `packages` directory alongside `menuitems`.
 
-### Using `menuitems` ###
+## Using `menuitems` ##
 
 We can use the `menuitems` module in exactly the same way we use built-in
 modules.
@@ -80,8 +80,8 @@ In your add-on's `package.json` add the line:
 Note that due to
 [bug 663480](https://bugzilla.mozilla.org/show_bug.cgi?id=663480), if you
 add a `dependencies` line to `package.json`, and you use any modules from
-built-in packages like [addon-kit](packages/addon-kit/addon-kit.html), then
-you must also declare your dependency on `addon-kit`, like this:
+built-in packages like [`addon-kit`](packages/addon-kit/addon-kit.html), then
+you must also declare your dependency on that built-in package, like this:
 
 <pre>
 "dependencies": ["menuitems", "addon-kit"]
