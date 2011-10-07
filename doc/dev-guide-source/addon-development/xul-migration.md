@@ -4,112 +4,26 @@
 This guide aims to help you migrate a traditional XUL-based add-on
 to the SDK.
 
-First, we'll look at the benefits and limitations of
-using the SDK, to help decide whether your add-on is a good candidate
+First, we'll look at the benefits and limitations of using the SDK,
+to help decide whether your add-on is a good candidate
 for porting.
 
 Next, we'll look at some of the main tasks involved in migrating
 to the SDK:
 
 * working with content scripts
-* using the SDK's supported APIs
-* how to go beyond the SDK's supported APIs when necessary, by using third
-party modules or using the SDK's low-level APIs to perform dynamic XUL
-manipulation or to access XPCOM objects directly.
+* using the SDK's [supported APIs](packages/addon-kit/addon-kit.html)
+* how to go beyond the SDK's supported APIs when necessary, by using
+[third party modules](dev-guide/addon-development/third-party-modules.html)
+or using the SDK's [low-level APIs](packages/addon-kit/api-utils.html) to
+perform dynamic XUL manipulation or to access XPCOM objects directly.
 
 Finally, we'll walk through a simple example.
 
-## Benefits and Limitations of the SDK ##
+## Should You Migrate? ##
 
-For developers already familiar with XUL and XPCOM development, the main
-advantages of the SDK are:
-
-<table>
-<colgroup>
-<col width="20%">
-<col width="80%">
-</colgroup>
-<tr>
-<td> <strong><a name="compatibility">Compatibility</a></strong></td>
-<td><p>Although we can't promise we'll never break a
-<a href="packages/addon-kit/addon-kit.html">supported API</a>,
-maintaining compatibility across Firefox versions is a top priority for us.</p>
-<p>We've designed the APIs to be forward-compatible with the new
-<a href="https://wiki.mozilla.org/Electrolysis/Firefox">multiple process architecture</a>
-(codenamed Electrolysis) planned for Firefox.</p>
-<p>We also expect to support both desktop and mobile Firefox using a single
-edition of the SDK: so you'll be able to write one extension and have it work
-on both products.</p></td>
-</tr>
-
-<tr>
-<td> <strong><a name="security">Security</a></strong></td>
-<td><p>If they're not carefully designed, Firefox add-ons can open the browser
-to attack by malicious web pages. Although it's possible to write insecure
-add-ons using the SDK, it's not as easy, and the damage that a compromised
-add-on can do is usually more limited.</p></td>
-</tr>
-
-<tr>
-<td> <strong><a name="restartlessness">Restartlessness</a></strong></td>
-<td><p>Add-ons built with the SDK are can be installed without having
-to restart Firefox.</p>
-<p>Although you can write
-<a href="https://developer.mozilla.org/en/Extensions/Bootstrapped_extensions">
-traditional add-ons that are restartless</a>, you can't use XUL overlays in
-them, so most traditional add-ons would have to be substantially rewritten
-anyway.</p></td>
-</tr>
-
-</table>
-
-The main advantages XUL-based add-ons have are:
-
-<table>
-<colgroup>
-<col width="20%">
-<col width="80%">
-</colgroup>
-<tr>
-<td><strong><a name="ui_flexibility">User interface flexibility</a></strong></td>
-<td><p>XUL overlays offer a great deal of options for building a UI and
-integrating it into the browser. Using only the SDK's supported APIs you have
-much more limited options for your UI.</p></td>
-</tr>
-
-<tr>
-<td><strong><a name="xpcom_access">XPCOM</a></strong></td>
-<td><p>Traditional add-ons have access to a vast amount of Firefox
-functionality via XPCOM. The SDK exposes a relatively small set of this
-functionality.</p></td>
-</tr>
-
-<tr>
-<td><strong><a name="localization">Localization Support</a></strong></td>
-<td><p>The SDK doesn't yet support localization, although this is
-<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=691782">coming soon</a>.
-</p></td>
-</tr>
-
-</table>
-
-### Low-level APIs and Third-party Modules ###
-
-That's not the whole story. If you need more flexibility than the SDK's
-["supported" APIs](packages/addon-kit/addon-kit.html) provide, you can
-use its ["low-level" APIs](packages/api-utils/api-utils.html) to load
-XPCOM objects directly or to manipulate the DOM directly as in a
-traditional
-<a href="https://developer.mozilla.org/en/Extensions/Bootstrapped_extensions">bootstrapped extension</a>.
-
-Alternatively, you can load third-party modules, which extend the SDK's
-core APIs.
-
-In this guide we'll look at all these techniques, but note that by
-doing this you lose some of the benefits of programming with the SDK
-including simplicity, compatibility, and to a lesser extent security.
-
-### Should You Migrate? ###
+The benefits and limitation of the SDK development compared to XUL development
+are summarized [here](dev-guide/addon-development/sdk-vs-xul.html).
 
 Whether you should migrate a particular add-on is largely a matter of
 how well the SDK's supported APIs meet its needs.
@@ -168,9 +82,7 @@ that all mobile add-ons already need to use
 There's much more information on content scripts in the
 [Working With Content Scripts](dev-guide/addon-development/web-content.html) guide.
 
-## Using the SDK APIs ##
-
-### Use the SDK's "supported" APIs ###
+## Using the SDK's "supported" APIs ##
 
 See this
 [quick overview](dev-guide/addon-development/api-modules.html) and
@@ -203,7 +115,7 @@ will very probably need more than the SDK's supported APIs can offer.
 Similarly, the supported APIs expose only a small fraction of the full range
 of XPCOM functionality.
 
-### Use a Third Party Module ###
+## Third Party Modules ##
 
 See the
 [guide to using third party modules](dev-guide/addon-development/third-party-modules.html).
@@ -214,21 +126,135 @@ APIs.
 Note that by using third party modules you're likely to lose the security and
 compatibility benefits of using the SDK.
 
-### Use the "low-level" APIs ###
+## The "low-level" APIs ##
 
 If you can't find a suitable third party module you can support, you can use
 low-level APIs to:
 
-* [load and access and XPCOM component](dev-guide/addon-development/xpcom-sdk.html)
-* [modify the browser chrome using dynamic manipulation of the XUL](dev-guide/addon-development/xul-sdk.html)
+* load and access any XPCOM component
+* modify the browser chrome using dynamic manipulation of the XUL
+* directly access the [tabbrowser](https://developer.mozilla.org/en/XUL/tabbrowser)
+object
 
-Both these techniques:
+All these techniques involve the use of low-level APIs, which don't have
+the same compatibility guarantees as the supported APIs.
 
-* require [chrome access](dev-guide/module-development/chrome.html), meaning
-that if your add-on is compromised, the attacker gets full access to the
-browser's capabilities
-* involve the use of low-level modules, which don't have the same
-compatibility guarantees as the supported APIs
+### Using XPCOM ###
+
+To use XPCOM, you need use `require("chrome")`, which gives you
+direct access to the
+[`Components`](https://developer.mozilla.org/en/Components_object) object.
+
+<div class="warning">
+If a module which uses <code>require("chrome")</code>
+is compromised, the attacker gets full access to the browser's capabilities
+</div>
+
+The following complete add-on uses
+[`nsIPromptService`](https://developer.mozilla.org/en/XPCOM_Interface_Reference/nsIPromptService)
+to display an alert dialog:
+
+    var {Cc, Ci} = require("chrome");
+
+    var promptSvc = Cc["@mozilla.org/embedcomp/prompt-service;1"].
+                    getService(Ci.nsIPromptService);
+
+    var widget = require("widget").Widget({
+      id: "xpcom example",
+      label: "Mozilla website",
+      contentURL: "http://www.mozilla.org/favicon.ico",
+      onClick: function() {
+        promptSvc.alert(null, "My Add-on", "Hello from XPCOM");
+      }
+    });
+
+It's good practice to encapsulate code which uses XPCOM by
+[packaging it in its own module](dev-guide/addon-development/implementing-reusable-module.html).
+For example, we could package the alert feature implemented above using a
+script like:
+
+    var {Cc, Ci} = require("chrome");
+
+    var promptSvc = Cc["@mozilla.org/embedcomp/prompt-service;1"].
+                getService(Ci.nsIPromptService);
+
+    exports.alert = function(title, text) {
+        promptSvc.alert(null, title, text);
+    };
+
+If we save this as "prompt.js" in our add-on's `lib` directory, we can rewrite
+`main.js` to use it as follows:
+
+    var widget = require("widget").Widget({
+      id: "xpcom example",
+      label: "Mozilla website",
+      contentURL: "http://www.mozilla.org/favicon.ico",
+      onClick: function() {
+        require("prompt").alert("My Add-on", "Hello from XPCOM");
+      }
+    });
+
+One of the benefits of this is that we can control which parts of the add-on
+are granted chrome privileges, making it easier to review and secure the code.
+
+### window-utils ###
+
+The [`window-utils`](packages/api-utils/docs/window-utils.html) module gives
+you direct access to the browser chrome.
+
+Here's a really simple example add-on that modifies the browser chrome using
+the [`window-utils`](packages/api-utils/docs/window-utils.html) module:
+
+    var windowUtils = require("window-utils");
+
+    windowUtils = new windowUtils.WindowTracker({
+      onTrack: function (window) {
+        if ("chrome://browser/content/browser.xul" != window.location) return;
+      var forward = window.document.getElementById('forward-button');
+      var parent = window.document.getElementById('unified-back-forward-button');
+      parent.removeChild(forward);
+      }
+    });
+
+This example just removes the 'forward' button from the browser. It constructs
+a `WindowTracker` object and assigns a function to the constructor's `onTrack`
+option. This function will be called whenever a window is opened. The function
+checks whether the window is the browser's XUL, and if it is, uses
+DOM manipulation functions to modify it.
+
+There are more useful examples of this technique in the Jetpack Wiki's
+collection of [third party modules](https://wiki.mozilla.org/Jetpack/Modules).
+
+### tab-browser ###
+
+The [`tab-browser`](packages/api-utils/docs/tab-browser.html) module gives
+you direct access to the
+[tabbrowser](https://developer.mozilla.org/en/XUL/tabbrowser) object.
+
+This simple example modifies the selected tab's CSS to enable the user to
+highlight the selected tab:
+
+    var widgets = require("widget");
+    var tabbrowser = require("tab-browser");
+    var self = require("self");
+
+    function highlightTab(tab) {
+      if (tab.style.getPropertyValue('background-color')) {
+        tab.style.setProperty('background-color','','important');
+      }
+      else {
+        tab.style.setProperty('background-color','rgb(255,255,100)','important');
+      }
+    }
+
+    var widget = widgets.Widget({
+      id: "tab highlighter",
+      label: "Highlight tabs",
+      contentURL: self.data.url("highlight.png"),
+      onClick: function() {
+        highlightTab(tabbrowser.activeTab);
+      }
+    });
 
 ## An Example: Porting the Library Detector ##
 
