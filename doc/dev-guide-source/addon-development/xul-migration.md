@@ -197,23 +197,39 @@ better user experience for add-ons to expose their interfaces in a consistent
 way. So it's worth considering changing your user interface to align with the
 SDK APIs.
 
-Having said that, add-ons which make drastic changes to the appearance
-of the browser chrome will very probably need more than the SDK's supported
-APIs can offer.
+Having said that, add-ons which make drastic changes to the browser chrome
+will very probably need more than the SDK's supported APIs can offer.
 
 Similarly, the supported APIs expose only a small fraction of the full range
 of XPCOM functionality.
 
 ### Use a Third Party Module ###
 
-See the [guide to using third party modules](dev-guide/addon-development/migration/third-party-modules.html).
+See the
+[guide to using third party modules](dev-guide/addon-development/third-party-modules.html).
 If you can find a third party module to do what you want, this is a great way
 to use features not supported in the SDK without having to use the low-level
 APIs.
 
-However, you're still indirectly dependent on the low-level APIs, so there's
-no guarantee that future versions of Firefox won't break your add-on.
+Note that by using third party modules you're likely to lose the security and
+compatibility benefits of using the SDK.
 
 ### Use the "low-level" APIs ###
 
-If you can't find a suitable third party module you can support 
+If you can't find a suitable third party module you can support, you can use
+low-level APIs to:
+
+* [load and access and XPCOM component](dev-guide/addon-development/xpcom-sdk.html)
+* [modify the browser chrome using dynamic manipulation of the XUL](dev-guide/addon-development/xul-sdk.html)
+
+Both these techniques:
+
+* require [chrome access](dev-guide/module-development/chrome.html), meaning
+that if your add-on is compromised, the attacker gets full access to the
+browser's capabilities
+* involve the use of low-level modules, which don't have the same
+compatibility guarantees as the supported APIs
+
+## An Example: Porting the Library Detector ##
+
+
