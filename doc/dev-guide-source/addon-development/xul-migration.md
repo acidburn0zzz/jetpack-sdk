@@ -8,22 +8,19 @@ First, we'll look at the benefits and limitations of using the SDK,
 to help decide whether your add-on is a good candidate
 for porting.
 
-Next, we'll look at some of the main tasks involved in migrating
-to the SDK:
-
-* working with content scripts
-* using the SDK's [supported APIs](packages/addon-kit/addon-kit.html)
-* how to go beyond the SDK's supported APIs when necessary, by using
+Next, we'll look at some of the main tasks involved in migrating:
+working with content scripts, using the SDK's
+[supported APIs](packages/addon-kit/addon-kit.html), and how to
+go beyond the supported APIs when necessary, by using
 [third party modules](dev-guide/addon-development/third-party-modules.html)
-or using the SDK's [low-level APIs](packages/addon-kit/api-utils.html) to
-perform dynamic XUL manipulation or to access XPCOM objects directly.
+or using the SDK's [low-level APIs](packages/addon-kit/api-utils.html).
 
 Finally, we'll walk through a simple example.
 
 ## Should You Migrate? ##
 
-The benefits and limitation of the SDK development compared to XUL development
-are summarized [here](dev-guide/addon-development/sdk-vs-xul.html).
+See this [guide to the benefits and limitation of the SDK development
+compared to XUL development](dev-guide/addon-development/sdk-vs-xul.html).
 
 Whether you should migrate a particular add-on is largely a matter of
 how well the SDK's supported APIs meet its needs.
@@ -82,7 +79,7 @@ that all mobile add-ons already need to use
 There's much more information on content scripts in the
 [Working With Content Scripts](dev-guide/addon-development/web-content.html) guide.
 
-## Using the SDK's "supported" APIs ##
+## Using the "supported" APIs ##
 
 See this
 [quick overview](dev-guide/addon-development/api-modules.html) and
@@ -115,7 +112,7 @@ will very probably need more than the SDK's supported APIs can offer.
 Similarly, the supported APIs expose only a small fraction of the full range
 of XPCOM functionality.
 
-## Third Party Modules ##
+## Using Third Party Modules ##
 
 See the
 [guide to using third party modules](dev-guide/addon-development/third-party-modules.html).
@@ -126,7 +123,7 @@ APIs.
 Note that by using third party modules you're likely to lose the security and
 compatibility benefits of using the SDK.
 
-## The "low-level" APIs ##
+## Using the "low-level" APIs ##
 
 If you can't find a suitable third party module you can support, you can use
 low-level APIs to:
