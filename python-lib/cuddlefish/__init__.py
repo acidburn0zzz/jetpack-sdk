@@ -77,13 +77,6 @@ parser_groups = (
                                  metavar=None,
                                  default=None,
                                  cmds=['run', 'test'])),
-        (("-a", "--app",), dict(dest="app",
-                                help=("app to run: firefox (default), "
-                                      "xulrunner, fennec, or thunderbird"),
-                                metavar=None,
-                                default="firefox",
-                                cmds=['test', 'run', 'testex', 'testpkgs',
-                                      'testall'])),
         (("", "--dependencies",), dict(dest="dep_tests",
                                        help="include tests for all deps",
                                        action="store_true",
@@ -146,6 +139,14 @@ parser_groups = (
      ),
 
     ("Experimental Command-Specific Options", [
+        (("-a", "--app",), dict(dest="app",
+                                help=("app to run: firefox (default), fennec, "
+                                      "fennec-on-device, xulrunner or "
+                                      "thunderbird"),
+                                metavar=None,
+                                default="firefox",
+                                cmds=['test', 'run', 'testex', 'testpkgs',
+                                      'testall'])),
         (("", "--no-run",), dict(dest="no_run",
                                      help=("Instead of launching the "
                                            "application, just show the command "
@@ -155,11 +156,6 @@ parser_groups = (
                                      action="store_true",
                                      default=False,
                                      cmds=['run', 'test'])),
-        (("", "--strip-xpi",), dict(dest="strip_xpi",
-                                    help="(ignored, deprecated, will be removed)",
-                                    action="store_true",
-                                    default=False,
-                                    cmds=['xpi'])),
         (("", "--no-strip-xpi",), dict(dest="no_strip_xpi",
                                     help="retain unused modules in XPI",
                                     action="store_true",
@@ -170,6 +166,13 @@ parser_groups = (
                                     action="store_true",
                                     default=False,
                                     cmds=['run', 'test', 'xpi', 'testall'])),
+        (("", "--mobile-app",), dict(dest="mobile_app_name",
+                                    help=("Name of your Android application to "
+                                          "use. Possible values: 'firefox', "
+                                          "'firefox_beta', 'firefox_nightly'."),
+                                    metavar=None,
+                                    default=None,
+                                    cmds=['run', 'test', 'testall'])),
         ]
      ),
 
@@ -707,8 +710,6 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
     if command == "xpi":
       used_files = set(manifest.get_used_files())
 
-    if options.strip_xpi:
-        print >>stdout, "--strip-xpi is now the default: argument ignored"
     if options.no_strip_xpi:
         used_files = None # disables the filter, includes all files
 
@@ -745,7 +746,8 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
                              args=options.cmdargs,
                              norun=options.no_run,
                              used_files=used_files,
-                             enable_mobile=options.enable_mobile)
+                             enable_mobile=options.enable_mobile,
+                             mobile_app_name=options.mobile_app_name)
         except Exception, e:
             if str(e).startswith(MOZRUNNER_BIN_NOT_FOUND):
                 print >>sys.stderr, MOZRUNNER_BIN_NOT_FOUND_HELP.strip()
