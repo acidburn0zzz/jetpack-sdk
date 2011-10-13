@@ -43,12 +43,9 @@ download it, and add it under the `packages` directory alongside `menuitems`.
 We can use the `menuitems` module in exactly the same way we use built-in
 modules.
 
-The `menuitems` module doesn't have any documentation, so we'll have to
-figure out how to use it by looking at
-[the source](https://github.com/erikvold/menuitems-jplib/blob/master/lib/menuitems.js):
-luckily, it's pretty simple: we create a menu item using `MenuItem()`.
-
-Of the options accepted by `MenuItem()`, we'll use this minimal set:
+The documentation for the `menuitems` module tells us to we create a menu
+item using `MenuItem()`. Of the options accepted by `MenuItem()`, we'll use
+this minimal set:
 
 * `id`: identifier for this menu item
 * `label`: text the item displays
@@ -95,7 +92,7 @@ console.
 
 Eventually we expect the availability of a rich set of third party modules
 will be one of the most valuable aspects of the SDK. Right now they're a great
-way to use features not supported by the core APIs without the
+way to use features not supported by the supported APIs without the
 complexity of using the low-level APIs, but our support for third party
 modules is still fairly immature.
 
