@@ -56,15 +56,15 @@ A XUL-based add-on will need to be reorganized to respect this distinction.
 
 Suppose an add-on wants to make a cross-domain XMLHttpRequest based on some
 data extracted from a web page. In a XUL-based extension you would implement
-all this in a single script. An SDK-based add-on would need to be structured
-like this:
+all this in a single script. An SDK-based equivalent would need to be
+structured like this:
 
-* the main add-on code attaches a content script to the page, and registers
-a listener function for messages from the content script
-* the content script extracts the data from the page and sends it to the
-main add-on code in a message
-* the main add-on code receives the message and sends the request, using the
-SDK's [`request`](packages/addon-kit/docs/request.html) API
+* the main add-on code (1) attaches a content script to the page, and (2)
+registers a listener function for messages from the content script
+* the content script (3) extracts the data from the page and (4) sends
+it to the main add-on code in a message
+* the main add-on code (5) receives the message and (6) sends the request,
+using the SDK's [`request`](packages/addon-kit/docs/request.html) API
 
 <img class="image-center" src="static-files/media/xul-migration-cs.png"
 alt="Content script organization">
