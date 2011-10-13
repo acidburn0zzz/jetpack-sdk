@@ -173,7 +173,7 @@ script like:
         promptSvc.alert(null, title, text);
     };
 
-If we save this as "prompt.js" in our add-on's `lib` directory, we can rewrite
+If we save this as "alert.js" in our add-on's `lib` directory, we can rewrite
 `main.js` to use it as follows:
 
     var widget = require("widget").Widget({
@@ -181,7 +181,7 @@ If we save this as "prompt.js" in our add-on's `lib` directory, we can rewrite
       label: "Mozilla website",
       contentURL: "http://www.mozilla.org/favicon.ico",
       onClick: function() {
-        require("prompt").alert("My Add-on", "Hello from XPCOM");
+        require("alert").alert("My Add-on", "Hello from XPCOM");
       }
     });
 
