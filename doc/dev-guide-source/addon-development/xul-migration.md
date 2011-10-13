@@ -366,4 +366,3 @@ handles this message by forwarding the library information on to the panel,
 which updates its content.
 
 <img class="image-center" src="static-files/media/librarydetector/panel-content.png" alt="Updating panel content" />
-
