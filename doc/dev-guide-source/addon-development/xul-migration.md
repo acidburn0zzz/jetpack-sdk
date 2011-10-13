@@ -1,8 +1,7 @@
 
 # XUL Migration Guide #
 
-This guide aims to help you migrate a traditional XUL-based add-on
-to the SDK.
+This guide aims to help you migrate a XUL-based add-on to the SDK.
 
 First, we'll look at the benefits and limitations of using the SDK,
 to help decide whether your add-on is a good candidate
@@ -53,6 +52,8 @@ messages: in fact, the ability to communicate with the add-on scripts is the
 only extra privilege a content script is granted over a normal remote web
 page script.
 
+A XUL-based add-on will need to be reorganized to respect this distinction.
+
 Suppose an add-on wants to make a cross-domain XMLHttpRequest based on some
 data extracted from a web page. In a XUL-based extension you would implement
 all this in a single script. An SDK-based add-on would need to be structured
@@ -62,19 +63,17 @@ like this:
 a listener function for messages from the content script
 * the content script extracts the data from the page and sends it to the
 main add-on code in a message
-* the main add-on code receives the message and sends the request.
+* the main add-on code receives the message and sends the request, using the
+SDK's [`request`](packages/addon-kit/docs/request.html) API
 
 <img class="image-center" src="static-files/media/xul-migration-cs.png"
 alt="Content script organization">
 
-A XUL-based add-on will need to be reorganized to respect this distinction.
-
-This design is motivated by two related concerns. First is security: it
+There are two related reasons for this design. First is security: it
 reduces the risk that a malicious web page will be able to access privileged
 APIs. Second is the need to be compatible with the multi-process architecture
-planned for Firefox and already partly implemented in Firefox Mobile. Note
-that all mobile add-ons already need to use
-[a similar design](https://wiki.mozilla.org/Mobile/Fennec/Extensions/Electrolysis).
+planned for Firefox: after this is implemented in Firefox, all add-ons will
+need to use a similar pattern.
 
 There's much more information on content scripts in the
 [Working With Content Scripts](dev-guide/addon-development/web-content.html) guide.
@@ -116,9 +115,9 @@ of XPCOM functionality.
 
 See the
 [guide to using third party modules](dev-guide/addon-development/third-party-modules.html).
-If you can find a third party module to do what you want, this is a great way
-to use features not supported in the SDK without having to use the low-level
-APIs.
+If you can find a third party module that does what you want, this is a great
+way to use features not supported in the SDK without having to use the
+low-level APIs.
 
 Note that by using third party modules you're likely to lose the security and
 compatibility benefits of using the SDK.
@@ -138,14 +137,9 @@ the same compatibility guarantees as the supported APIs.
 
 ### Using XPCOM ###
 
-To use XPCOM, you need use `require("chrome")`, which gives you
+To use XPCOM, you need to use `require("chrome")`, which gives you
 direct access to the
 [`Components`](https://developer.mozilla.org/en/Components_object) object.
-
-<div class="warning">
-If a module which uses <code>require("chrome")</code>
-is compromised, the attacker gets full access to the browser's capabilities.
-</div>
 
 The following complete add-on uses
 [`nsIPromptService`](https://developer.mozilla.org/en/XPCOM_Interface_Reference/nsIPromptService)
@@ -193,6 +187,9 @@ If we save this as "prompt.js" in our add-on's `lib` directory, we can rewrite
 
 One of the benefits of this is that we can control which parts of the add-on
 are granted chrome privileges, making it easier to review and secure the code.
+
+**If a module which uses `require("chrome")`
+is compromised, the attacker gets full access to the browser's capabilities.**
 
 ### window-utils ###
 
@@ -258,7 +255,7 @@ highlight the selected tab:
 This example walks through the process of porting a XUL-based add-on to the
 SDK. It's a very simple add-on and a good candidate for porting because
 there are suitable SDK APIs for all its features. Even so, we have to make
-small changes to the its user interface.
+small changes to its user interface.
 
 <img class="image-right" src="static-files/media/librarydetector/library-detector.png" alt="Library Detector Screenshot" />
 
@@ -325,7 +322,8 @@ access to the un-proxied DOM window, so they can see the objects added by
 libraries, so we’ll need to use the experimental
 [unsafeWindow](dev-guide/addon-development/content-scripts/access.html) object.
 
-`main.js` will use a [`page-mod`](packages/addon-kit/docs/page-mod.html)
+The main add-on script, `main.js`, will use a
+[`page-mod`](packages/addon-kit/docs/page-mod.html)
 to inject the content script into every new page.
 
 The content script, which we'll call `library-detector.js`, will keep most of
@@ -335,8 +333,9 @@ user interface, the content script will just run when it's loaded, collect
 the array of library names, and post it back to `main.js`.
 
 `main.js` responds to that message by fetching the tab
-corresponding to that worker using `worker.tab`, and adding the array of
-library names to that tab's `libraries` property.
+corresponding to that worker using
+[`worker.tab`](packages/api-utils/docs/content/worker.html#tab), and adding
+the array of library names to that tab's `libraries` property.
 
 The content script is executed once for every `window.onload` event, so
 it will run multiple times when a single page containing multiple iframes
@@ -346,7 +345,7 @@ a page contains more than one iframe, and those iframes use the same library.
 ### Implementing the User Interface ###
 
 The [`widget`](packages/addon-kit/docs/widget.html) module is a natural fit
-for this add-on's UI. We'll want to specify its content using HTML, so we
+for this add-on's UI. We'll specify its content using HTML, so we
 can display an array of icons. The widget must be able to display different
 content for different windows, so we'll use the
 [`WidgetView`](packages/addon-kit/docs/widget.html) object.
