@@ -18,7 +18,7 @@ Finally, we'll walk through a simple example.
 
 ## Should You Migrate? ##
 
-See this [guide to the benefits and limitation of the SDK development
+See this [guide to the benefits and limitations of SDK development
 compared to XUL development](dev-guide/addon-development/sdk-vs-xul.html).
 
 Whether you should migrate a particular add-on is largely a matter of
@@ -69,9 +69,9 @@ using the SDK's [`request`](packages/addon-kit/docs/request.html) API
 <img class="image-center" src="static-files/media/xul-migration-cs.png"
 alt="Content script organization">
 
-There are two related reasons for this design. First is security: it
+There are two related reasons for this design. The first is security: it
 reduces the risk that a malicious web page will be able to access privileged
-APIs. Second is the need to be compatible with the multi-process architecture
+APIs. The second is the need to be compatible with the multi-process architecture
 planned for Firefox: after this is implemented in Firefox, all add-ons will
 need to use a similar pattern.
 
@@ -84,13 +84,13 @@ See this
 [quick overview](dev-guide/addon-development/api-modules.html) and
 [links to detailed API documentation](packages/addon-kit/addon-kit.html).
 If the supported APIs do what you need, they're the best option: you get the
-benefit of compatibility across Firefox releases, and of the SDK's security
+benefits of compatibility across Firefox releases and of the SDK's security
 model.
 
 APIs like [`widget`](packages/addon-kit/docs/widget.html) and
-[`panel`](packages/addon-kit/docs/panel.html) are very generic, and with the
+[`panel`](packages/addon-kit/docs/panel.html) are very generic and with the
 right content can be used to replace many specific XUL elements. But there are
-some notable limitations in the SDK APIs, and even a fairly simple UI may need
+some notable limitations in the SDK APIs and even a fairly simple UI may need
 some degree of redesign to work with them. In particular:
 
 * widgets always appear by default in the
@@ -124,8 +124,7 @@ compatibility benefits of using the SDK.
 
 ## Using the "low-level" APIs ##
 
-If you can't find a suitable third party module you can support, you can use
-low-level APIs to:
+If you can't find a suitable third party module, you can use low-level APIs to:
 
 * load and access any XPCOM component
 * modify the browser chrome using dynamic manipulation of the XUL
