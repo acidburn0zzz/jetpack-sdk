@@ -16,10 +16,10 @@ CommonJS defines:
 module wants to make available to other modules
 
 * a function called `require` which a module can use to import the `exports`
-object of another module. Your translator add-on uses `require` to import the
+object of another module. The "wikipanel" add-on uses `require` to import the
 SDK modules it uses.
 
-![CommonJS modules](static-files/media/commonjs-modules.jpg)
+![CommonJS modules](static-files/media/commonjs-modules.png)
 
 The SDK
 [freezes](https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/freeze)
@@ -59,10 +59,11 @@ CommonJS package, that module will be evaluated as soon as your program is
 loaded. For an add-on, that means that the `main` module will be evaluated as
 soon as Firefox has enabled the add-on.
 
-So in terms of CommonJS objects the translator consists of a package that
-contains a single module called `main`, and which imports three SDK modules:
+So in terms of CommonJS objects the wikipanel add-on consists of a package
+that contains a single module called `main`, and which imports three SDK
+modules:
 
-![CommonJS translator](static-files/media/commonjs-translator.jpg)
+![CommonJS wikipanel](static-files/media/commonjs-wikipanel.png)
 
 Because an add-on is a CommonJS package it's possible to include more than one
 module in an add-on, and to make your modules available to any code that want

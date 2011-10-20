@@ -11,14 +11,14 @@ collection of modules. This makes the design of the add-on easier to understand
 and provides some encapsulation as each module will export only what it chooses
 to, so you can change the internals of the module without breaking its users.
 
-In this example we'll start with the [translator
+In this example we'll start with the [wikipanel
 add-on](dev-guide/addon-development/implementing-simple-addon.html), and create
-a separate module containing the code that performs the translation.
+a separate module containing the code that loads the panel.
 
-## Implementing "translate.js" ##
+## Implementing "wikipanel.js" ##
 
-In the `lib` directory under your translator's root, create a new file called
-`translate.js` with the following contents:
+In the `lib` directory under your wikipanel's root, create a new file called
+`wikipanel.js` with the following contents:
 
     // Import the APIs we need.
     var request = require("request");
