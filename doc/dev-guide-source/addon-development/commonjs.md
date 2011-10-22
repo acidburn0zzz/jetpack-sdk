@@ -48,6 +48,9 @@ structure `cfx init` created for your add-on.
 
 ## CommonJS and the Add-on SDK ##
 
+<img class="image-right" src="static-files/media/commonjs-wikipanel.png"
+alt="CommonJS wikipanel">
+
 * The JavaScript modules which the SDK provides are CommonJS modules, and they
 are collected into CommonJS packages.
 
@@ -60,10 +63,8 @@ loaded. For an add-on, that means that the `main` module will be evaluated as
 soon as Firefox has enabled the add-on.
 
 So in terms of CommonJS objects the wikipanel add-on consists of a package
-that contains a single module called `main`, and which imports three SDK
-modules:
-
-![CommonJS wikipanel](static-files/media/commonjs-wikipanel.png)
+that contains a single module called `main`, and which imports two SDK
+modules.
 
 Because an add-on is a CommonJS package it's possible to include more than one
 module in an add-on, and to make your modules available to any code that want

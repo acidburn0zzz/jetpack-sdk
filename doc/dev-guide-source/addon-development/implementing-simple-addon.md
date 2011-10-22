@@ -2,8 +2,9 @@
 
 This section of the tutorial takes you through the process of implementing,
 running and packaging a simple add-on using the SDK. The add-on will add a
-menu item to Firefox's context menu displays a popup dialog containing the
-Wikipedia entry for any selected text.
+menu item to Firefox's context menu, to appear when anything in the page
+is selected. The menu item displays a popup dialog containing the
+Wikipedia entry for the selected text.
 
 ## Initializing Your Add-on ##
 
@@ -86,7 +87,6 @@ contents with the following:
 
     // Import the APIs we need.
     var contextMenu = require("context-menu");
-    var selection = require("selection");
     var panel = require("panel");
 
     exports.main = function(options, callbacks) {
@@ -115,24 +115,22 @@ contents with the following:
     };
 
     function lookup(item) {
-      panel.Panel({
+      wikipanel = panel.Panel({
         width: 240,
         height: 320,
         contentURL: "http://en.wikipedia.org/w/index.php?title=" + 
                     item + "&useformat=mobile"
       });
-      panel.show();
+      wikipanel.show();
     }
 
 ### Importing Modules ###
 
-The first three lines are used to import three SDK modules from the
+The first two lines are used to import two SDK modules from the
 addon-kit package:
 
 * [`context-menu`](packages/addon-kit/docs/context-menu.html) enables add-ons
 to add new items to the context menu
-* [`selection`](packages/addon-kit/docs/selection.html) gives add-ons access
-to selected text in the active browser window
 * [`panel`](packages/addon-kit/docs/panel.html) enables add-ons to display
 popup windows
 
@@ -220,15 +218,16 @@ The first time you do this, you'll see a message like this:
   package.json modified: please re-run 'cfx run'
 </pre>
 
-Run it again, and it will run an instance of Firefox with your add-on
-installed.
-
+<span class="aside">
 The ID that `cfx` generated the first time you executed `cfx run` is a unique
 identifier for you add-on called the **Program ID** and it is important. It is
 used by various tools and services to distinguish this add-on from any other.
-
 To learn more about the Program ID refer to the
 [Program ID](dev-guide/addon-development/program-id.html) document.
+</span>
+
+Run it again, and it will run an instance of Firefox with your add-on
+installed.
 
 Once `cfx run` has launched Firefox you can try out the new add-on. Load a
 page containing some text that is not in English, for example:
