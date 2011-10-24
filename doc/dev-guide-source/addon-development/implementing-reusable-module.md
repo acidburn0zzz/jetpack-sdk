@@ -42,8 +42,8 @@ In the `lib` directory under your wikipanel's root, create a new file called
     exports.lookup = lookup;
     exports.getURL = getURL;
 
-The `lookup()` function here is essentially the same as the listener function
-assigned to `onMessage` in the original code.
+The `lookup()` function here is essentially the same as the `lookup()` in the
+original code.
 
 Just so we can demonstrate the SDK's unit testing framework, we've also
 split the code that creates the URL into its own trivial `getURL()` function.
@@ -117,24 +117,25 @@ place create a file called `test-wikipanel.js` with the following contents:
     exports.test_getURL = test_getURL;
     exports.test_empty_string = test_empty_string;
 
-This file exports two functions, each of which expects to receive a single
+This file:
+
+* exports two functions, each of which expects to receive a single
 argument which is a `test` object. `test` is supplied by the
 [`unit-test`](packages/api-utils/docs/unit-test.html) module and provides
 functions to simplify unit testing.
+The first function calls `getURL()` and uses [`test.assertEqual()`](packages/api-utils/docs/unit-test.html#assertEqual(a, b, message))
+to check that the URL is as expected.
+The second function tests the wikipanel's error-handling code by passing an
+empty string into `getURL()` and using
+[`test.assertRaises()`](packages/api-utils/docs/unit-test.html#assertRaises(func%2C predicate%2C message))
+to check that the expected exception is raised.
 
-The file imports one module, the `wikipanel` module that lives in our
-`wikipanel` package. The `PACKAGE/MODULE` syntax lets you identify a specific
-module in a specific package, rather than searching all available packages
-(using, for example, `require("request")`). The
+* imports one module, the `wikipanel` module that lives in our
+`wikipanel` package. The `PACKAGE/MODULE` ("wikipanel/wikipanel") syntax lets
+you identify a specific module in a specific package, rather than searching
+all available packages (using, for example, `require("request")`). The
 [module-search](dev-guide/addon-development/module-search.html) documentation
 has more detail on this.
-
-The first function calls `getURL()` and uses `test.assertEqual()` to check that
-the URL is as expected.
-
-The second function tests the wikipanel's error-handling code by passing an
-empty string into `getURL()` and using `test.assertRaises()` to check that the
-expected exception is raised.
 
 At this point your package ought to look like this:
 
@@ -169,7 +170,6 @@ What happens here is that `cfx test`:
 
 * looks in the `test` directory of your
 package
-
 * loads any modules that start with the word `test`
 *  calls all their exported functions, passing them a `test` object
 implementation as their only argument.

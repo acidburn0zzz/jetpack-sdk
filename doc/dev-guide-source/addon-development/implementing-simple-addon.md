@@ -118,7 +118,7 @@ contents with the following:
       wikipanel = panel.Panel({
         width: 240,
         height: 320,
-        contentURL: "http://en.wikipedia.org/w/index.php?title=" + 
+        contentURL: "http://en.wikipedia.org/w/index.php?title=" +
                     item + "&useformat=mobile"
       });
       wikipanel.show();
