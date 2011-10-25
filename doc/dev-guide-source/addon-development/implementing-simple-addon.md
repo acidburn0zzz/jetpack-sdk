@@ -110,10 +110,6 @@ contents with the following:
       });
     };
 
-    exports.onUnload = function (reason) {
-      console.log(reason);
-    };
-
     function lookup(item) {
       wikipanel = panel.Panel({
         width: 240,
@@ -184,8 +180,8 @@ your add-on's code at the top level instead of wrapping it in a function
 assigned to `exports.main`: it will be loaded in the same circumstances, but
 you won't get access to the `options` or `callbacks` arguments.
 
-This particular add-on doesn't need to use `exports.main` or `exports.onUnload`
-for anything, and only includes them to illustrate their use.
+This particular add-on doesn't need to use `exports.main` for anything, and
+only includes it to illustrate its use.
 
 ### Logging ###
 

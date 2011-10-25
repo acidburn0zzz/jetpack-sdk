@@ -80,10 +80,6 @@ module:
       });
     };
 
-    exports.onUnload = function (reason) {
-      console.log(reason);
-    };
-
 Next, execute `cfx run` again, and try out the add-on. It should work in
 exactly the same way as the previous version, except that now the core
 `lookup()` function has been made available to other parts of your add-on or
