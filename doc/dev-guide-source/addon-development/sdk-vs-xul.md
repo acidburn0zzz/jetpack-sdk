@@ -1,14 +1,22 @@
 
-# Benefits of the SDK for XUL Developers #
+# SDK and XUL Comparison #
 
-For developers already familiar with XUL and XPCOM development, the main
-advantages of the SDK are:
+## Advantages of the SDK ##
 
 <table>
 <colgroup>
 <col width="20%">
 <col width="80%">
 </colgroup>
+
+<tr>
+<td> <strong><a name="simplicity">Simplicity</a></strong></td>
+<td><p>The SDK provides high-level JavaScript APIs to simplify many
+common tasks in add-on development, and tool support which greatly simplifies
+the process of developing, testing, and packaging an add-on.</p>
+</td>
+</tr>
+
 <tr>
 <td> <strong><a name="compatibility">Compatibility</a></strong></td>
 <td><p>Although we can't promise we'll never break a
@@ -41,9 +49,15 @@ them, so most traditional add-ons would have to be substantially rewritten
 anyway.</p></td>
 </tr>
 
+<tr>
+<td> <strong><a name="ux_best_practice">User Experience Best Practices</a></strong></td>
+<td><p>The UI components available in the SDK are designed to align with the usability
+guidelines for Firefox, giving your users a better, more consistent experience.</p></td>
+</tr>
+
 </table>
 
-The main advantages XUL-based add-ons have are:
+## Advantages of XUL-based Add-ons ##
 
 <table>
 <colgroup>
