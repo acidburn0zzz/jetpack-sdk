@@ -18,8 +18,8 @@ Finally, we'll walk through a simple example.
 
 ## Should You Migrate? ##
 
-See this [guide to the benefits and limitations of SDK development
-compared to XUL development](dev-guide/addon-development/sdk-vs-xul.html).
+See this [comparison of the benefits and limitations of SDK development
+and XUL development](dev-guide/addon-development/sdk-vs-xul.html).
 
 Whether you should migrate a particular add-on is largely a matter of
 how well the SDK's supported APIs meet its needs.
@@ -27,8 +27,8 @@ how well the SDK's supported APIs meet its needs.
 * If your add-on can accomplish everything it needs using only the
 supported APIs, it's a good candidate for migration.
 
-* If your add-on needs a lot of help from the low-level APIs, then you
-won't see much benefit from migrating.
+* If your add-on needs a lot of help from the low-level APIs, then the
+cost of migrating is high, and may not be worth it at this point.
 
 * If your add-on needs a fairly limited amount of help from low-level
 APIs, then it might still be worth migrating: we'll add more supported
@@ -73,12 +73,20 @@ There are two related reasons for this design. The first is security: it
 reduces the risk that a malicious web page will be able to access privileged
 APIs. The second is the need to be compatible with the multi-process architecture
 planned for Firefox: after this is implemented in Firefox, all add-ons will
-need to use a similar pattern.
+need to use a similar pattern, so it's likely that a XUL-based add-on will
+need to be rewritten anyway.
 
 There's much more information on content scripts in the
 [Working With Content Scripts](dev-guide/addon-development/web-content.html) guide.
 
-## Using the "supported" APIs ##
+## Using the Supported APIs ##
+
+The SDK provides a set of high level APIs providing some basic user
+interface components and functionality commonly required by add-ons.
+These are collected together in the
+[`addon-kit`](packages/addon-kit/addon-kit.html) package. Because we expect
+to keep these APIs compatible as new versions of Firefox are released, we
+call them the "supported" APIs.
 
 See this
 [quick overview](dev-guide/addon-development/api-modules.html) and
@@ -111,23 +119,28 @@ will very probably need more than the SDK's supported APIs can offer.
 Similarly, the supported APIs expose only a small fraction of the full range
 of XPCOM functionality.
 
-## Using Third Party Modules ##
+## Using Third Party Packages ##
 
-See the
-[guide to using third party modules](dev-guide/addon-development/third-party-modules.html).
-If you can find a third party module that does what you want, this is a great
+The SDK is extensible by design: developers can create new APIs filling gaps
+in the SDK, and distribute them as additional packages. Add-on developers can
+install these packages and use the new APIs.
+
+If you can find a third party package that does what you want, this is a great
 way to use features not supported in the SDK without having to use the
 low-level APIs.
 
-Note that by using third party modules you're likely to lose the security and
-compatibility benefits of using the SDK.
+See the
+[guide to using third party packages](dev-guide/addon-development/third-party-packages.html).
 
-## Using the "low-level" APIs ##
+Note, though, that by using third party packages you're likely to lose the
+security and compatibility benefits of using the SDK.
+
+## Using the Low-level APIs ##
 
 If you can't find a suitable third party module, you can use low-level APIs to:
 
 * load and access any XPCOM component
-* modify the browser chrome using dynamic manipulation of the XUL
+* modify the browser chrome using dynamic manipulation of the DOM
 * directly access the [tabbrowser](https://developer.mozilla.org/en/XUL/tabbrowser)
 object
 
@@ -193,7 +206,7 @@ is compromised, the attacker gets full access to the browser's capabilities.**
 ### window-utils ###
 
 The [`window-utils`](packages/api-utils/docs/window-utils.html) module gives
-you direct access to the browser chrome.
+you direct access to chrome windows, including the browser's chrome window.
 
 Here's a really simple example add-on that modifies the browser chrome using
 the [`window-utils`](packages/api-utils/docs/window-utils.html) module:
@@ -212,7 +225,7 @@ the [`window-utils`](packages/api-utils/docs/window-utils.html) module:
 This example just removes the 'forward' button from the browser. It constructs
 a `WindowTracker` object and assigns a function to the constructor's `onTrack`
 option. This function will be called whenever a window is opened. The function
-checks whether the window is the browser's XUL, and if it is, uses
+checks whether the window is the browser's chrome window, and if it is, uses
 DOM manipulation functions to modify it.
 
 There are more useful examples of this technique in the Jetpack Wiki's
@@ -274,7 +287,7 @@ icon, which contains the library name and version.
 You can browse and run the ported version in
 [the Builder](https://builder.addons.mozilla.org/addon/1020373/revision/65/).
 
-### How the Library Detector works ###
+### How the Library Detector Works ###
 
 All the work is done inside a single file,
 [`librarydetector.xul`](http://code.google.com/p/librarydetector/source/browse/trunk/chrome/content/librarydetector.xul)
@@ -310,7 +323,7 @@ Once the list is built, the `switchLibraries` function constructs a XUL
 `statusbarpanel` element for each library it found, populates it with the
 icon at the corresponding `chrome://` URL, and adds it to the box.
 
-Finally, it listen to gBrowser's `TabSelect` event, to update the contents
+Finally, it listens to gBrowser's `TabSelect` event, to update the contents
 of the box for that window.
 
 ### Content Script Separation ###
