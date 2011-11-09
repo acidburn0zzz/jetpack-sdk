@@ -7,7 +7,7 @@ there are suitable SDK APIs for all its features.
 <img class="image-right" src="static-files/media/librarydetector/library-detector.png" alt="Library Detector Screenshot" />
 
 The add-on is Paul Bakaus's
-[Library Detector](https://addons.mozilla.org/de/firefox/addon/library-detector/).
+[Library Detector](https://addons.mozilla.org/en-US/firefox/addon/library-detector/).
 
 The Library Detector tells you which JavaScript frameworks the current
 web page is using. It does this by checking whether particular objects
@@ -19,8 +19,7 @@ For each library that it finds, the library detector adds an icon
 representing that library to the status bar. It adds a tooltip to each
 icon, which contains the library name and version.
 
-You can browse and run the ported version in the
-[Add-on Builder](https://builder.addons.mozilla.org/addon/1024194/latest/).
+You can browse and run the ported version in the SDK's `examples` directory.
 
 ### How the Library Detector Works ###
 
@@ -214,9 +213,3 @@ widget.port.on('setLibraryInfo', function(libraryInfo) {
 </code></pre>
 
 <img class="image-center" src="static-files/media/librarydetector/panel-content.png" alt="Updating panel content" />
-
-### The Final Result ###
-
-<img class="image-right" src="static-files/media/librarydetector/library-detector-sdk.png" alt="Library Detector SDK Port Screenshot" />
-
-The screenshot shows the ported version of the library detector in action.

@@ -40,14 +40,14 @@ supported APIs</a> meet its needs.
 * If your add-on can accomplish everything it needs using only the
 supported APIs, it's a good candidate for migration.
 
-* If your add-on needs a lot of help from the low-level APIs, then the
-cost of migrating is high, and may not be worth it at this point.
+* If your add-on needs a lot of help from third party packages, low-level
+APIs, or XPCOM, then the cost of migrating is high, and may not be worth
+it at this point.
 
-* If your add-on needs a fairly limited amount of help from low-level
-APIs, then it might still be worth migrating: we'll add more supported
-APIs in future releases to meet important use cases, and eventually hope
-to have a comprehensive collection of third party modules filling many of
-the gaps.
+* If your add-on only needs a little help from those techniques, and can
+accomplish most of what it needs using the supported APIs, then it might
+still be worth migrating: we'll add more supported APIs in future releases
+to meet important use cases.
 
 ## <a name="content-scripts">Content Scripts</a> ##
 
@@ -154,6 +154,11 @@ security and compatibility benefits of using the SDK.
 
 ## <a name="low-level-apis">Using the Low-level APIs</a> ##
 
+<span class="aside">
+But note that unlike the supported APIs, low-level APIs do not come with a
+compatibility guarantee, so we do not expect code using them will necessarily
+continue to work as new versions of Firefox are released.
+</span>
 In addition to the supported APIs, the SDK includes a number of
 [low-level modules](packages/api-utils/api-utils.html) some of which, such
 as [`tab-browser`](packages/api-utils/docs/tab-browser.html), [`xhr`](packages/api-utils/docs/xhr.html), and
@@ -165,10 +170,6 @@ In this section we'll use low-level modules how to:
 * modify the browser chrome using dynamic manipulation of the DOM
 * directly access the [tabbrowser](https://developer.mozilla.org/en/XUL/tabbrowser)
 object
-
-But note that unlike the supported APIs, low-level APIs do not come with a
-compatibility guarantee, so we do not expect code using them will necessarily
-continue to work as new versions of Firefox are released.
 
 ### <a name="browser-chrome">Modifying the Browser Chrome</a> ###
 
