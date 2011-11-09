@@ -36,7 +36,7 @@ menu item to Firefox's Tools menu.
 ## Installing `menuitems` ##
 
 First we'll download `menuitems` from
-[https://github.com/erikvold/menuitems-jplib](https://github.com/erikvold/menuitems-jplib).
+[https://github.com/erikvold/menuitems-jplib](https://github.com/erikvold/menuitems-jplib/zipball/51080383cbb0fe2a05f8992a8aae890f4c014176).
 Like [`addon-kit`](packages/addon-kit/addon-kit.html) and
 [`api-utils`](packages/api-utils/api-utils.html), it's a
 [CommonJS package](dev-guide/addon-development/commonjs.html),
