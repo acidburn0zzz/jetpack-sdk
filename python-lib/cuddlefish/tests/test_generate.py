@@ -2,6 +2,8 @@ import os
 import shutil
 import unittest
 import StringIO
+import tarfile
+import HTMLParser
 
 from cuddlefish.docs import generate
 from cuddlefish.tests import env_root
@@ -17,17 +19,72 @@ EXTENDED_FILESET = [ ["static-files", "base.html"], \
 
 EXTRAFILE = ["dev-guide", "extra.html"]
 
+BASE_URL = []
+
+class Link_Checker(HTMLParser.HTMLParser):
+    def __init__(self, tester):
+        HTMLParser.HTMLParser.__init__(self)
+        self.tester = tester
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "a":
+            href = dict(attrs).get('href', '')
+            if href:
+                self.validate_href(href)
+
+    def validate_href(self, href):
+        self.tester.assertFalse(href.startswith("file"))
+
 class Generate_Docs_Tests(unittest.TestCase):
+    def test_root(self):
+        return os.path.join(env_root, "python-lib", "cuddlefish", "tests", "static-files")
+
+    def sdk_docs_root(self):
+        return os.path.join(self.test_root(), "sdk-docs")
+
+    def base_url_path(self):
+        return os.path.join(self.sdk_docs_root(), "doc")
+
+    def base_url(self):
+        base_url_path = self.base_url_path()
+        # this is to ensure the path starts with "/"
+        # whether or not it's on Windows
+        # there might be a better way
+        if not base_url_path.startswith("/"):
+            base_url_path = "/" + base_url_path
+        base_url_path_pieces = base_url_path.split(os.sep)
+        base_url = "file://" + "/".join(base_url_path_pieces) + "/"
+        return base_url
+
     def test_generate_static_docs_does_not_smoke(self):
+        # make sure we start clean
         filename = 'testdocs.tgz'
         if os.path.exists(filename):
             os.remove(filename)
-        filename = generate.generate_static_docs(env_root)
-        self.assertTrue(os.path.exists(filename))
-        os.remove(filename)
+        if os.path.exists(self.base_url_path()):
+            shutil.rmtree(self.base_url_path())
+        # generate a doc tarball, and extract it
+        filename = generate.generate_static_docs(env_root, self.base_url())
+        tgz = tarfile.open(filename)
+        tgz.extractall(self.sdk_docs_root())
+        # look in each HTML file
+
+        for root, subFolders, filenames in os.walk(self.sdk_docs_root()):
+            for filename in filenames:
+                if not filename.endswith(".html"):
+                    continue
+         #       print os.path.join(root, filename)
+                # we'll create this for each file, so that if there's an error
+                # we get a usable line number
+                linkChecker = Link_Checker(self)
+                linkChecker.feed(open(os.path.join(root, filename), "r").read())
+
+   #     self.assertTrue(os.path.exists(filename))
+   #     os.remove(filename)
+        shutil.rmtree(self.base_url_path())
 
     def test_generate_docs_does_not_smoke(self):
-        test_root = os.path.join(env_root, "python-lib", "cuddlefish", "tests", "static-files")
+        test_root = self.test_root()
         docs_root = os.path.join(test_root, "doc")
         generate.clean_generated_docs(docs_root)
         new_digest = self.check_generate_regenerate_cycle(test_root, INITIAL_FILESET)

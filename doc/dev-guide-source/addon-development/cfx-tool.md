@@ -111,7 +111,7 @@ your add-on alongside debuggers like [Firebug](http://getfirebug.com/).
     <p>For example, to pass the
     <code>-jsconsole</code> argument to Firefox, which will launch the
     <a href="https://developer.mozilla.org/en/Error_Console">JavaScript
-    Error Console</a>, try the following:</p<>
+    Error Console</a>, try the following:</p>
     <pre>cfx run --binary-args -jsconsole</pre>
     <p>To pass multiple arguments, or arguments containing spaces, quote them:</p>
     <pre>cfx run --binary-args '-url "www.mozilla.org" -jsconsole'</pre>
@@ -333,7 +333,7 @@ times.
     <p>For example, to pass the
     <code>-jsconsole</code> argument to Firefox, which will launch the
     <a href="https://developer.mozilla.org/en/Error_Console">JavaScript
-    Error Console</a>, try the following:</p<>
+    Error Console</a>, try the following:</p>
     <pre>cfx run --binary-args -jsconsole</pre>
     <p>To pass multiple arguments, or arguments containing spaces, quote them:</p>
     <pre>cfx run --binary-args '-url "www.mozilla.org" -jsconsole'</pre>
