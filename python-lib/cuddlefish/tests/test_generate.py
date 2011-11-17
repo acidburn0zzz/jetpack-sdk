@@ -88,6 +88,8 @@ class Generate_Docs_Tests(unittest.TestCase):
                 linkChecker.feed(open(filename, "r").read())
         # clean up
         shutil.rmtree(get_base_url_path())
+        os.remove(tar_filename)
+        generate.clean_generated_docs(os.path.join(env_root, "doc"))
 
     def test_generate_docs_does_not_smoke(self):
         test_root = get_test_root()
