@@ -263,9 +263,8 @@ To launch the application, enter the following command:
     <code>--e10s</code>
   </td>
   <td>
-    If this option is set then the add-on runs in a separate process. See
-    <a href="dev-guide/module-development/e10s.html">out-of-process add-ons</a>
-    for details.
+    If this option is set then the add-on runs in a separate process.
+    This option is currently not implemented.
   </td>
 </tr>
 
@@ -488,9 +487,8 @@ To launch the application, enter the following command:
     <code>--e10s</code>
   </td>
   <td>
-    If this option is set then the add-on runs in a separate process. See
-    <a href="dev-guide/module-development/e10s.html">out-of-process add-ons</a>
-    for details.
+    If this option is set then the add-on runs in a separate process.
+    This option is currently not implemented.
   </td>
 </tr>
 
