@@ -21,8 +21,6 @@ EXTENDED_FILESET = [ ["static-files", "base.html"], \
 
 EXTRAFILE = ["dev-guide", "extra.html"]
 
-BASE_URL = []
-
 def get_test_root():
     return os.path.join(env_root, "python-lib", "cuddlefish", "tests", "static-files")
 
@@ -79,16 +77,14 @@ class Generate_Docs_Tests(unittest.TestCase):
         tar_filename = generate.generate_static_docs(env_root, get_base_url())
         tgz = tarfile.open(tar_filename)
         tgz.extractall(get_sdk_docs_root())
-        # look in each HTML file
+        # get each HTML file...
         for root, subFolders, filenames in os.walk(get_sdk_docs_root()):
             for filename in filenames:
                 if not filename.endswith(".html"):
                     continue
-                # we'll create this for each file, so that if there's an error
-                # we get a usable line number
                 filename = os.path.join(root, filename)
+                # ...and feed it to the link checker
                 linkChecker = Link_Checker(self, filename)
-                # feed it to the link checker
                 linkChecker.feed(open(filename, "r").read())
         # clean up
         shutil.rmtree(get_base_url_path())
