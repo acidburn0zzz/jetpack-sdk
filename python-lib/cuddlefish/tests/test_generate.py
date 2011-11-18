@@ -31,21 +31,15 @@ def get_base_url_path():
     return os.path.join(get_sdk_docs_root(), "doc")
 
 def get_base_url():
-    base_url_path = get_base_url_path()
-    # this is to ensure the path starts with "/"
-    # whether or not it's on Windows
-    # there might be a better way
-    if not base_url_path.startswith("/"):
-        base_url_path = "/" + base_url_path
-    base_url_path_pieces = base_url_path.split(os.sep)
-    base_url = "file://" + "/".join(base_url_path_pieces) + "/"
-    return base_url
+    base_url_path = get_base_url_path().lstrip("/")
+    return "file://"+"/"+"/".join(base_url_path.split(os.sep))+"/"
 
 class Link_Checker(HTMLParser.HTMLParser):
-    def __init__(self, tester, filename):
+    def __init__(self, tester, filename, base_url):
         HTMLParser.HTMLParser.__init__(self)
         self.tester = tester
         self.filename = filename
+        self.base_url = base_url
 
     def handle_starttag(self, tag, attrs):
         if tag == "a":
@@ -61,7 +55,7 @@ class Link_Checker(HTMLParser.HTMLParser):
         if parsed.scheme:
             return
         # otherwise try to open the file at: baseurl + path
-        absolute_url = get_base_url() + parsed.path
+        absolute_url = self.base_url + parsed.path
         try:
             urllib.urlopen(absolute_url)
         except IOError:
@@ -69,12 +63,13 @@ class Link_Checker(HTMLParser.HTMLParser):
 
 class Generate_Docs_Tests(unittest.TestCase):
 
-    def test_generate_static_docs_does_not_smoke(self):
+    def test_generate_static_docs(self):
         # make sure we start clean
         if os.path.exists(get_base_url_path()):
             shutil.rmtree(get_base_url_path())
         # generate a doc tarball, and extract it
-        tar_filename = generate.generate_static_docs(env_root, get_base_url())
+        base_url = get_base_url()
+        tar_filename = generate.generate_static_docs(env_root, base_url)
         tgz = tarfile.open(tar_filename)
         tgz.extractall(get_sdk_docs_root())
         # get each HTML file...
@@ -84,14 +79,14 @@ class Generate_Docs_Tests(unittest.TestCase):
                     continue
                 filename = os.path.join(root, filename)
                 # ...and feed it to the link checker
-                linkChecker = Link_Checker(self, filename)
+                linkChecker = Link_Checker(self, filename, base_url)
                 linkChecker.feed(open(filename, "r").read())
         # clean up
         shutil.rmtree(get_base_url_path())
         os.remove(tar_filename)
         generate.clean_generated_docs(os.path.join(env_root, "doc"))
 
-    def test_generate_docs_does_not_smoke(self):
+    def test_generate_docs(self):
         test_root = get_test_root()
         docs_root = os.path.join(test_root, "doc")
         generate.clean_generated_docs(docs_root)
