@@ -83,6 +83,7 @@ class Generate_Docs_Tests(unittest.TestCase):
                 linkChecker.feed(open(filename, "r").read())
         # clean up
         shutil.rmtree(get_base_url_path())
+        tgz.close()
         os.remove(tar_filename)
         generate.clean_generated_docs(os.path.join(env_root, "doc"))
 
