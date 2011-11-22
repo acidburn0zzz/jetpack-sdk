@@ -85,8 +85,11 @@ h2 {
 }
 
 .title {
-  margin: 1em;
+  height: 30px;
+  margin-bottom: 10px;
 }
+ 
+
 
 .sidebar-section, #toc {
   border-style: solid;
