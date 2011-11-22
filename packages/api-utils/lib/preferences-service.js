@@ -21,6 +21,7 @@
  *   Myk Melez <myk@mozilla.org>
  *   Daniel Aquino <mr.danielaquino@gmail.com>
  *   Atul Varma <atul@mozilla.com>
+ *   Erik Vold <erikvvold@gmail.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,12 +37,14 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 // The minimum and maximum integers that can be set as preferences.
 // The range of valid values is narrower than the range of valid JS values
 // because the native preferences code treats integers as NSPR PRInt32s,
 // which are 32-bit signed integers on all platforms.
-const MAX_INT = Math.pow(2, 31) - 1;
-const MIN_INT = -MAX_INT;
+const MAX_INT = 0x7FFFFFFF;
+const MIN_INT = -0x80000000;
 
 const {Cc,Ci,Cr} = require("chrome");
 
@@ -88,15 +91,13 @@ var set = exports.set = function set(name, value) {
     break;
 
   case "Number":
-    // We throw if the number is outside the range, since the result
-    // will never be what the consumer wanted to store, but we only warn
-    // if the number is non-integer, since the consumer might not mind
-    // the loss of precision.
+    // We throw if the number is outside the range or not an integer, since
+    // the result will not be what the consumer wanted to store.
     if (value > MAX_INT || value < MIN_INT)
       throw new Error("you cannot set the " + name +
                       " pref to the number " + value +
                       ", as number pref values must be in the signed " +
-                      "32-bit integer range -(2^31-1) to 2^31-1.  " +
+                      "32-bit integer range -(2^31) to 2^31-1.  " +
                       "To store numbers outside that range, store " +
                       "them as strings.");
     if (value % 1 != 0)
@@ -110,7 +111,7 @@ var set = exports.set = function set(name, value) {
 
   default:
     throw new Error("can't set pref " + name + " to value '" + value +
-                    "'; it isn't a String, Number, or Boolean");
+                    "'; it isn't a string, integer, or boolean");
   }
 };
 

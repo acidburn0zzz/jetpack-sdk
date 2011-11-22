@@ -23,6 +23,7 @@
  * Contributor(s):
  *   Atul Varma <atul@mozilla.com> (Original Author)
  *   Drew Willcoxon <adw@mozilla.com>
+ *   Erik Vold <erikvvold@gmail.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -39,12 +40,17 @@
  * ***** END LICENSE BLOCK ***** */
 
 var unload = require("unload");
+var { Loader } = require("./helpers");
 
 exports.testUnloading = function(test) {
-  var loader = test.makeSandboxedLoader();
+  var loader = Loader(module);
   var ul = loader.require("unload");
   var unloadCalled = 0;
-  function unload() { unloadCalled++; }
+  var errorsReported = 0;
+  function unload() {
+    unloadCalled++;
+    throw new Error("error");
+  }
   ul.when(unload);
 
   // This should be ignored, as we already registered it
@@ -52,9 +58,11 @@ exports.testUnloading = function(test) {
 
   function unload2() { unloadCalled++; }
   ul.when(unload2);
-  loader.unload();
+  loader.unload(undefined, function onError() { errorsReported++; });
   test.assertEqual(unloadCalled, 2,
                    "Unloader functions are called on unload.");
+  test.assertEqual(errorsReported, 1,
+                   "One unload handler threw exception");
 };
 
 exports.testEnsure = function(test) {
@@ -86,7 +94,7 @@ exports.testEnsure = function(test) {
 exports.testEnsureWithTraits = function(test) {
 
   let { Trait } = require("traits");
-  let loader = test.makeSandboxedLoader();
+  let loader = Loader(module);
   let ul = loader.require("unload");
 
   let called = 0;
@@ -142,7 +150,7 @@ exports.testEnsureWithTraits = function(test) {
 exports.testEnsureWithTraitsPrivate = function(test) {
 
   let { Trait } = require("traits");
-  let loader = test.makeSandboxedLoader();
+  let loader = Loader(module);
   let ul = loader.require("unload");
 
   let called = 0;
@@ -171,7 +179,7 @@ exports.testEnsureWithTraitsPrivate = function(test) {
 
 exports.testReason = function (test) {
   var reason = "Reason doesn't actually have to be anything in particular.";
-  var loader = test.makeSandboxedLoader();
+  var loader = Loader(module);
   var ul = loader.require("unload");
   ul.when(function (rsn) {
     test.assertEqual(rsn, reason,

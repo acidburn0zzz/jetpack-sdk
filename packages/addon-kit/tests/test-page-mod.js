@@ -2,6 +2,8 @@
 
 var pageMod = require("page-mod");
 var testPageMod = require("pagemod-test-helpers").testPageMod;
+const { Loader } = require('./helpers');
+const tabs = require("tabs");
 
 /* XXX This can be used to delay closing the test Firefox instance for interactive
  * testing or visual inspection. This test is registered first so that it runs
@@ -17,15 +19,14 @@ exports.delay = function(test) {
 /* Tests for the PageMod APIs */
 
 exports.testPageMod1 = function(test) {
-  let pageMod;
-  [pageMod] = testPageMod(test, "about:", [{
-      include: "about:*",
+  let mods = testPageMod(test, "about:", [{
+      include: /about:/,
       contentScriptWhen: 'end',
       contentScript: 'new ' + function WorkerScope() {
         window.document.body.setAttribute("JEP-107", "worked");
       },
       onAttach: function() {
-        test.assertEqual(this, pageMod, "The 'this' object is the page mod.");
+        test.assertEqual(this, mods[0], "The 'this' object is the page mod.");
       }
     }],
     function(win, done) {
@@ -51,15 +52,20 @@ exports.testPageMod2 = function(test) {
           catch(e) {
             throw new Error("PageMod scripts executed in order");
           }
+          document.documentElement.setAttribute("first", "true");
         },
         'new ' + function contentScript() {
-          window.test = true;
+          document.documentElement.setAttribute("second", "true");
         }
       ]
     }], function(win, done) {
-      test.assertEqual(win.AUQLUE(), 42, "PageMod test #2: first script has run");
-      test.assertEqual(win.test, true, "PageMod test #2: second script has run");
-      test.assertEqual("AUQLUE" in win, true,
+      test.assertEqual(win.document.documentElement.getAttribute("first"),
+                       "true",
+                       "PageMod test #2: first script has run");
+      test.assertEqual(win.document.documentElement.getAttribute("second"),
+                       "true",
+                       "PageMod test #2: second script has run");
+      test.assertEqual("AUQLUE" in win, false,
                        "PageMod test #2: scripts get a wrapped window");
       done();
     });
@@ -70,7 +76,7 @@ exports.testPageModIncludes = function(test) {
   function createPageModTest(include, expectedMatch) {
     // Create an 'onload' test function...
     asserts.push(function(test, win) {
-      var matches = include in win;
+      var matches = include in win.localStorage;
       test.assert(expectedMatch ? matches : !matches,
                   "'" + include + "' match test, expected: " + expectedMatch);
     });
@@ -79,7 +85,7 @@ exports.testPageModIncludes = function(test) {
       include: include,
       contentScript: 'new ' + function() {
         self.on("message", function(msg) {
-          window[msg] = true;
+          window.localStorage[msg] = true;
         });
       },
       // The testPageMod callback with test assertions is called on 'end',
@@ -100,7 +106,7 @@ exports.testPageModIncludes = function(test) {
       createPageModTest("about:buildconfig", true)
     ],
     function (win, done) {
-      test.waitUntil(function () win["about:buildconfig"],
+      test.waitUntil(function () win.localStorage["about:buildconfig"],
                      "about:buildconfig page-mod to be executed")
           .then(function () {
             asserts.forEach(function(fn) {
@@ -116,7 +122,7 @@ exports.testPageModErrorHandling = function(test) {
   test.assertRaises(function() {
       new pageMod.PageMod();
     },
-    'The PageMod must have a string or array `include` option.',
+    'pattern is undefined',
     "PageMod() throws when 'include' option is not specified.");
 };
 
@@ -174,12 +180,12 @@ exports.testCommunication2 = function(test) {
       include: "about:*",
       contentScriptWhen: 'start',
       contentScript: 'new ' + function WorkerScope() {
-        window.AUQLUE = function() { return 42; }
+        document.documentElement.setAttribute('AUQLUE', 42);
         window.addEventListener('load', function listener() {
           self.postMessage('onload');
         }, false);
         self.on("message", function() {
-          self.postMessage(window.test)
+          self.postMessage(document.documentElement.getAttribute("test"))
         });
       },
       onAttach: function(worker) {
@@ -189,11 +195,11 @@ exports.testCommunication2 = function(test) {
         worker.on('message', function(msg) {
           if ('onload' == msg) {
             test.assertEqual(
-              42,
-              window.AUQLUE(),
+              '42',
+              window.document.documentElement.getAttribute('AUQLUE'),
               'PageMod scripts executed in order'
             );
-            window.test = 'changes in window';
+            window.document.documentElement.setAttribute('test', 'changes in window');
             worker.postMessage('get window.test')
           } else {
             test.assertEqual(
@@ -233,7 +239,7 @@ exports.testEventEmitter = function(test) {
             "worked",
             value,
             "EventEmitter API works!"
-          );          
+          );
           if (callbackDone)
             callbackDone();
           else
@@ -251,12 +257,74 @@ exports.testEventEmitter = function(test) {
   );
 };
 
+// Execute two concurrent page mods on same document to ensure that their
+// JS contexts are different
+exports.testMixedContext = function(test) {
+  let doneCallback = null;
+  let messages = 0;
+  let modObject = {
+    include: "data:text/html,",
+    contentScript: 'new ' + function WorkerScope() {
+      // Both scripts will execute this,
+      // context is shared if one script see the other one modification.
+      let isContextShared = "sharedAttribute" in document;
+      self.postMessage(isContextShared);
+      document.sharedAttribute = true;
+    },
+    onAttach: function(w) {
+      w.on("message", function (isContextShared) {
+        if (isContextShared) {
+          test.fail("Page mod contexts are mixed.");
+          doneCallback();
+        }
+        else if (++messages == 2) {
+          test.pass("Page mod contexts are different.");
+          doneCallback();
+        }
+      });
+    }
+  };
+  testPageMod(test, "data:text/html,", [modObject, modObject],
+    function(win, done) {
+      doneCallback = done;
+    }
+  );
+};
+
+exports.testHistory = function(test) {
+  // We need a valid url in order to have a working History API.
+  // (i.e do not work on data: or about: pages)
+  // Test bug 679054.
+  let url = require("self").data.url("test-page-mod.html");
+  let callbackDone = null;
+  testPageMod(test, url, [{
+      include: url,
+      contentScriptWhen: 'end',
+      contentScript: 'new ' + function WorkerScope() {
+        history.pushState({}, "", "#");
+        history.replaceState({foo: "bar"}, "", "#");
+        self.postMessage(history.state);
+      },
+      onAttach: function(worker) {
+        worker.on('message', function (data) {
+          test.assertEqual(JSON.stringify(data), JSON.stringify({foo: "bar"}),
+                           "History API works!");
+          callbackDone();
+        });
+      }
+    }],
+    function(win, done) {
+      callbackDone = done;
+    }
+  );
+};
+
 exports.testRelatedTab = function(test) {
   test.waitUntilDone();
-  
-  let tabs = require("tabs");
+
   let tab;
-  let pageMod = new require("page-mod").PageMod({
+  let { PageMod } = require("page-mod");
+  let pageMod = new PageMod({
     include: "about:*",
     onAttach: function(worker) {
       test.assertEqual(tab, worker.tab, "Worker.tab is valid");
@@ -265,11 +333,83 @@ exports.testRelatedTab = function(test) {
       test.done();
     }
   });
-  
+
   tabs.open({
     url: "about:",
     onOpen: function onOpen(t) {
       tab = t;
+    }
+  });
+
+};
+
+exports['test tab worker on message'] = function(test) {
+  test.waitUntilDone();
+
+  let { browserWindows } = require("windows");
+  let tabs = require("tabs");
+  let { PageMod } = require("page-mod");
+
+  let url1 = "data:text/html,<title>tab1</title><h1>worker1.tab</h1>";
+  let url2 = "data:text/html,<title>tab2</title><h1>worker2.tab</h1>";
+  let worker1 = null;
+
+  let mod = PageMod({
+    include: "data:text/html,*",
+    contentScriptWhen: "ready",
+    contentScript: "self.postMessage('#1');",
+    onAttach: function onAttach(worker) {
+      worker.on("message", function onMessage() {
+        this.tab.attach({
+          contentScriptWhen: "ready",
+          contentScript: "self.postMessage({ url: window.location.href, title: document.title });",
+          onMessage: function onMessage(data) {
+            test.assertEqual(this.tab.url, data.url, "location is correct");
+            test.assertEqual(this.tab.title, data.title, "title is correct");
+            if (this.tab.url === url1) {
+              worker1 = this;
+              tabs.open({ url: url2, inBackground: true });
+            }
+            else if (this.tab.url === url2) {
+              mod.destroy();
+              worker1.tab.close();
+              worker1.destroy();
+              worker.tab.close();
+              worker.destroy();
+              test.done();
+            }
+          }
+        });
+      });
+    }
+  });
+
+  tabs.open(url1);
+};
+
+exports.testAutomaticDestroy = function(test) {
+  test.waitUntilDone();
+  let loader = Loader(module);
+  
+  let pageMod = loader.require("page-mod").PageMod({
+    include: "about:*",
+    contentScriptWhen: "start",
+    onAttach: function(w) {
+      test.fail("Page-mod should have been detroyed during module unload");
+    }
+  });
+  
+  // Unload the page-mod module so that our page mod is destroyed
+  loader.unload();
+ 
+  // Then create a second tab to ensure that it is correctly destroyed
+  let tabs = require("tabs");
+  tabs.open({
+    url: "about:",
+    onReady: function onReady(tab) {
+      test.pass("check automatic destroy");
+      tab.close();
+      test.done();
     }
   });
   

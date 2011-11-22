@@ -40,19 +40,15 @@
 "use strict";
 
 const { Cc, Ci } = require("chrome");
-const runtime = require("runtime");
-const { isString } = require("type");
-const array = require("array");
+const runtime = require("../runtime");
+const { isString } = require("../type");
+const array = require("../array");
 
 
 const SWP = "{{SEPARATOR}}";
 const SEPARATOR = "-"
 const INVALID_COMBINATION = "Hotkey key combination must contain one or more " +
                             "modifiers and only one key";
-
-// Key codes for non printable chars.
-// @See: http://mxr.mozilla.org/mozilla-central/source/dom/interfaces/events/nsIDOMKeyEvent.idl
-const DOM_VK_CODES = exports.DOM_VK_CODES = Ci.nsIDOMKeyEvent;
 
 // Map of modifier key mappings.
 const MODIFIERS = exports.MODIFIERS = {
@@ -66,30 +62,53 @@ const MODIFIERS = exports.MODIFIERS = {
   'shift': 'shift'
 };
 
-// Map of keys that contain `_` chars.
-const ALIAS_KEYS = exports.KEYS = {
-  'backspace': DOM_VK_CODES.BACK_SPACE,
-  'capslock': DOM_VK_CODES.CAPS_LOCK,
-  'pageup': DOM_VK_CODES.PAGE_UP,
-  'pagedown': DOM_VK_CODES.PAGE_DOWN,
-  'numlock': DOM_VK_CODES.NUM_LOCK,
-  'scrolllock': DOM_VK_CODES.SCROLL_LOCK
+// Hash of key:code pairs for all the chars supported by `nsIDOMKeyEvent`.
+// This is just a copy of the `nsIDOMKeyEvent` hash with normalized names.
+// @See: http://mxr.mozilla.org/mozilla-central/source/dom/interfaces/events/nsIDOMKeyEvent.idl
+const CODES = exports.CODES = new function Codes() {
+  let nsIDOMKeyEvent = Ci.nsIDOMKeyEvent;
+  // Names that will be substituted with a shorter analogs.
+  let aliases = {
+    'subtract':     '-',
+    'add':          '+',
+    'equals':       '=',
+    'slash':        '/',
+    'backslash':    '\\',
+    'openbracket':  '[',
+    'closebracket': ']',
+    'quote':        '\'',
+    'backquote':    '`',
+    'period':       '.',
+    'semicolon':    ';',
+    'comma':        ','
+  };
+
+  // Normalizing keys and copying values to `this` object.
+  Object.keys(nsIDOMKeyEvent).filter(function(key) {
+    // Filter out only key codes.
+    return key.indexOf('DOM_VK') === 0;
+  }).map(function(key) {
+    // Map to key:values
+    return [ key, nsIDOMKeyEvent[key] ];
+  }).map(function([key, value]) {
+    return [ key.replace('DOM_VK_', '').replace('_', '').toLowerCase(), value ];
+  }).forEach(function ([ key, value ]) {
+    this[aliases[key] || key] = value;
+  }, this);
 };
+
+// Inverted `CODES` hash of `code:key`.
+const KEYS = exports.KEYS = new function Keys() {
+  Object.keys(CODES).forEach(function(key) {
+    this[CODES[key]] = key;
+  }, this)
+}
 
 exports.getKeyForCode = function getKeyForCode(code) {
-  for (let key in DOM_VK_CODES) {
-    if (DOM_VK_CODES[key] === code) {
-      return key.substr(7).              // Remove DOM_VK_ part.
-                 replace(/_/g, '').      // Remove all the _ chars.
-                 toLowerCase();          // Lover casing the rest.
-    }
-  }
+  return (code in KEYS) && KEYS[code];
 };
-
 exports.getCodeForKey = function getCodeForKey(key) {
-  return key in ALIAS_KEYS ? ALIAS_KEYS[key] :
-         (key = "DOM_VK_" + key.toUpperCase()) in DOM_VK_CODES ?
-         DOM_VK_CODES[key] : undefined;
+  return (key in CODES) && CODES[key];
 };
 
 /**
@@ -188,4 +207,14 @@ var toString = exports.toString = function toString(hotkey, separator) {
   let keys = hotkey.modifiers.slice();
   keys.push(hotkey.key);
   return keys.join(separator || SEPARATOR);
+};
+
+/**
+ * Utility function takes `key` name and returns `true` if it's function key
+ * (F1, ..., F24) and `false` if it's not.
+ */
+var isFunctionKey = exports.isFunctionKey = function isFunctionKey(key) {
+  var $
+  return key[0].toLowerCase() === 'f' &&
+         ($ = parseInt(key.substr(1)), 0 < $ && $ < 25);
 };

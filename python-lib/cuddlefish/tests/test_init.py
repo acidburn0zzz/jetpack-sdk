@@ -1,6 +1,6 @@
 import os, unittest, shutil
 from StringIO import StringIO
-from cuddlefish import initializer
+from cuddlefish import initializer, get_unique_prefix
 from cuddlefish.templates import MAIN_JS, TEST_MAIN_JS, PACKAGE_JSON
 
 class TestInit(unittest.TestCase):
@@ -41,7 +41,8 @@ class TestInit(unittest.TestCase):
         self.assertTrue(os.path.exists(test_main_js))
         self.assertEqual(open(main_js,"r").read(),MAIN_JS)
         self.assertEqual(open(package_json,"r").read(),
-                         PACKAGE_JSON % {"name":"tmp_addon_sample"})
+                         PACKAGE_JSON % {"name":"tmp_addon_sample",
+                                         "fullName": "tmp_addon_SAMPLE" })
         self.assertEqual(open(test_main_js,"r").read(),TEST_MAIN_JS)
 
         # Let's check that the addon is initialized
@@ -52,7 +53,7 @@ class TestInit(unittest.TestCase):
         self.assertTrue("This command must be run in an empty directory." in err)
 
     def test_initializer(self):
-        self.run_init_in_subdir("tmp_addon_sample",self.do_test_init)
+        self.run_init_in_subdir("tmp_addon_SAMPLE",self.do_test_init)
 
     def do_test_args(self, basedir):
         # check that running it with spurious arguments will fail
@@ -79,6 +80,17 @@ class TestInit(unittest.TestCase):
 
     def test_existing_files(self):
         self.run_init_in_subdir("existing_files", self._test_existing_files)
+
+class TestRun(unittest.TestCase):
+
+    def test_get_unique_prefix(self):
+        self.assertEqual(get_unique_prefix("LOWERCASEME"), "lowercaseme-")
+        self.assertEqual(get_unique_prefix("foo@example.com"),
+                         "foo-at-example-dot-com-")
+        self.assertEqual(
+            get_unique_prefix("{74343602-334C-4570-BBCD-69BDE8CAFBD1}"),
+            "74343602-334c-4570-bbcd-69bde8cafbd1-"
+        )
 
 if __name__ == "__main__":
     unittest.main()

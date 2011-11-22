@@ -34,53 +34,65 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var obsvc = require("observer-service");
+"use strict";
+
+var obsvc = require("api-utils/observer-service");
+var system = require("api-utils/system");
+var options = require('@packaging');
 var {Cc,Ci} = require("chrome");
 
-function runTests(iterations, filter, profileMemory, verbose, rootPaths, quit, print) {
+function runTests(iterations, filter, profileMemory, verbose, rootPaths, exit, print) {
   var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"]
            .getService(Ci.nsIWindowWatcher);
 
-  var window = ww.openWindow(null, "data:text/plain,Running tests...",
-                             "harness", "centerscreen", null);
+  let ns = 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul';
+  let msg = 'Running tests...';
+  let markup = '<?xml version="1.0"?><window xmlns="' + ns +
+               '" windowtype="test:runner"><label>' + msg + '</label></window>';
+  let url = "data:application/vnd.mozilla.xul+xml," + escape(markup);
 
-  var harness = require("harness");
 
-  var startTime = new Date();
-  const MIN_RUN_TIME = 12321;
+  var window = ww.openWindow(null, url, "harness", "centerscreen", null);
+
+  var harness = require("./harness");
 
   function onDone(tests) {
-    function finish() {
-      window.close();
-      if (tests.passed > 0 && tests.failed == 0) {
-        quit("OK");
-      } else {
-        if (tests.passed == 0) {
-          print("No tests were run\n");
-        } else {
-          printFailedTests(tests, verbose, print);
-        }
-        quit("FAIL");
-      }
+    window.close();
+    if (tests.failed == 0) {
+      if (tests.passed === 0)
+        print("No tests were run\n");
+      exit(0);
+    } else {
+      printFailedTests(tests, verbose, print);
+      exit(1);
     }
+  };
 
-    // Make sure the host application stays open for a minimum amount of time
-    // to reduce our chances of running into platform bug 468736.
-    // FIXME: remove this workaround once platform bug 468736 is fixed.
-    var elapsedTime = new Date() - startTime;
-    if (elapsedTime < MIN_RUN_TIME)
-      require("timer").setTimeout(finish, MIN_RUN_TIME - elapsedTime);
-    else
-      finish();
-  }
+  // We have to wait for this window to be fully loaded *and* focused
+  // in order to avoid it to mess with our various window/focus tests.
+  // We are first waiting for our window to be fully loaded before ensuring
+  // that it will take the focus, and then we wait for it to be focused.
+  window.addEventListener("load", function onload() {
+    window.removeEventListener("load", onload, true);
 
-  harness.runTests({iterations: iterations,
-                    filter: filter,
-                    profileMemory: profileMemory,
-                    verbose: verbose,
-                    rootPaths: rootPaths,
-                    print: print,
-                    onDone: onDone});
+    window.addEventListener("focus", function onfocus() {
+      window.removeEventListener("focus", onfocus, true);
+      // Finally, we have to run test on next cycle, otherwise XPCOM components
+      // are not correctly updated.
+      // For ex: nsIFocusManager.getFocusedElementForWindow may throw
+      // NS_ERROR_ILLEGAL_VALUE exception.
+      require("timer").setTimeout(function () {
+        harness.runTests({iterations: iterations,
+                          filter: filter,
+                          profileMemory: profileMemory,
+                          verbose: verbose,
+                          rootPaths: rootPaths,
+                          print: print,
+                          onDone: onDone});
+      }, 0);
+    }, true);
+    window.focus();
+  }, true);
 }
 
 function printFailedTests(tests, verbose, print) {
@@ -108,27 +120,14 @@ function printFailedTests(tests, verbose, print) {
   }
 }
 
-exports.main = function main(options, callbacks) {
+exports.main = function main() {
   var testsStarted = false;
 
-  function doRunTests() {
-    if (!testsStarted) {
-      testsStarted = true;
-      runTests(options.iterations, options.filter,
-               options.profileMemory, options.verbose,
-               options.rootPaths, callbacks.quit,
-               callbacks.print);
-    }
-  }
-
-  // TODO: This is optional code that might be put in by
-  // something running this code to force it to just
-  // run tests immediately, rather than wait. We need
-  // to actually standardize on this, though.
-  if (options.runImmediately) {
-    doRunTests();
-  }
-  else {
-    obsvc.add(obsvc.topics.APPLICATION_READY, doRunTests);
+  if (!testsStarted) {
+    testsStarted = true;
+    runTests(options.iterations, options.filter,
+             options.profileMemory, options.verbose,
+             options.rootPaths, system.exit,
+             dump);
   }
 };

@@ -2,10 +2,12 @@ import os
 import unittest
 import zipfile
 import pprint
+import shutil
 
 import simplejson as json
-from cuddlefish import xpi
+from cuddlefish import xpi, packaging, manifest
 from cuddlefish.tests import test_packaging
+from test_linker import up
 
 xpi_template_path = os.path.join(test_packaging.static_files_path,
                                  'xpi-template')
@@ -27,7 +29,7 @@ class Bug588119Tests(unittest.TestCase):
     def tearDown(self):
         if self.xpi:
             self.xpi.close()
-        if self.xpiname:
+        if self.xpiname and os.path.exists(self.xpiname):
             os.remove(self.xpiname)
 
     def testPackageWithImplicitIcon(self):
@@ -57,6 +59,135 @@ class Bug588119Tests(unittest.TestCase):
     def testIcon64PathNotInHarnessOptions(self):
         self.makexpi('implicit-icon')
         assert 'icon64' not in self.xpi_harness_options
+
+class ExtraHarnessOptions(unittest.TestCase):
+    def setUp(self):
+        self.xpiname = None
+        self.xpi = None
+
+    def tearDown(self):
+        if self.xpi:
+            self.xpi.close()
+        if self.xpiname and os.path.exists(self.xpiname):
+            os.remove(self.xpiname)
+
+    def testOptions(self):
+        pkg_name = "extra-options"
+        self.xpiname = "%s.xpi" % pkg_name
+        create_xpi(self.xpiname, pkg_name, "bug-669274-files",
+                   extra_harness_options={"builderVersion": "futuristic"})
+        self.xpi = zipfile.ZipFile(self.xpiname, 'r')
+        options = self.xpi.read('harness-options.json')
+        hopts = json.loads(options)
+        self.failUnless("builderVersion" in hopts)
+        self.failUnlessEqual(hopts["builderVersion"], "futuristic")
+
+    def testBadOptionName(self):
+        pkg_name = "extra-options"
+        self.xpiname = "%s.xpi" % pkg_name
+        self.failUnlessRaises(xpi.HarnessOptionAlreadyDefinedError,
+                              create_xpi,
+                              self.xpiname, pkg_name, "bug-669274-files",
+                              extra_harness_options={"main": "already in use"})
+
+class SmallXPI(unittest.TestCase):
+    def setUp(self):
+        self.root = up(os.path.abspath(__file__), 4)
+    def get_linker_files_dir(self, name):
+        return os.path.join(up(os.path.abspath(__file__)), "linker-files", name)
+    def get_pkg(self, name):
+        d = self.get_linker_files_dir(name)
+        return packaging.get_config_in_dir(d)
+
+    def get_basedir(self):
+        return os.path.join(".test_tmp", self.id())
+    def make_basedir(self):
+        basedir = self.get_basedir()
+        if os.path.isdir(basedir):
+            here = os.path.abspath(os.getcwd())
+            assert os.path.abspath(basedir).startswith(here) # safety
+            shutil.rmtree(basedir)
+        os.makedirs(basedir)
+        return basedir
+
+    def test_contents(self):
+        target_cfg = self.get_pkg("three")
+        package_path = [self.get_linker_files_dir("three-deps")]
+        pkg_cfg = packaging.build_config(self.root, target_cfg,
+                                         packagepath=package_path)
+        deps = packaging.get_deps_for_targets(pkg_cfg,
+                                              [target_cfg.name, "addon-kit"])
+        m = manifest.build_manifest(target_cfg, pkg_cfg, deps,
+                                    "P/", scan_tests=False)
+        used_files = list(m.get_used_files())
+        here = up(os.path.abspath(__file__))
+        def absify(*parts):
+            fn = os.path.join(here, "linker-files", *parts)
+            return os.path.abspath(fn)
+        expected = [absify(*parts) for parts in
+                    [("three", "lib", "main.js"),
+                     ("three-deps", "three-a", "lib", "main.js"),
+                     ("three-deps", "three-a", "lib", "subdir", "subfile.js"),
+                     ("three-deps", "three-a", "data", "msg.txt"),
+                     ("three-deps", "three-a", "data", "subdir", "submsg.txt"),
+                     ("three-deps", "three-b", "lib", "main.js"),
+                     ("three-deps", "three-c", "lib", "main.js"),
+                     ("three-deps", "three-c", "lib", "sub", "foo.js"),
+                     ]]
+        missing = set(expected) - set(used_files)
+        extra = set(used_files) - set(expected)
+        self.failUnlessEqual((list(missing), list(extra)), ([], []))
+        used_deps = m.get_used_packages()
+
+        build = packaging.generate_build_for_target(pkg_cfg, target_cfg.name,
+                                                    used_deps,
+                                                    prefix="p-",
+                                                    include_tests=False)
+        options = {'main': target_cfg.main}
+        options.update(build)
+        basedir = self.make_basedir()
+        xpi_name = os.path.join(basedir, "contents.xpi")
+        xpi.build_xpi(template_root_dir=xpi_template_path,
+                      manifest=fake_manifest,
+                      xpi_path=xpi_name,
+                      harness_options=options,
+                      limit_to=used_files)
+        x = zipfile.ZipFile(xpi_name, "r")
+        names = x.namelist()
+        expected = ["components/",
+                    "components/harness.js",
+                    # the real template also has 'bootstrap.js', but the fake
+                    # one in tests/static-files/xpi-template doesn't
+                    "harness-options.json",
+                    "install.rdf",
+                    "resources/",
+                    "resources/p-api-utils-data/",
+                    "resources/p-api-utils-lib/",
+                    "resources/p-three-lib/",
+                    "resources/p-three-lib/main.js",
+                    "resources/p-three-a-data/",
+                    "resources/p-three-a-data/msg.txt",
+                    "resources/p-three-a-data/subdir/",
+                    "resources/p-three-a-data/subdir/submsg.txt",
+                    "resources/p-three-a-lib/",
+                    "resources/p-three-a-lib/main.js",
+                    "resources/p-three-a-lib/subdir/",
+                    "resources/p-three-a-lib/subdir/subfile.js",
+                    "resources/p-three-b-lib/",
+                    "resources/p-three-b-lib/main.js",
+                    "resources/p-three-c-lib/",
+                    "resources/p-three-c-lib/main.js",
+                    "resources/p-three-c-lib/sub/",
+                    "resources/p-three-c-lib/sub/foo.js",
+                    # notably absent: p-three-a-lib/unused.js
+                    ]
+        # showing deltas makes failures easier to investigate
+        missing = set(expected) - set(names)
+        extra = set(names) - set(expected)
+        self.failUnlessEqual((list(missing), list(extra)), ([], []))
+        self.failUnlessEqual(sorted(names), sorted(expected))
+
+
 
 def document_dir(name):
     if name in ['packages', 'xpi-template']:
@@ -107,11 +238,16 @@ def document_dir_files(path):
         print "%s:" % filename
         print "  %s" % contents
 
-def create_xpi(xpiname, pkg_name='aardvark', dirname='static-files'):
+def create_xpi(xpiname, pkg_name='aardvark', dirname='static-files',
+               extra_harness_options={}):
     configs = test_packaging.get_configs(pkg_name, dirname)
     options = {'main': configs.target_cfg.main}
     options.update(configs.build)
     xpi.build_xpi(template_root_dir=xpi_template_path,
                   manifest=fake_manifest,
-                  xpi_name=xpiname,
-                  harness_options=options)
+                  xpi_path=xpiname,
+                  harness_options=options,
+                  extra_harness_options=extra_harness_options)
+
+if __name__ == '__main__':
+    unittest.main()

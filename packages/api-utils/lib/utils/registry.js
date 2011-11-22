@@ -38,8 +38,8 @@
  * ***** END LICENSE BLOCK ***** */
 "use strict";
 
-const { EventEmitter } = require('events');
-const unload = require("unload");
+const { EventEmitter } = require('../events');
+const unload = require('../unload');
 
 const Registry = EventEmitter.compose({
   _registry: null,
@@ -52,7 +52,7 @@ const Registry = EventEmitter.compose({
   },
   _destructor: function _destructor() {
     let _registry = this._registry.slice(0);
-    for each (instance in _registry)
+    for each (let instance in _registry)
       this._emit('remove', instance);
     this._registry.splice(0);
   },
@@ -74,8 +74,8 @@ const Registry = EventEmitter.compose({
     if (0 > _registry.indexOf(instance)) {
       _registry.push(instance);
       this._emit('add', instance);
-      return instance;
     }
+    return instance;
   },
   remove: function remove(instance) {
     let _registry = this._registry;

@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Atul Varma <atul@mozilla.com>
+ *   Irakli Gozalishvili <gozala@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -34,7 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var {Cc,Ci} = require("chrome");
+"use strict";
+
+const { Cc,Ci } = require("chrome");
+const { Loader } = require("@loader")
 
 var cService = Cc['@mozilla.org/consoleservice;1'].getService()
                .QueryInterface(Ci.nsIConsoleService);
@@ -48,9 +52,6 @@ var onDone;
 
 // Function to print text to a console, w/o CR at the end.
 var print;
-
-// The directories to look for tests in.
-var dirs;
 
 // How many more times to run all tests.
 var iterationsLeft;
@@ -88,7 +89,7 @@ function analyzeRawProfilingData(data) {
   var modules = 0;
   var moduleIds = [];
   var moduleObjs = {UNKNOWN: 0};
-  for (name in data.namedObjects) {
+  for (let name in data.namedObjects) {
     moduleObjs[name] = 0;
     moduleIds[data.namedObjects[name]] = name;
     modules++;
@@ -122,9 +123,9 @@ function analyzeRawProfilingData(data) {
                                    data.totalObjectClasses)
     };
 
-    for (name in diff.moduleObjs)
+    for (let name in diff.moduleObjs)
       print("  " + diff.moduleObjs[name] + " in " + name + "\n");
-    for (name in diff.totalObjectClasses)
+    for (let name in diff.totalObjectClasses)
       print("  " + diff.totalObjectClasses[name] + " instances of " +
             name + "\n");
   }
@@ -137,12 +138,12 @@ function analyzeRawProfilingData(data) {
 function dictDiff(last, curr) {
   var diff = {};
 
-  for (name in last) {
+  for (let name in last) {
     var result = (curr[name] || 0) - last[name];
     if (result)
       diff[name] = (result > 0 ? "+" : "") + result;
   }
-  for (name in curr) {
+  for (let name in curr) {
     var result = curr[name] - (last[name] || 0);
     if (result)
       diff[name] = (result > 0 ? "+" : "") + result;
@@ -201,19 +202,19 @@ function showResults() {
 
 function cleanup() {
   try {
-    for (name in sandbox.sandboxes)
-      sandbox.memory.track(sandbox.sandboxes[name].globalScope,
+    for (let name in sandbox.modules)
+      sandbox.globals.memory.track(sandbox.modules[name],
                            "module global scope: " + name);
-    sandbox.memory.track(sandbox, "Cuddlefish Loader");
+    sandbox.globals.memory.track(sandbox, "Cuddlefish Loader");
 
     if (profileMemory) {
       gWeakrefInfo = [{ weakref: info.weakref, bin: info.bin }
-                      for each (info in sandbox.memory.getObjects())];
+                      for each (info in sandbox.globals.memory.getObjects())];
     }
 
     sandbox.unload();
 
-    if (sandbox.console.errorsLogged && !results.failed) {
+    if (sandbox.globals.console.errorsLogged && !results.failed) {
       results.failed++;
       console.error("warnings and/or errors were logged.");
     }
@@ -236,7 +237,7 @@ function cleanup() {
     console.exception(e);
   };
 
-  require("timer").setTimeout(showResults, 1);
+  require("api-utils/timer").setTimeout(showResults, 1);
 }
 
 function nextIteration(tests) {
@@ -246,7 +247,7 @@ function nextIteration(tests) {
 
     if (profileMemory)
       reportMemoryUsage();
-    
+
     let testRun = [];
     for each (let test in tests.testRunSummary) {
       let testCopy = {};
@@ -259,17 +260,19 @@ function nextIteration(tests) {
     results.testRuns.push(testRun);
     iterationsLeft--;
   }
-  if (iterationsLeft)
-    sandbox.require("unit-test").findAndRunTests({
-      testOutOfProcess: packaging.enableE10s,
+
+  if (iterationsLeft) {
+    let require = Loader.require.bind(sandbox, module.uri);
+    require("api-utils/unit-test").findAndRunTests({
+      testOutOfProcess: require('@packaging').enableE10s,
       testInProcess: true,
-      fs: sandbox.fs,
-      dirs: dirs,
       filter: filter,
       onDone: nextIteration
     });
-  else
-    require("timer").setTimeout(cleanup, 0);
+  }
+  else {
+    require("api-utils/timer").setTimeout(cleanup, 0);
+  }
 }
 
 var POINTLESS_ERRORS = [
@@ -280,8 +283,9 @@ var POINTLESS_ERRORS = [
 var consoleListener = {
   errorsLogged: 0,
   observe: function(object) {
-    if (object instanceof Ci.nsIScriptError)
-      this.errorsLogged++;
+    if (!(object instanceof Ci.nsIScriptError))
+      return;
+    this.errorsLogged++;
     var message = object.QueryInterface(Ci.nsIConsoleMessage).message;
     var pointless = [err for each (err in POINTLESS_ERRORS)
                          if (message.indexOf(err) == 0)];
@@ -322,37 +326,27 @@ var runTests = exports.runTests = function runTests(options) {
   try {
     cService.registerListener(consoleListener);
 
-    var cuddlefish = require("cuddlefish");
-    var ptc = require("plain-text-console");
-    var url = require("url");
+    var ptc = require("api-utils/plain-text-console");
+    var url = require("api-utils/url");
+    var system = require("api-utils/system");
 
-    dirs = [url.toFilename(path)
-            for each (path in options.rootPaths)];
-    var console = new TestRunnerConsole(new ptc.PlainTextConsole(print),
-                                        options);
-    var globals = {packaging: packaging};
+    print("Running tests on " + system.name + " " + system.version +
+          "/Gecko " + system.platformVersion + " (" +
+          system.id + ") under " +
+          system.platform + "/" + system.architecture + ".\n");
 
-    var xulApp = require("xul-app");
-    var xulRuntime = Cc["@mozilla.org/xre/app-info;1"]
-                     .getService(Ci.nsIXULRuntime);
+    sandbox = Loader.new(require("@packaging"));
+    Object.defineProperty(sandbox.globals, 'console', {
+      value: new TestRunnerConsole(new ptc.PlainTextConsole(print), options)
+    });
 
-    print("Running tests on " + xulApp.name + " " + xulApp.version +
-          "/Gecko " + xulApp.platformVersion + " (" + 
-          xulApp.ID + ") under " +
-          xulRuntime.OS + "/" + xulRuntime.XPCOMABI + ".\n");
-
-    sandbox = new cuddlefish.Loader({console: console,
-                                     globals: globals,
-                                     packaging: packaging,
-                                     __proto__: options});
     nextIteration();
   } catch (e) {
-    print(require("traceback").format(e) + "\n" + e + "\n");
+    print(require("api-utils/traceback").format(e) + "\n" + e + "\n");
     onDone({passed: 0, failed: 1});
   }
 };
 
-require("unload").when(
-  function() {
-    cService.unregisterListener(consoleListener);
-  });
+require("api-utils/unload").when(function() {
+  cService.unregisterListener(consoleListener);
+});

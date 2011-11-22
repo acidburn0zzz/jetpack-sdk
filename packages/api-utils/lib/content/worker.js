@@ -38,22 +38,46 @@
  * ***** END LICENSE BLOCK ***** */
 "use strict";
 
-const es5code = require('cuddlefish').es5code;
-const { Trait } = require('traits');
-const { EventEmitter, EventEmitterTrait } = require('events');
+const { Trait } = require('../traits');
+const { EventEmitter, EventEmitterTrait } = require('../events');
 const { Ci, Cu, Cc } = require('chrome');
-const timer = require('timer');
-const { toFilename } = require('url');
-const file = require('file');
-const unload = require('unload');
-const observers = require("observer-service");
-const { Cortex } = require('cortex');
-const { Enqueued } = require('utils/function');
+const timer = require('../timer');
+const { toFilename } = require('../url');
+const file = require('../file');
+const unload = require('../unload');
+const observers = require('../observer-service');
+const { Cortex } = require('../cortex');
+const { Enqueued } = require('../utils/function');
+const self = require("self");
+const scriptLoader = Cc["@mozilla.org/moz/jssubscript-loader;1"].
+                     getService(Ci.mozIJSSubScriptLoader);
+
+const CONTENT_PROXY_URL = self.data.url("content-proxy.js");
 
 const JS_VERSION = '1.8';
 
 const ERR_DESTROYED =
   "The page has been destroyed and can no longer be used.";
+
+/**
+ * This key is not exported and should only be used for proxy tests.
+ * The following `PRIVATE_KEY` is used in addon module scope in order to tell
+ * Worker API to expose `UNWRAP_ACCESS_KEY` in content script.
+ * This key allows test-content-proxy.js to unwrap proxy with valueOf:
+ *   let xpcWrapper = proxyWrapper.valueOf(UNWRAP_ACCESS_KEY);
+ */
+const PRIVATE_KEY = {};
+
+function ensureArgumentsAreJSON(args) {
+  // First convert to real array
+  let array = Array.prototype.slice.call(args);
+  // JSON.stringify is buggy with cross-sandbox values,
+  // it may return "{}" on functions. Use a replacer to match them correctly.
+  function replacer(k, v) {
+    return typeof v === "function" ? undefined : v;
+  }
+  return JSON.parse(JSON.stringify(array, replacer));
+}
 
 /**
  * Extended `EventEmitter` allowing us to emit events asynchronously.
@@ -83,29 +107,44 @@ const WorkerGlobalScope = AsyncEventEmitter.compose({
   // emit `error` event on a symbiont if exception is thrown in
   // the Worker global scope.
   // @see http://www.w3.org/TR/workers/#workerutils
+
+  // List of all living timeouts/intervals
+  _timers: null,
+
   setTimeout: function setTimeout(callback, delay) {
     let params = Array.slice(arguments, 2);
-    return timer.setTimeout(function(worker) {
+    let id = timer.setTimeout(function(self) {
       try {
+        delete self._timers[id];
         callback.apply(null, params);
       } catch(e) {
-        worker._asyncEmit('error', e);
+        self._addonWorker._asyncEmit('error', e);
       }
-    }, delay, this._addonWorker);
+    }, delay, this);
+    this._timers[id] = true;
+    return id;
   },
-  clearTimeout: timer.clearTimeout,
+  clearTimeout: function clearTimeout(id){
+    delete this._timers[id];
+    return timer.clearTimeout(id);
+  },
 
   setInterval: function setInterval(callback, delay) {
     let params = Array.slice(arguments, 2);
-    return timer.setInterval(function(worker) {
+    let id = timer.setInterval(function(self) {
       try {
         callback.apply(null, params); 
       } catch(e) {
-        worker._asyncEmit('error', e);
+        self._addonWorker._asyncEmit('error', e);
       }
-    }, delay, this._addonWorker);
+    }, delay, this);
+    this._timers[id] = true;
+    return id;
   },
-  clearInterval: timer.clearInterval,
+  clearInterval: function clearInterval(id) {
+    delete this._timers[id];
+    return timer.clearInterval(id);
+  },
 
   /**
    * `onMessage` function defined in the global scope of the worker context.
@@ -182,27 +221,51 @@ const WorkerGlobalScope = AsyncEventEmitter.compose({
     // expose wrapped port, that exposes only public properties. 
     this._port._public = Cortex(this._port);
     
-    // XXX I think the principal should be `this._port._frame.contentWindow`,
-    // but script doesn't work correctly when I set it to that value.
-    // Events don't get registered; even dump() fails.
-    //
-    // FIXME: figure out the problem and resolve it, so we can restrict
-    // the sandbox to the same set of privileges the page has (plus any others
-    // it gets to access through the object that created it).
-    //
-    // XXX when testing `this._port.frame.contentWindow`, I found that setting
-    // the principal to its `this._port.frame.contentWindow.wrappedJSObject`
-    // resolved some test leaks; that was before I started clearing the
-    // principal of the sandbox on unload, though, so perhaps it is no longer
-    // a problem.
-    let sandbox = this._sandbox = new Cu.Sandbox(
-      Cc["@mozilla.org/systemprincipal;1"].createInstance(Ci.nsIPrincipal)
-    );
-
-    // Shimming natives in sandbox so that they support ES5 features
-    Cu.evalInSandbox(es5code.contents, sandbox, JS_VERSION, es5code.filename);
-
+    // We receive an unwrapped window, with raw js access
     let window = worker._window;
+    
+    let proto = window;
+    let proxySandbox = null;
+    // Build content proxies only if the document has a non-system principal
+    if (window.wrappedJSObject) {
+      // Instantiate the proxy code in another Sandbox in order to prevent
+      // content script from polluting globals used by proxy code
+      proxySandbox = Cu.Sandbox(window, {
+        wantXrays: true
+      });
+      proxySandbox.console = console;
+      // Execute the proxy code
+      scriptLoader.loadSubScript(CONTENT_PROXY_URL, proxySandbox);
+      // Get a reference of the window's proxy
+      proto = proxySandbox.create(window);
+    }
+
+    // Create the sandbox and bind it to window in order for content scripts to
+    // have access to all standard globals (window, document, ...)
+    let sandbox = this._sandbox = new Cu.Sandbox(window, {
+      sandboxPrototype: proto,
+      wantXrays: true
+    });
+    Object.defineProperties(sandbox, {
+      // We need "this === window === top" to be true in toplevel scope:
+      window: { get: function() sandbox },
+      top: { get: function() sandbox },
+      // Use the Greasemonkey naming convention to provide access to the
+      // unwrapped window object so the content script can access document
+      // JavaScript values.
+      // NOTE: this functionality is experimental and may change or go away
+      // at any time!
+      unsafeWindow: { get: function () window.wrappedJSObject }
+    });
+
+    // Internal feature that is only used by SDK tests:
+    // Expose unlock key to content script context.
+    // See `PRIVATE_KEY` definition for more information.
+    if (proxySandbox && worker._expose_key)
+      sandbox.UNWRAP_ACCESS_KEY = proxySandbox.UNWRAP_ACCESS_KEY;
+    // Initialize timer lists
+    this._timers = {};
+
     let publicAPI = this._public;
     
     // List of content script globals:
@@ -221,7 +284,9 @@ const WorkerGlobalScope = AsyncEventEmitter.compose({
           console.warn("The global `onMessage` function in content scripts " +
                        "is deprecated in favor of the `self.on()` function. " +
                        "Replace `onMessage = function (data){}` definitions " +
-                       "with calls to `self.on('message', function (data){})`.");
+                       "with calls to `self.on('message', function (data){})`. " +
+                       "For more info on `self.on`, see " +
+                       "<https://addons.mozilla.org/en-US/developers/docs/sdk/latest/dev-guide/addon-development/web-content.html>.");
           self._onMessage = value;
         },
         configurable: true
@@ -234,7 +299,9 @@ const WorkerGlobalScope = AsyncEventEmitter.compose({
           console.warn("The global `on()` function in content scripts is " +
                        "deprecated in favor of the `self.on()` function, " +
                        "which works the same. Replace calls to `on()` with " +
-                       "calls to `self.on()`");
+                       "calls to `self.on()`" +
+                       "For more info on `self.on`, see " +
+                       "<https://addons.mozilla.org/en-US/developers/docs/sdk/latest/dev-guide/addon-development/web-content.html>.");
           publicAPI.on.apply(publicAPI, arguments);
         },
         configurable: true
@@ -245,34 +312,26 @@ const WorkerGlobalScope = AsyncEventEmitter.compose({
                        "scripts is deprecated in favor of the " +
                        "`self.postMessage()` function, which works the same. " +
                        "Replace calls to `postMessage()` with calls to " +
-                       "`self.postMessage()`.");
+                       "`self.postMessage()`." +
+                       "For more info on `self.on`, see " +
+                       "<https://addons.mozilla.org/en-US/developers/docs/sdk/latest/dev-guide/addon-development/web-content.html>.");
           publicAPI.postMessage.apply(publicAPI, arguments);
         },
         configurable: true
       }
     });
-    
-    // Chain the global object for the sandbox to the global object for
-    // the frame.  This supports JavaScript libraries like jQuery that depend
-    // on the presence of certain properties in the global object, like window,
-    // document, location, and navigator.
-    sandbox.__proto__ = window;
-    // Alternate approach:
-    // Define each individual global on which JavaScript libraries depend
-    // in the global object of the sandbox.  This is hard to get right,
-    // since it requires a priori knowledge of the libraries developers use,
-    // and exceptions in those libraries aren't always reported.  It's also
-    // brittle, prone to breaking when those libraries change.  But it might
-    // make it easier to avoid namespace conflicts.
-    // In my testing with jQuery, I found that the library needed window,
-    // document, location, and navigator to avoid throwing exceptions,
-    // although even with those globals defined, the library still doesn't
-    // work, so it also needs something else about which it unfortunately does
-    // not complain.
-    // sandbox.window = window;
-    // sandbox.document = window.document;
-    // sandbox.location = window.location;
-    // sandbox.navigator = window.navigator;
+
+    // Temporary fix for test-widget, that pass self.postMessage to proxy code
+    // that first try to access to `___proxy` and then call it through `apply`.
+    // We need to move function given to content script to a sandbox
+    // with same principal than the content script.
+    // In the meantime, we need to allow such access explicitly
+    // by using `__exposedProps__` property, documented here:
+    // https://developer.mozilla.org/en/XPConnect_wrappers
+    sandbox.self.postMessage.__exposedProps__ = {
+      ___proxy: 'rw',
+      apply: 'rw'
+    }
 
     // The order of `contentScriptFile` and `contentScript` evaluation is
     // intentional, so programs can load libraries like jQuery from script URLs
@@ -295,11 +354,11 @@ const WorkerGlobalScope = AsyncEventEmitter.compose({
   },
   _destructor: function _destructor() {
     this._removeAllListeners();
-    let publicAPI = this._public,
-        sandbox = this._sandbox;
-    delete sandbox.__proto__;
-    for (let key in publicAPI)
-      delete sandbox[key];
+    // Unregister all setTimeout/setInterval
+    // We can use `clearTimeout` for both setTimeout/setInterval
+    // as internal implementation of timer module use same method for both.
+    for (let id in this._timers)
+      timer.clearTimeout(id);
     this._sandbox = null;
     this._addonWorker = null;
     this.__onMessage = undefined;
@@ -438,7 +497,8 @@ const Worker = AsyncEventEmitter.compose({
     }
     
     let scope = this._contentWorker._port;
-    scope._asyncEmit.apply(scope, args);
+    // Ensure that we pass only JSON values
+    scope._asyncEmit.apply(scope, ensureArgumentsAreJSON(args));
   },
   
   // Is worker connected to the content worker (i.e. WorkerGlobalScope) ?
@@ -466,7 +526,12 @@ const Worker = AsyncEventEmitter.compose({
       this.on('message', options.onMessage);
     if ('onDetach' in options)
       this.on('detach', options.onDetach);
-    
+
+    // Internal feature that is only used by SDK unit tests.
+    // See `PRIVATE_KEY` definition for more information.
+    if ('exposeUnlockKey' in options && options.exposeUnlockKey === PRIVATE_KEY)
+      this._expose_key = true;
+
     // Track document unload to destroy this worker.
     // We can't watch for unload event on page's window object as it 
     // prevents bfcache from working: 
@@ -497,17 +562,23 @@ const Worker = AsyncEventEmitter.compose({
   
   _documentUnload: function _documentUnload(subject, topic, data) {
     let innerWinID = subject.QueryInterface(Ci.nsISupportsPRUint64).data;
-    if (innerWinID != this._windowID) return;
+    if (innerWinID != this._windowID) return false;
     this._workerCleanup();
+    return true;
   },
 
   get url() {
-    return this._window.document.location.href;
+    // this._window will be null after detach
+    return this._window ? this._window.document.location.href : null;
   },
   
   get tab() {
-    let tab = require("tabs/tab");
-    return tab.getTabForWindow(this._window);
+    if (this._window) {
+      let tab = require("../tabs/tab");
+      // this._window will be null after detach
+      return tab.getTabForWindow(this._window);
+    }
+    return null;
   },
   
   /**
@@ -532,10 +603,14 @@ const Worker = AsyncEventEmitter.compose({
       this._contentWorker._destructor();
     this._contentWorker = null;
     this._window = null;
-    observers.remove("inner-window-destroyed", this._documentUnload);
-    this._windowID = null;
-    this._earlyEvents.slice(0, this._earlyEvents.length);
-    this._emit("detach");
+    // This method may be called multiple times,
+    // avoid dispatching `detach` event more than once
+    if (this._windowID) {
+      this._windowID = null;
+      observers.remove("inner-window-destroyed", this._documentUnload);
+      this._earlyEvents.slice(0, this._earlyEvents.length);
+      this._emit("detach");
+    }
   },
   
   /**
@@ -543,7 +618,8 @@ const Worker = AsyncEventEmitter.compose({
    * worker.port. Provide a way for composed object to catch all events.
    */
   _onContentScriptEvent: function _onContentScriptEvent() {
-    this._port._asyncEmit.apply(this._port, arguments);
+    // Ensure that we pass only JSON values
+    this._port._asyncEmit.apply(this._port, ensureArgumentsAreJSON(arguments));
   },
   
   /**
@@ -560,4 +636,3 @@ const Worker = AsyncEventEmitter.compose({
   _window: null,
 });
 exports.Worker = Worker;
-

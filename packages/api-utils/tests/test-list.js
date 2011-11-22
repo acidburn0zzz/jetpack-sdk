@@ -24,7 +24,7 @@ function assertList(test, array, list) {
   }
 }
 
-const { List } = require('list');
+const { List } = require('api-utils/list');
 
 exports['test:test for'] = function(test) {
   let fixture = List(3, 2, 1);
@@ -143,6 +143,15 @@ exports['test:removing adding elements'] = function(test) {
 
   assertList(test, array, fixture);
 };
+
+exports['test: remove does not leave invalid numerical properties'] = function(test) {
+  let fixture = List.compose({
+    remove: function() this._remove.apply(this, arguments),
+  }).apply(null, [1, 2, 3]);
+
+    fixture.remove(1);
+    test.assertEqual(fixture[fixture.length], undefined);
+}
 
 exports['test:add list item from Iterator'] = function(test) {
   let array = [1, 2, 3, 4], sum = 0, added = false;

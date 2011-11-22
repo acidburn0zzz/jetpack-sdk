@@ -36,7 +36,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!require("xul-app").is("Firefox")) {
+"use strict";
+
+if (!require("api-utils/xul-app").is("Firefox")) {
   throw new Error([
     "The panel module currently supports only Firefox.  In the future ",
     "we would like it to support other applications, however.  Please see ",
@@ -45,18 +47,16 @@ if (!require("xul-app").is("Firefox")) {
   ].join(""));
 }
 
-const { Ci } = require("chrome");
-const { validateOptions: valid } = require("api-utils");
-const { Symbiont } = require("content");
-const { EventEmitter } = require('events');
-const timer = require("timer");
+const { Cc, Ci } = require("chrome");
 
-require("xpcom").utils.defineLazyServiceGetter(
-  this,
-  "windowMediator",
-  "@mozilla.org/appshell/window-mediator;1",
-  "nsIWindowMediator"
-);
+const { validateOptions: valid } = require("api-utils/api-utils");
+const { Symbiont } = require("api-utils/content");
+const { EventEmitter } = require('api-utils/events');
+const timer = require("api-utils/timer");
+const runtime = require("api-utils/runtime");
+
+const windowMediator = Cc['@mozilla.org/appshell/window-mediator;1'].
+                       getService(Ci.nsIWindowMediator);
 
 const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul",
       ON_SHOW = 'popupshown',
@@ -69,7 +69,8 @@ const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul",
 const Panel = Symbiont.resolve({
   constructor: '_init',
   _onInit: '_onSymbiontInit',
-  destroy: '_symbiontDestructor'
+  destroy: '_symbiontDestructor',
+  _documentUnload: '_workerDocumentUnload'
 }).compose({
   _frame: Symbiont.required,
   _init: Symbiont.required,
@@ -79,7 +80,6 @@ const Panel = Symbiont.resolve({
   _asyncEmit: Symbiont.required,
   on: Symbiont.required,
   removeListener: Symbiont.required,
-  _destructor: Symbiont.required,
 
   _inited: false,
 
@@ -172,6 +172,10 @@ const Panel = Symbiont.resolve({
       frame.setAttribute('type', 'content');
       frame.setAttribute('flex', '1');
       frame.setAttribute('transparent', 'transparent');
+      if (runtime.OS === "Darwin") {
+        frame.style.borderRadius = "6px";
+        frame.style.padding = "1px";
+      }
       
       // Load an empty document in order to have an immediatly loaded iframe, 
       // so swapFrameLoaders is going to work without having to wait for load.
@@ -256,7 +260,13 @@ const Panel = Symbiont.resolve({
   resize: function resize(width, height) {
     this.width = width;
     this.height = height;
-    this._xulPanel.sizeTo(width, height);
+    // Resize the iframe instead of using panel.sizeTo
+    // because sizeTo doesn't work with arrow panels
+    let xulPanel = this._xulPanel;
+    if (xulPanel) {
+      xulPanel.firstChild.style.width = width + "px";
+      xulPanel.firstChild.style.height = height + "px";
+    }
   },
 
   // While the panel is visible, this is the XUL <panel> we use to display it.
@@ -297,10 +307,30 @@ const Panel = Symbiont.resolve({
    */
   _onShow: function _onShow() {
     try {
-      if (!this._inited) // defer if not initialized yet
-        return this.on('inited', this._onShow.bind(this));
-      this._frameLoadersSwapped = true;
-      this._emit('show');
+      if (!this._inited) { // defer if not initialized yet
+        this.on('inited', this._onShow.bind(this));
+      } else {
+        this._frameLoadersSwapped = true;
+
+        // Retrieve computed text color style in order to apply to the iframe
+        // document. As MacOS background is dark gray, we need to use skin's
+        // text color.
+        let win = this._xulPanel.ownerDocument.defaultView;
+        let node = win.document.getAnonymousElementByAttribute(this._xulPanel,
+                    "class", "panel-inner-arrowcontent");
+        let textColor = win.getComputedStyle(node).getPropertyValue("color");
+        let doc = this._xulPanel.firstChild.contentDocument;
+        let style = doc.createElement("style");
+        style.textContent = "body { color: " + textColor + "; }";
+        let container = doc.head ? doc.head : doc.documentElement;
+
+        if (container.firstChild)
+          container.insertBefore(style, container.firstChild);
+        else
+          container.appendChild(style);
+
+        this._emit('show');
+      }
     } catch(e) {
       this._emit('error', e);
     }
@@ -310,11 +340,26 @@ const Panel = Symbiont.resolve({
    */
   _onInit: function _onInit() {
     this._inited = true;
+
+    // Avoid panel document from resizing the browser window
+    // New platform capability added through bug 635673
+    if ("allowWindowControl" in this._frame.docShell)
+      this._frame.docShell.allowWindowControl = false;
+
     // perform all deferred tasks like initSymbiont, show, hide ...
     // TODO: We're publicly exposing a private event here; this
     // 'inited' event should really be made private, somehow.
     this._emit('inited');
-    this._removeAllListeners('inited');
+  },
+
+  // Catch document unload event in order to rebind load event listener with
+  // Symbiont._initFrame if Worker._documentUnload destroyed the worker
+  _documentUnload: function(subject, topic, data) {
+    if (this._workerDocumentUnload(subject, topic, data)) {
+      this._initFrame(this._frame);
+      return true;
+    }
+    return false;
   }
 });
 exports.Panel = function(options) Panel(options)

@@ -38,13 +38,13 @@
  * ***** END LICENSE BLOCK ***** */
 "use strict";
 
-const observers = require("observer-service");
-const { Worker, Loader } = require('content');
-const { EventEmitter } = require('events');
-const { List } = require('list');
-const { Registry } = require('utils/registry');
-const xulApp = require("xul-app");
-const { MatchPattern } = require('match-pattern');
+const observers = require("api-utils/observer-service");
+const { Worker, Loader } = require('api-utils/content');
+const { EventEmitter } = require('api-utils/events');
+const { List } = require('api-utils/list');
+const { Registry } = require('api-utils/utils/registry');
+const xulApp = require("api-utils/xul-app");
+const { MatchPattern } = require('api-utils/match-pattern');
 
 // Whether or not the host application dispatches a document-element-inserted
 // notification when the document element is inserted into the DOM of a page.
@@ -55,7 +55,6 @@ const HAS_DOCUMENT_ELEMENT_INSERTED =
         xulApp.versionInRange(xulApp.platformVersion, "2.0b6", "*");
 const ON_CONTENT = HAS_DOCUMENT_ELEMENT_INSERTED ? 'document-element-inserted' :
                    'content-document-global-created';
-const ERR_INCLUDE = 'The PageMod must have a string or array `include` option.';
 
 // Workaround bug 642145: document-element-inserted is fired multiple times.
 // This bug is fixed in Firefox 4.0.1, but we want to keep FF 4.0 compatibility
@@ -115,12 +114,6 @@ const PageMod = Loader.compose(EventEmitter, {
     rules.on('add', this._onRuleAdd = this._onRuleAdd.bind(this));
     rules.on('remove', this._onRuleRemove = this._onRuleRemove.bind(this));
 
-    // Validate 'include'
-    if (typeof(include) == "object" && !Array.isArray(include))
-      throw new Error(ERR_INCLUDE);
-    if (typeof(include) == "number" || typeof(include) == "undefined")
-      throw new Error(ERR_INCLUDE);
-
     if (Array.isArray(include))
       rules.add.apply(null, include);
     else
@@ -128,7 +121,7 @@ const PageMod = Loader.compose(EventEmitter, {
 
     this.on('error', this._onUncaughtError = this._onUncaughtError.bind(this));
     pageModManager.add(this._public);
-    
+
     this._loadingWindows = [];
   },
 
@@ -138,38 +131,38 @@ const PageMod = Loader.compose(EventEmitter, {
     pageModManager.remove(this._public);
     this._loadingWindows = [];
   },
-  
+
   _loadingWindows: [],
-  
+
   _onContent: function _onContent(window) {
     // not registered yet
     if (!pageModManager.has(this))
       return;
-    
+
     if (!HAS_BUG_642145_FIXED) {
       if (this._loadingWindows.indexOf(window) != -1)
         return;
       this._loadingWindows.push(window);
     }
-    
+
     if ('start' == this.contentScriptWhen) {
       this._createWorker(window);
       return;
     }
-    
+
     let eventName = 'end' == this.contentScriptWhen ? 'load' : 'DOMContentLoaded';
     let self = this;
     window.addEventListener(eventName, function onReady(event) {
       if (event.target.defaultView != window)
         return;
       window.removeEventListener(eventName, onReady, true);
-      
+
       self._createWorker(window);
     }, true);
   },
   _createWorker: function _createWorker(window) {
     let worker = Worker({
-      window: window.wrappedJSObject,
+      window: window,
       contentScript: this.contentScript,
       contentScriptFile: this.contentScriptFile,
       onError: this._onUncaughtError
@@ -178,7 +171,7 @@ const PageMod = Loader.compose(EventEmitter, {
     let self = this;
     worker.once('detach', function detach() {
       worker.destroy();
-      
+
       if (!HAS_BUG_642145_FIXED) {
         let idx = self._loadingWindows.indexOf(window);
         if (idx != -1)

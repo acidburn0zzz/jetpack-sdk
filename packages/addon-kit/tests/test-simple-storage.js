@@ -44,11 +44,15 @@ const prefs = require("preferences-service");
 const QUOTA_PREF = "extensions.addon-sdk.simple-storage.quota";
 
 let {Cc,Ci} = require("chrome");
+
+const { Loader } = require("./helpers");
+const options = require("@packaging");
+
 let storeFile = Cc["@mozilla.org/file/directory_service;1"].
                 getService(Ci.nsIProperties).
                 get("ProfD", Ci.nsIFile);
 storeFile.append("jetpack");
-storeFile.append(packaging.jetpackID);
+storeFile.append(options.jetpackID);
 storeFile.append("simple-storage");
 storeFile.append("store.json");
 let storeFilename = storeFile.path;
@@ -269,13 +273,42 @@ exports.testUninstall = function (test) {
   loader.unload();
 };
 
-function manager(loader) {
-  return loader.findSandboxForModule("simple-storage").globalScope.manager;
-}
+exports.testSetNoSetRead = function (test) {
+  test.waitUntilDone();
 
-function newLoader(test) {
-  return test.makeSandboxedLoader({ globals: { packaging: packaging } });
-}
+  // Load the module, set a value.
+  let loader = newLoader(test);
+  let ss = loader.require("simple-storage");
+  manager(loader).jsonStore.onWrite = function (storage) {
+    test.assert(file.exists(storeFilename), "Store file should exist");
+
+    // Load the module again but don't access ss.storage.
+    loader = newLoader(test);
+    ss = loader.require("simple-storage");
+    manager(loader).jsonStore.onWrite = function (storage) {
+      test.fail("Nothing should be written since `storage` was not accessed.");
+    };
+    loader.unload();
+
+    // Load the module a third time and make sure the value stuck.
+    loader = newLoader(test);
+    ss = loader.require("simple-storage");
+    manager(loader).jsonStore.onWrite = function (storage) {
+      file.remove(storeFilename);
+      test.done();
+    };
+    test.assertEqual(ss.storage.foo, val, "Value should persist");
+    loader.unload();
+  };
+  let val = "foo";
+  ss.storage.foo = val;
+  test.assertEqual(ss.storage.foo, val, "Value read should be value set");
+  loader.unload();
+};
+
+function manager(loader) loader.sandbox("simple-storage").manager;
+
+function newLoader() Loader(module);
 
 function setGetRoot(test, val, compare) {
   test.waitUntilDone();

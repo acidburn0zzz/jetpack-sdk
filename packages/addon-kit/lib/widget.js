@@ -40,6 +40,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 const {Cc, Ci} = require("chrome");
 
 // Widget content types
@@ -52,7 +54,8 @@ const ERR_CONTENT = "No content or contentURL property found. Widgets must "
       ERR_LABEL = "The widget must have a non-empty label property.",
       ERR_ID = "You have to specify a unique value for the id property of " +
                "your widget in order for the application to remember its " +
-               "position.";
+               "position.",
+      ERR_DESTROYED = "The widget has been destroyed and can no longer be used.";
 
 // Supported events, mapping from DOM event names to our event names
 const EVENTS = {
@@ -61,7 +64,7 @@ const EVENTS = {
   "mouseout": "mouseout",
 };
 
-if (!require("xul-app").is("Firefox")) {
+if (!require("api-utils/xul-app").is("Firefox")) {
   throw new Error([
     "The widget module currently supports only Firefox.  In the future ",
     "it will support other applications. Please see ",
@@ -69,15 +72,16 @@ if (!require("xul-app").is("Firefox")) {
   ].join(""));
 }
 
-const { validateOptions } = require("api-utils");
-const panels = require("panel");
-const { EventEmitter, EventEmitterTrait } = require("events");
-const { Trait } = require("traits");
-const LightTrait = require('light-traits').Trait;
-const { Loader, Symbiont } = require("content");
-const timer = require("timer");
-const { Cortex } = require('cortex');
-const windowsAPI = require("windows");
+const { validateOptions } = require("api-utils/api-utils");
+const panels = require("./panel");
+const { EventEmitter, EventEmitterTrait } = require("api-utils/events");
+const { Trait } = require("api-utils/traits");
+const LightTrait = require('api-utils/light-traits').Trait;
+const { Loader, Symbiont } = require("api-utils/content");
+const timer = require("api-utils/timer");
+const { Cortex } = require('api-utils/cortex');
+const windowsAPI = require("./windows");
+const unload = require("api-utils/unload");
 
 // Data types definition
 const valid = {
@@ -120,7 +124,7 @@ let widgetAttributes = {
 
 // Import data definitions from loader, but don't compose with it as Model
 // functions allow us to recreate easily all Loader code.
-let loaderAttributes = require("content/loader").validationAttributes;
+let loaderAttributes = require("api-utils/content/loader").validationAttributes;
 for (let i in loaderAttributes)
   widgetAttributes[i] = loaderAttributes[i];
 
@@ -319,11 +323,30 @@ const WidgetTrait = LightTrait.compose(EventEmitterTrait, LightTrait({
     this._views.splice(idx, 1);
   },
   
+  /**
+   * Called on browser window closed, to destroy related WidgetViews
+   * @params {ChromeWindow} window
+   *         Window that has been closed
+   */
+  _onWindowClosed: function _onWindowClosed(window) {
+    for each (let view in this._views) {
+      if (view._isInChromeWindow(window)) {
+        view.destroy();
+        break;
+      }
+    }
+  },
+  
+  /**
+   * Get the WidgetView instance related to a BrowserWindow instance
+   * @params {BrowserWindow} window
+   *         BrowserWindow reference from "windows" module
+   */
   getView: function getView(window) {
-    for (let i = this._views.length - 1; i >= 0; i--) {
-      let view = this._views[i];
-      if (view._isInWindow(window))
+    for each (let view in this._views) {
+      if (view._isInWindow(window)) {
         return view._public;
+      }
     }
     return null;
   },
@@ -360,7 +383,9 @@ const Widget = function Widget(options) {
   w._initWidget(options);
   
   // Return a Cortex of widget in order to hide private attributes like _onEvent
-  return Cortex(w);
+  let _public = Cortex(w);
+  unload.ensure(_public, "destroy");
+  return _public;
 }
 exports.Widget = Widget;
 
@@ -392,6 +417,8 @@ const WidgetViewTrait = LightTrait.compose(EventEmitterTrait, LightTrait({
     let self = this;
     this._port = EventEmitterTrait.create({
       emit: function () {
+        if (!self._chrome)
+          throw new Error(ERR_DESTROYED);
         self._chrome.update(self._baseWidget, "emit", arguments);
       }
     });
@@ -435,6 +462,10 @@ const WidgetViewTrait = LightTrait.compose(EventEmitterTrait, LightTrait({
     }) == window;
   },
   
+  _isInChromeWindow: function WidgetView__isInChromeWindow(window) {
+    return this._chrome.window == window;
+  },
+  
   _onPortEvent: function WidgetView__onPortEvent(args) {
     let port = this._port;
     port._emit.apply(port, args);
@@ -448,13 +479,16 @@ const WidgetViewTrait = LightTrait.compose(EventEmitterTrait, LightTrait({
   _port: null,
   
   postMessage: function WidgetView_postMessage(message) {
+    if (!this._chrome)
+      throw new Error(ERR_DESTROYED);
     this._chrome.update(this._baseWidget, "postMessage", message);
   },
 
   destroy: function WidgetView_destroy() {
     this._chrome.destroy();
-    this._emit("detach");
+    delete this._chrome;
     this._baseWidget._onViewDestroyed(this);
+    this._emit("detach");
   }
 
 }));
@@ -481,8 +515,8 @@ let browserManager = {
   // that calling this method can cause onTrack to be called immediately if
   // there are open windows.
   init: function () {
-    let windowTracker = new (require("window-utils").WindowTracker)(this);
-    require("unload").ensure(windowTracker);
+    let windowTracker = new (require("api-utils/window-utils").WindowTracker)(this);
+    unload.ensure(windowTracker);
   },
 
   // Registers a window with the manager.  This is a WindowTracker callback.
@@ -502,12 +536,14 @@ let browserManager = {
   // currently opened windows.
   onUntrack: function browserManager_onUntrack(window) {
     if (this._isBrowserWindow(window)) {
+      this.items.forEach(function(i) i._onWindowClosed(window));
       for (let i = 0; i < this.windows.length; i++) {
         if (this.windows[i].window == window) {
           this.windows.splice(i, 1)[0];
           return;
         }
       }
+      
     }
   },
   
@@ -633,7 +669,10 @@ BrowserWindow.prototype = {
     // Finally insert our widget in the right toolbar and in the right position
     container.insertItem(id, nextNode, null, false);
     
+    // Update DOM in order to save position if we remove/readd the widget
     container.setAttribute("currentset", container.currentSet);
+    // Save DOM attribute in order to save position on new window opened
+    this.window.document.persist(container.id, "currentset");
   }
 }
 
@@ -682,7 +721,7 @@ WidgetChrome.prototype.update = function WC_update(updatedItem, property, value)
 WidgetChrome.prototype._createNode = function WC__createNode() {
   // XUL element container for widget
   let node = this._doc.createElement("toolbaritem");
-  let guid = require("xpcom").makeUuid().toString();
+  let guid = require("api-utils/xpcom").makeUuid().toString();
   
   // Temporary work around require("self") failing on unit-test execution ...
   let jetpackID = "testID";
@@ -767,6 +806,10 @@ WidgetChrome.prototype.setContent = function WC_setContent() {
   let iframe = this.node.firstElementChild;
 
   let self = this;
+  // Cleanup previously created symbiont (in case we are update content)
+  if (this._symbiont)
+    this._symbiont.destroy();
+  
   this._symbiont = Trait.compose(Symbiont.resolve({
     _onContentScriptEvent: "_onContentScriptEvent-not-used"
   }), {

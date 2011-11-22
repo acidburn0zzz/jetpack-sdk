@@ -1,6 +1,7 @@
 let { Cc, Ci } = require("chrome");
 let panels = require('panel');
 let tests = {}, panels, Panel;
+const { Loader } = require('./helpers');
 
 tests.testPanel = function(test) {
   test.waitUntilDone();
@@ -81,6 +82,80 @@ tests.testShowHidePanel = function(test) {
     }
   });
 };
+
+tests.testDocumentReload = function(test) {
+  test.waitUntilDone();
+  let content =
+    "<script>" +
+    "setTimeout(function () {" +
+    "  window.location = 'about:blank';" +
+    "}, 250);" +
+    "</script>";
+  let messageCount = 0;
+  let panel = Panel({
+    contentURL: "data:text/html," + encodeURIComponent(content),
+    contentScript: "self.postMessage(window.location.href)",
+    onMessage: function (message) {
+      messageCount++;
+      if (messageCount == 1) {
+        test.assertMatches(message, /data:text\/html,/, "First document had a content script");
+      }
+      else if (messageCount == 2) {
+        test.assertEqual(message, "about:blank", "Second document too");
+        panel.destroy();
+        test.done();
+      }
+    }
+  });
+};
+
+tests.testParentResizeHack = function(test) {
+  let browserWindow = Cc["@mozilla.org/appshell/window-mediator;1"].
+                      getService(Ci.nsIWindowMediator).
+                      getMostRecentWindow("navigator:browser");
+  let docShell = browserWindow.QueryInterface(Ci.nsIInterfaceRequestor)
+                  .getInterface(Ci.nsIWebNavigation)
+                  .QueryInterface(Ci.nsIDocShell);
+  if (!("allowWindowControl" in docShell)) {
+    // bug 635673 is not fixed in this firefox build
+    test.pass("allowWindowControl attribute that allow to fix browser window " +
+              "resize is not available on this build.");
+    return;
+  }
+
+  test.waitUntilDone(30000);
+
+  let previousWidth = browserWindow.outerWidth, previousHeight = browserWindow.outerHeight;
+
+  let content = "<script>" +
+                "function contentResize() {" +
+                "  resizeTo(200,200);" +
+                "  resizeBy(200,200);" +
+                "}" +
+                "</script>" +
+                "Try to resize browser window";
+  let panel = Panel({
+    contentURL: "data:text/html," + encodeURIComponent(content),
+    contentScript: "self.on('message', function(message){" +
+                   "  if (message=='resize') " +
+                   "    unsafeWindow.contentResize();" +
+                   "});",
+    contentScriptWhen: "ready",
+    onMessage: function (message) {
+
+    },
+    onShow: function () {
+      panel.postMessage('resize');
+      require("timer").setTimeout(function () {
+        test.assertEqual(previousWidth,browserWindow.outerWidth,"Size doesn't change by calling resizeTo/By/...");
+        test.assertEqual(previousHeight,browserWindow.outerHeight,"Size doesn't change by calling resizeTo/By/...");
+        panel.destroy();
+        test.done();
+      },0);
+    }
+  });
+  panel.show();
+}
 
 tests.testResizePanel = function(test) {
   test.waitUntilDone();
@@ -230,6 +305,24 @@ tests.testAnchorAndArrow = function(test) {
   
 };
 
+tests.testPanelTextColor = function(test) {
+  test.waitUntilDone();
+  let html = "<html><head><style>body {color: yellow}</style></head>" +
+             "<body><p>Foo</p></body></html>";
+  let panel = Panel({
+    contentURL: "data:text/html," + encodeURI(html),
+    contentScript: "self.port.emit('color', " +
+                   "window.getComputedStyle(document.body.firstChild, null). " +
+                   "       getPropertyValue('color'));"
+  });
+  panel.port.on("color", function (color) {
+    test.assertEqual(color, "rgb(255, 255, 0)",
+      "The panel text color style is preserved when a style exists.");
+    panel.destroy();
+    test.done();
+  });
+};
+
 function makeEventOrderTest(options) {
   let expectedEvents = [];
 
@@ -250,6 +343,23 @@ function makeEventOrderTest(options) {
     options.test(test, expect, panel);
   }
 }
+
+tests.testAutomaticDestroy = function(test) {
+  let loader = Loader(module);
+  let panel = loader.require("panel").Panel({
+    contentURL: "about:buildconfig",
+    contentScript: 
+      "self.port.on('event', function() self.port.emit('event-back'));"
+  });
+  
+  loader.unload();
+  
+  panel.port.on("event-back", function () {
+    test.fail("Panel should have been destroyed on module unload");
+  });
+  panel.port.emit("event");
+  test.pass("check automatic destroy");
+};
 
 tests.testWaitForInitThenShowThenDestroy = makeEventOrderTest({
   test: function(test, expect, panel) {
