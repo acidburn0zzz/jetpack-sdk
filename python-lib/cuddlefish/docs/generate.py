@@ -8,7 +8,6 @@ import HTMLParser
 import urlparse
 
 from cuddlefish import packaging
-from cuddlefish import Bunch
 from cuddlefish.docs import apiparser
 from cuddlefish.docs import apirenderer
 from cuddlefish.docs import webdocs
@@ -244,6 +243,7 @@ def get_guide_doc_dest_path(src_dir):
 def get_api_doc_dest_path(src_dir):
     src_dir_relative = src_dir[len(env_root) + 1:]
     return os.path.split(os.path.join(env_root, DOCS_DIR, src_dir_relative)[:-3])
+<<<<<<< HEAD
 
 class LinkRewriter(HTMLParser.HTMLParser):
     def __init__(self, link_prefix):
@@ -295,3 +295,5 @@ class LinkRewriter(HTMLParser.HTMLParser):
         if attrs:
             _attrs = ' %s' % (' '.join([('%s="%s"' % (k,v)) for k,v in dict(attrs).iteritems()]))
         return _attrs
+=======
+>>>>>>> master
