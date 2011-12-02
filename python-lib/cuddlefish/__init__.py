@@ -514,16 +514,17 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
     elif command == "docs":
         from cuddlefish.docs import generate
         if len(args) > 1:
-            docs_home = generate.generate_docs(env_root, filename=args[1])
+            docs_home = generate.generate_local_docs(filename=args[1])
         else:
-            docs_home = generate.generate_docs(env_root)
+            docs_home = generate.generate_local_docs()
+            print docs_home
             webbrowser.open(docs_home)
         return
     elif command == "sdocs":
         from cuddlefish.docs import generate
 
         # TODO: Allow user to change this filename via cmd line.
-        filename = generate.generate_static_docs(env_root, base_url=options.baseurl)
+        filename = generate.generate_static_docs()
         print >>stdout, "Wrote %s." % filename
         return
 
