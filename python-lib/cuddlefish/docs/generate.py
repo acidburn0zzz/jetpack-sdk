@@ -50,17 +50,27 @@ def generate_static_docs():
     return TGZ_FILENAME
 
 def generate_local_docs(filename=None):
+    return generate_docs(get_sdk_docs_url())
+
+def generate_named_file(filename):
     base_url = get_sdk_docs_url()
-    # if we were given a filename, just generate the named file
-    # and return its URL
-    if filename:
-        return generate_named_file(base_url, filename)
-    return generate_docs(base_url)
+    docs_dir = os.path.join(env_root, DOCS_DIR)
+    web_docs = webdocs.WebDocs(env_root, base_url)
+    # next, generate api doc or guide doc
+    abs_path = os.path.abspath(filename)
+    if abs_path.startswith(os.path.join(env_root, 'packages')):
+        doc_html, dest_dir, filename = generate_api_doc(abs_path, web_docs)
+        write_file(doc_html, dest_dir, filename)
+    elif abs_path.startswith(os.path.join(env_root, DOCS_DIR, 'dev-guide-source')):
+        doc_html, dest_dir, filename = generate_guide_doc(abs_path, web_docs)
+        write_file(doc_html, dest_dir, filename)
+    else:
+        raise ValueError("Not a valid path to a documentation file")
 
 def generate_docs(base_url=None, stdout=sys.stdout):
     docs_dir = os.path.join(env_root, DOCS_DIR)
     # if the generated docs don't exist, generate everything
-    if not os.path.exists(os.path.join(docs_dir, "index.html")):
+    if not os.path.exists(os.path.join(docs_dir, "dev-guide")):
         print >>stdout, "Generating documentation..."
         generate_docs_from_scratch(base_url, docs_dir)
         current_status = calculate_current_status()
@@ -76,20 +86,7 @@ def generate_docs(base_url=None, stdout=sys.stdout):
             print >>stdout, "Regenerating documentation..."
             generate_docs_from_scratch(base_url, docs_dir)
             open(os.path.join(env_root, DOCS_DIR, DIGEST), "w").write(current_status)
-    return get_sdk_docs_url() + "index.html"
-
-def generate_named_file(base_url, filename):
-    docs_dir = os.path.join(env_root, DOCS_DIR)
-    web_docs = webdocs.WebDocs(env_root, base_url)
-
-    # next, generate api doc or guide doc
-    abs_path = os.path.abspath(filename)
-    if abs_path.startswith(os.path.join(env_root, 'packages')):
-        return generate_api_doc(abs_path, web_docs)
-    elif abs_path.startswith(os.path.join(env_root, DOCS_DIR, 'dev-guide-source')):
-        return generate_guide_doc(abs_path, web_docs)
-    else:
-        raise ValueError("Not a valid path to a documentation file")
+    return get_sdk_docs_url() + "/".join(["dev-guide", "welcome.html"])
 
 # this function builds a hash of the name and last modification date of:
 # * every file in "packages" which ends in ".md"
@@ -160,10 +157,6 @@ def generate_docs_from_scratch(base_url, docs_dir):
     dev_guide_src = os.path.join(env_root, DOCS_DIR, "dev-guide-source")
     generate_file_tree(dev_guide_src, web_docs, generate_guide_doc)
 
-    # make /md/dev-guide/welcome.html the top level index file
-    shutil.copy(os.path.join(env_root, DOCS_DIR, 'dev-guide', 'welcome.html'), \
-                 os.path.join(docs_dir, 'index.html'))
-
 def generate_file_tree(src_dir, web_docs, generate_file):
     for (dirpath, dirnames, filenames) in os.walk(src_dir):
         assert dirpath.startswith(src_dir) # what is this for??
@@ -171,57 +164,38 @@ def generate_file_tree(src_dir, web_docs, generate_file):
             if filename.endswith("~"):
                 continue
             src_path = os.path.join(dirpath, filename)
-            generate_file(src_path, web_docs)
+            if src_path.endswith(".md"):
+                # write the standalone HTML files
+                doc_html, dest_dir, filename = generate_file(src_path, web_docs)
+                write_file(doc_html, dest_dir, filename)
 
 def generate_api_doc(src_dir, web_docs):
-    if src_dir.endswith(".md"):
-        dest_dir, filename = get_api_doc_dest_path(src_dir)
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
-
-        # parse and JSONify the API docs
-        docs_md = open(src_dir, 'r').read()
-        docs_parsed = list(apiparser.parse_hunks(docs_md))
-        docs_json = json.dumps(docs_parsed)
-        dest_path_json = os.path.join(dest_dir, filename) + ".json"
-        replace_file(dest_path_json, docs_json)
-
-        # write the HTML div files
-        docs_div = apirenderer.json_to_div(docs_parsed, src_dir)
-        dest_path_div = os.path.join(dest_dir, filename) + ".div"
-        replace_file(dest_path_div, docs_div)
-
-        # write the standalone HTML files
-        docs_html = web_docs.create_module_page(src_dir)
-        dest_path_html = os.path.join(dest_dir, filename) + ".html"
-        replace_file(dest_path_html, docs_html)
-
-        return dest_path_html
+    doc_html = web_docs.create_module_page(src_dir)
+    dest_dir, filename = get_api_doc_dest_path(src_dir)
+    return doc_html, dest_dir, filename
 
 def generate_guide_doc(src_dir, web_docs):
-    if src_dir.endswith(".md"):
-        dest_dir, filename = get_guide_doc_dest_path(src_dir)
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
-        # write the standalone HTML files
-        docs_html = web_docs.create_guide_page(src_dir)
-        dest_path_html = os.path.join(dest_dir, filename) + ".html"
-        replace_file(dest_path_html, docs_html)
-        return dest_path_html
+    doc_html = web_docs.create_guide_page(src_dir)
+    dest_dir, filename = get_guide_doc_dest_path(src_dir)
+    return doc_html, dest_dir, filename
+
+def write_file(doc_html, dest_dir, filename):
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+    dest_path_html = os.path.join(dest_dir, filename) + ".html"
+    replace_file(dest_path_html, doc_html)
+    return dest_path_html
 
 def replace_file(dest_path, file_contents):
     if os.path.exists(dest_path):
         os.remove(dest_path)
     # before we copy the final version, we'll rewrite the links
     # I'll do this last, just because we know definitely what the dest_path is at this point
-    print dest_path
     if dest_path.endswith(".html"):
         file_contents = rewrite_links(file_contents, dest_path)
     open(dest_path, "w").write(file_contents)
 
 def rewrite_links(page, dest_path):
-    print dest_path
-    print get_sdk_docs_path()
     dest_path_depth = len(dest_path.split(os.sep)) -1 # because dest_path includes filename
     docs_root_depth = len(get_sdk_docs_path().split(os.sep))
     relative_depth = dest_path_depth - docs_root_depth
