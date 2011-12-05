@@ -488,6 +488,7 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
         return
     elif command == "docs":
         from time import time
+        print "starting"
         t1 = time()
 
         from cuddlefish.docs import generate
@@ -497,6 +498,7 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
             docs_home = generate.generate_local_docs()
             t2 = time()
             print "time: " + str(t2 - t1)
+            print docs_home
             webbrowser.open(docs_home)
         return
     elif command == "sdocs":

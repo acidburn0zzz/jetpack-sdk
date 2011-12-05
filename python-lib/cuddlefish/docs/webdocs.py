@@ -66,6 +66,7 @@ def insert_after(target, insertion_point_id, text_to_insert):
 class WebDocs(object):
     def __init__(self, root, base_url = None):
         self.root = root
+        print root
         self.pkg_cfg = packaging.build_pkg_cfg(root)
         self.packages_json = packaging.build_pkg_index(self.pkg_cfg)
         self.base_page = self._create_base_page(root, base_url)
@@ -129,9 +130,9 @@ class WebDocs(object):
 
     def _create_base_page(self, root, base_url):
         base_page = unicode(open(root + INDEX_PAGE, 'r').read(), 'utf8')
-#        if base_url:
-#            base_tag = 'href="' + base_url + '"'
-#            base_page = insert_after(base_page, BASE_URL_INSERTION_POINT, base_tag)
+        if base_url:
+            base_tag = 'href="' + base_url + '"'
+            base_page = insert_after(base_page, BASE_URL_INSERTION_POINT, base_tag)
         sdk_version = get_versions()["version"]
         base_page = insert_after(base_page, VERSION_INSERTION_POINT, "Version " + sdk_version)
         high_level_summaries = \
