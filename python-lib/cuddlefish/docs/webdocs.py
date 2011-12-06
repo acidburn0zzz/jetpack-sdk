@@ -66,7 +66,6 @@ def insert_after(target, insertion_point_id, text_to_insert):
 class WebDocs(object):
     def __init__(self, root, base_url = None):
         self.root = root
-        print root
         self.pkg_cfg = packaging.build_pkg_cfg(root)
         self.packages_json = packaging.build_pkg_index(self.pkg_cfg)
         self.base_page = self._create_base_page(root, base_url)

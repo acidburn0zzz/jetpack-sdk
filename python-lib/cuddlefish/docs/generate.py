@@ -38,10 +38,10 @@ def clean_generated_docs(docs_dir):
         shutil.rmtree(api_doc_dir)
 
 def generate_static_docs(env_root):
-    clean_generated_docs(get_sdk_docs_path())
+    clean_generated_docs(get_sdk_docs_path(env_root))
     generate_docs(env_root, stdout=StringIO.StringIO())
     tgz = tarfile.open(TGZ_FILENAME, 'w:gz')
-    tgz.add(get_sdk_docs_path(), "doc")
+    tgz.add(get_sdk_docs_path(env_root), "doc")
     tgz.close()
     return TGZ_FILENAME
 
@@ -54,10 +54,10 @@ def generate_named_file(env_root, filename):
     abs_path = os.path.abspath(filename)
     if abs_path.startswith(os.path.join(env_root, 'packages')):
         doc_html, dest_dir, filename = generate_api_doc(env_root, abs_path, web_docs)
-        write_file(doc_html, dest_dir, filename)
-    elif abs_path.startswith(os.path.join(get_sdk_docs_path(), 'dev-guide-source')):
+        write_file(env_root, doc_html, dest_dir, filename)
+    elif abs_path.startswith(os.path.join(get_sdk_docs_path(env_root), 'dev-guide-source')):
         doc_html, dest_dir, filename = generate_guide_doc(env_root, abs_path, web_docs)
-        write_file(doc_html, dest_dir, filename)
+        write_file(env_root, doc_html, dest_dir, filename, False)
     else:
         raise ValueError("Not a valid path to a documentation file")
 
@@ -79,7 +79,7 @@ def generate_docs(env_root, base_url=None, stdout=sys.stdout):
             print >>stdout, "Regenerating documentation..."
             generate_docs_from_scratch(env_root, base_url)
             open(os.path.join(get_sdk_docs_path(env_root), DIGEST), "w").write(current_status)
-    return get_sdk_docs_url(env_root) + "index.html"
+    return get_base_url(env_root) + "index.html"
 
 # this function builds a hash of the name and last modification date of:
 # * every file in "packages" which ends in ".md"
@@ -123,7 +123,6 @@ def generate_docs_from_scratch(env_root, base_url):
     pkg_cfg = packaging.build_pkg_cfg(env_root)
     index = json.dumps(packaging.build_pkg_index(pkg_cfg))
     index_path = os.path.join(get_sdk_docs_path(env_root), "packages", 'index.json')
-    print pkg.cfg
     open(index_path, 'w').write(index)
 
     # for each package, generate its docs
@@ -142,21 +141,21 @@ def generate_docs_from_scratch(env_root, base_url):
         package_filename = os.path.join(dest_dir, pkg_name + ".html")
         if not os.path.exists(package_filename):
             package_doc_html = web_docs.create_package_page(pkg_name)
-            replace_file(package_filename, package_doc_html, must_rewrite_links)
+            replace_file(env_root, package_filename, package_doc_html, must_rewrite_links)
 
         # generate all the API docs
         docs_src_dir = os.path.join(src_dir, "doc")
         if os.path.isdir(os.path.join(src_dir, "docs")):
             docs_src_dir = os.path.join(src_dir, "docs")
-        generate_file_tree(docs_src_dir, web_docs, generate_api_doc, must_rewrite_links)
+        generate_file_tree(env_root, docs_src_dir, web_docs, generate_api_doc, must_rewrite_links)
 
     # generate all the guide docs
     dev_guide_src = os.path.join(get_sdk_docs_path(env_root), "dev-guide-source")
-    generate_file_tree(dev_guide_src, web_docs, generate_guide_doc, must_rewrite_links)
+    generate_file_tree(env_root, dev_guide_src, web_docs, generate_guide_doc, must_rewrite_links)
 
     # make /md/dev-guide/welcome.html the top level index file
-    doc_html, dest_dir, filename = generate_guide_doc(os.path.join(get_sdk_docs_path(env_root), 'dev-guide-source', 'welcome.md'), web_docs)
-    write_file(doc_html, get_sdk_docs_path(env_root), 'index', False)
+    doc_html, dest_dir, filename = generate_guide_doc(env_root, os.path.join(get_sdk_docs_path(env_root), 'dev-guide-source', 'welcome.md'), web_docs)
+    write_file(env_root, doc_html, get_sdk_docs_path(env_root), 'index', False)
 
 def generate_file_tree(env_root, src_dir, web_docs, generate_file, must_rewrite_links):
     for (dirpath, dirnames, filenames) in os.walk(src_dir):
@@ -168,7 +167,7 @@ def generate_file_tree(env_root, src_dir, web_docs, generate_file, must_rewrite_
             if src_path.endswith(".md"):
                 # write the standalone HTML files
                 doc_html, dest_dir, filename = generate_file(env_root, src_path, web_docs)
-                write_file(doc_html, dest_dir, filename, must_rewrite_links)
+                write_file(env_root, doc_html, dest_dir, filename, must_rewrite_links)
 
 def generate_api_doc(env_root, src_dir, web_docs):
     doc_html = web_docs.create_module_page(src_dir)
@@ -180,25 +179,25 @@ def generate_guide_doc(env_root, src_dir, web_docs):
     dest_dir, filename = get_guide_doc_dest_path(env_root, src_dir)
     return doc_html, dest_dir, filename
 
-def write_file(doc_html, dest_dir, filename, must_rewrite_links):
+def write_file(env_root, doc_html, dest_dir, filename, must_rewrite_links):
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
     dest_path_html = os.path.join(dest_dir, filename) + ".html"
-    replace_file(dest_path_html, doc_html, must_rewrite_links)
+    replace_file(env_root, dest_path_html, doc_html, must_rewrite_links)
     return dest_path_html
 
-def replace_file(dest_path, file_contents, must_rewrite_links):
+def replace_file(env_root, dest_path, file_contents, must_rewrite_links):
     if os.path.exists(dest_path):
         os.remove(dest_path)
     # before we copy the final version, we'll rewrite the links
     # I'll do this last, just because we know definitely what the dest_path is at this point
     if must_rewrite_links and dest_path.endswith(".html"):
-        file_contents = rewrite_links(file_contents, dest_path)
+        file_contents = rewrite_links(env_root, file_contents, dest_path)
     open(dest_path, "w").write(file_contents)
 
-def rewrite_links(page, dest_path):
+def rewrite_links(env_root, page, dest_path):
     dest_path_depth = len(dest_path.split(os.sep)) -1 # because dest_path includes filename
-    docs_root_depth = len(get_sdk_docs_path().split(os.sep))
+    docs_root_depth = len(get_sdk_docs_path(env_root).split(os.sep))
     relative_depth = dest_path_depth - docs_root_depth
     linkRewriter = LinkRewriter("../" * relative_depth)
     return linkRewriter.rewrite_links(page)
