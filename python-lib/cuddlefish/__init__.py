@@ -487,23 +487,15 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
         test_cfx(env_root, options.verbose)
         return
     elif command == "docs":
-        from time import time
-        print "starting"
-        t1 = time()
-
         from cuddlefish.docs import generate
         if len(args) > 1:
             docs_home = generate.generate_named_file(env_root, filename=args[1])
         else:
             docs_home = generate.generate_local_docs(env_root)
-            t2 = time()
-            print "time: " + str(t2 - t1)
             webbrowser.open(docs_home)
         return
     elif command == "sdocs":
         from cuddlefish.docs import generate
-
-        # TODO: Allow user to change this filename via cmd line.
         filename = generate.generate_static_docs(env_root)
         print >>stdout, "Wrote %s." % filename
         return
