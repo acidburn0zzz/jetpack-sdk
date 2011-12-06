@@ -231,6 +231,12 @@ class LinkRewriter(HTMLParser.HTMLParser):
         self.stack = []
         return page
 
+    def handle_decl(self, decl):
+        self.stack.append("<!" + decl + ">")
+
+    def handle_comment(self, decl):
+        self.stack.append("<!--" + decl + "-->")
+
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
         href = attrs.get('href', '')
