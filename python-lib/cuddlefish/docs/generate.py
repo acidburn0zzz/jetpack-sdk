@@ -274,4 +274,3 @@ class LinkRewriter(HTMLParser.HTMLParser):
         if attrs:
             _attrs = ' %s' % (' '.join([('%s="%s"' % (k,v)) for k,v in dict(attrs).iteritems()]))
         return _attrs
-

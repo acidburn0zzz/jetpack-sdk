@@ -196,4 +196,3 @@ class WebDocs(object):
             title = DEFAULT_TITLE
         target = insert_after(target, TITLE_ID, title)
         return target
-
