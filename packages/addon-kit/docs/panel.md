@@ -19,13 +19,82 @@ in preparation for the next time it is shown.
 Your add-on can receive notifications when a panel is shown or hidden by
 listening to its `show` and `hide` events.
 
-Panels have associated content scripts, which are JavaScript scripts that have
-access to the content loaded into the panels.  An add-on can specify one or
-more content scripts to load for a panel, and the add-on can communicate with
-those scripts either using the `message` event or by using user-defined
-events. See
+## Panel Content ##
+
+The panel's content is specified as HTML, which is loaded from the URL
+supplied in the `contentURL` option to the panel's constructor.
+
+You can load remote HTML into the panel:
+
+    var panel = require("panel").Panel({
+      contentURL: "http://www.bbc.co.uk/mobile/index.html"
+    });
+
+    panel.show();
+
+You can also load HTML that's been packaged with your add-on. To do this, save
+the HTML in your add-on's `data` directory and load it using the `url()`
+method from the `data` object exported by the `self` module, like this:
+
+    var panel = require("panel").Panel({
+      contentURL: require("self").data.url("myFile.html")
+    });
+
+    panel.show();
+
+## Scripting Panel Content ##
+
+You can't directly access your panel's content from your main add-on code.
+To do this, you need to load a script into the panel.
+
+In the SDK these scripts are called "content scripts" because they're
+explicitly used for interacting with web content. You can specify
+one or more content scripts to load into a panel using the
+`contentScript` or `contentScriptFile` options, and you can communicate
+with the script using either the
+[`postMessage()`](dev-guide/addon-development/content-scripts/using-postmessage.html)
+API or (preferably, usually) the
+[`port`](dev-guide/addon-development/content-scripts/using-port.html) API.
+
+For example, here's a content script that intercepts mouse clicks on links
+inside the panel, and sends the target URL to the main add-on code:
+
+<span class="aside">This example uses `contentScript` to pass in the script
+as a string. It's usually better practice to use `contentScriptFile`, which
+passes in a URL to a separate file containing the script, but as this results
+in more verbose examples, many of the SDK's examples use `contentScript`.
+</span>
+
+    var myScript = "window.addEventListener('click', function(event) {" +
+                   "  var t = event.target;" + 
+                   "  if (t.nodeName == 'A')" +
+                   "    self.port.emit('click-link', t.toString());" +
+                   "}, false);"
+
+    var panel = require("panel").Panel({
+      contentURL: "http://www.bbc.co.uk/mobile/index.html",
+      contentScript: myScript
+    });
+
+    panel.port.on("click-link", function(url) {
+      console.log(url);
+    });
+
+    panel.show();
+
+To learn much more about content scripts, see the
 [Working with Content Scripts](dev-guide/addon-development/web-content.html)
-for more information.
+guide.
+
+### Scripting Trusted Panel Content ###
+
+**Note that the feature described in this section is currently experimental.**
+
+We've already seen that you can package HTML files in your add-on's `data`
+directory and use them to define the panel's content. In this case the HTML
+content is entirely under your control
+
+## Styling Panels ##
 
 The panel's default style is different for each operating system.
 For example, suppose a panel's content is specified with the following HTML:
