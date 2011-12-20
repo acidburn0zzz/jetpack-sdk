@@ -1,8 +1,16 @@
 <!-- contributed by Myk Melez [myk@mozilla.org] -->
 <!-- contributed by Irakli Gozalishvili [gozala@mozilla.com] -->
 
-The `panel` module creates floating modal "popup dialogs" that appear on top of
-web content and browser chrome and persist until dismissed by users or programs.
+A panel is a dialog. Its content is specified as HTML and you can
+execute scripts in it, so the appearance and behaviour of the panel
+is limited only by what you can do using HTML, CSS and JavaScript.
+
+The screenshot below shows a panel whose content is built from the
+list of currently open tabs:
+
+<img class="image-center" src="static-files/media/screenshots/panel-tabs-osx.png"
+alt="Simple panel example">
+
 Panels are useful for presenting temporary interfaces to users in a way that is
 easier for users to ignore and dismiss than a modal dialog, since panels are
 hidden the moment users interact with parts of the application interface outside
@@ -26,16 +34,17 @@ supplied in the `contentURL` option to the panel's constructor.
 
 You can load remote HTML into the panel:
 
-<img class="image-center" src="static-files/media/screenshots/wikipedia-jetpack-panel.png"
-alt="Wikipedia Jetpack panel">
-
     var panel = require("panel").Panel({
       contentURL: "https://en.wikipedia.org/w/index.php?title=Jetpack&useformat=mobile"
     });
 
     panel.show();
 
-You can also load HTML that's been packaged with your add-on. To do this, save
+<img class="image-center" src="static-files/media/screenshots/wikipedia-jetpack-panel.png"
+alt="Wikipedia Jetpack panel">
+
+You can also load HTML that's been packaged with your add-on, and this is
+most probably how you will create dialogs. To do this, save
 the HTML in your add-on's `data` directory and load it using the `url()`
 method from the `data` object exported by the
 [`self`](packages/addon-kit/docs/self.html) module, like this:
