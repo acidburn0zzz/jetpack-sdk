@@ -61,25 +61,51 @@ method exported by the
 
 You can't directly access your panel's content from your main add-on code.
 To access the panel's content, you need to load a script into the panel.
-
 In the SDK these scripts are called "content scripts" because they're
 explicitly used for interacting with web content.
 
 You can specify one or more content scripts to load into a panel using the
-`contentScript` or `contentScriptFile` options. Using `contentScript` you
-pass in the script as a string, and using `contentScriptFile` you save the
-content script as a separate file in your add-on's `data` directory, and pass
-in a URL pointing to it.
+`contentScript` or `contentScriptFile` options.
 
 You can communicate with the script using either the
 [`postMessage()`](dev-guide/addon-development/content-scripts/using-postmessage.html)
 API or (preferably, usually) the
 [`port`](dev-guide/addon-development/content-scripts/using-port.html) API.
 
+For example, here's an add-on whose content script intercepts mouse clicks
+on links inside the panel, and sends the target URL to the main add-on
+code. The content script sends the add-on code messages using
+`self.port.emit()` and the add-on script receives them using
+`panel.port.on()`.
+
+    var myScript = "window.addEventListener('click', function(event) {" +
+                   "  var t = event.target;" + 
+                   "  if (t.nodeName == 'A')" +
+                   "    self.port.emit('click-link', t.toString());" +
+                   "}, false);"
+
+    var panel = require("panel").Panel({
+      contentURL: "http://www.bbc.co.uk/mobile/index.html",
+      contentScript: myScript
+    });
+
+    panel.port.on("click-link", function(url) {
+      console.log(url);
+    });
+
+    panel.show();
+
+This example uses `contentScript` to supply the script as a string. It's
+usually better practice to use `contentScriptFile`, which is a URL pointing
+to a script file saved under your add-on's `data` directory.
+That's what the next example does.
+
 <img class="image-right" src="static-files/media/screenshots/text-entry-panel.png"
 alt="Text entry panel">
 
-For example, the following add-on adds a widget which displays a panel when
+### Getting User Input ###
+
+The following add-on adds a widget which displays a panel when
 clicked. The panel just contains a `<textarea>` element: when the user
 presses the `return` key, the contents of the `<textarea>` is sent to the
 main add-on code.
