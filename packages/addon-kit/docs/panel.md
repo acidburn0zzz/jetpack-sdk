@@ -1,6 +1,9 @@
 <!-- contributed by Myk Melez [myk@mozilla.org] -->
 <!-- contributed by Irakli Gozalishvili [gozala@mozilla.com] -->
 
+This module exports a single constructor function `Panel` which constructs a
+new panel.
+
 A panel is a dialog. Its content is specified as HTML and you can
 execute scripts in it, so the appearance and behaviour of the panel
 is limited only by what you can do using HTML, CSS and JavaScript.
@@ -15,9 +18,6 @@ Panels are useful for presenting temporary interfaces to users in a way that is
 easier for users to ignore and dismiss than a modal dialog, since panels are
 hidden the moment users interact with parts of the application interface outside
 them.
-
-The module exports a single constructor function `Panel` which constructs a
-new panel.
 
 A panel's content is loaded as soon as it is created, before the panel is shown,
 and the content remains loaded when a panel is hidden, so it is possible
@@ -47,8 +47,8 @@ alt="Wikipedia Jetpack panel">
 
 You can also load HTML that's been packaged with your add-on, and this is
 most probably how you will create dialogs. To do this, save
-the HTML in your add-on's `data` directory and load it using the `url()`
-method from the `data` object exported by the
+the HTML in your add-on's `data` directory and load it using the `data.url()`
+method exported by the
 [`self`](packages/addon-kit/docs/self.html) module, like this:
 
     var panel = require("panel").Panel({
