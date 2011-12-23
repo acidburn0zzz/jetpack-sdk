@@ -83,7 +83,7 @@ code. The content script sends messages using `self.port.emit()` and the
 add-on script receives them using `panel.port.on()`.
 
     var myScript = "window.addEventListener('click', function(event) {" +
-                   "  var t = event.target;" + 
+                   "  var t = event.target;" +
                    "  if (t.nodeName == 'A')" +
                    "    self.port.emit('click-link', t.toString());" +
                    "}, false);"
@@ -299,9 +299,9 @@ Finally, the HTML file now references "get-text.js" inside a `<script>` tag:
 <script type="syntaxhighlighter" class="brush: html"><![CDATA[
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
- 
+
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
- 
+
 <head>
   <style type="text/css" media="all">
     textarea {
@@ -310,11 +310,11 @@ Finally, the HTML file now references "get-text.js" inside a `<script>` tag:
   </style>
   <script src="get-text.js">&lt;/script>
 </head>
- 
+
 <body>
   <textarea rows="10" cols="20" id="edit-box"></textarea>
 </body>
- 
+
 </html>
 ]]>
 </script>

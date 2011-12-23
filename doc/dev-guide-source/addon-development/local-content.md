@@ -1,1 +1,0 @@
-Several of the modules in addon-kit can 

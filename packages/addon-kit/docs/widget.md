@@ -33,7 +33,7 @@ pixels.
 For example, this widget contains an image, so it looks like a simple icon:
 
     require("widget").Widget({
-      id: "mozilla-icon", 
+      id: "mozilla-icon",
       label: "My Mozilla Widget",
       contentURL: "http://www.mozilla.org/favicon.ico"
     });
@@ -49,7 +49,7 @@ directory, and reference it using the `data.url()` method of the
     var data = require("self").data;
 
     require("widget").Widget({
-      id: "my-widget", 
+      id: "my-widget",
       label: "My Widget",
       contentURL: data.url("my-content.html")
     });
