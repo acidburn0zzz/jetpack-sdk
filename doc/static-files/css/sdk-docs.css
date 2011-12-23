@@ -7,12 +7,14 @@ pre {
   color: black;
   background-color: whitesmoke;
   padding: 10px;
+  overflow:auto;
 }
 
 h2 {
   color: black;
   background-color: #F0F8FF;
   padding: 10px;
+  overflow:auto;
 }
 
 #columns {

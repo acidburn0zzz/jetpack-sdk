@@ -91,8 +91,8 @@ API or (preferably, usually) the
 [`port`](dev-guide/addon-development/content-scripts/using-port.html) API.
 
 <!-- The icons this widget displays, shown in the screenshot, is taken from the
-GLossy Buttons icon set created by IconEden which is made
-freely available for commercial and non-commercial use.
+Glossy Buttons icon set created by IconEden which is made freely available for
+commercial and non-commercial use.
 See: http://www.iconeden.com/icon/category/free -->
 
 <img class="image-right" src="static-files/media/screenshots/widget-player-buttons.png"
@@ -170,11 +170,98 @@ script:
       console.log("stopping");
     });
 
+To learn much more about content scripts, see the
+[Working with Content Scripts](dev-guide/addon-development/web-content.html)
+guide.
+
 ### Scripting Trusted Widget Content ###
 
 **Note that the feature described in this section is experimental: we'll
 very probably continue to support it, but the name of the `addon`
 property might change in a future release.**
+
+We've already seen that you can package HTML files in your add-on's `data`
+directory and use them to define the widget's content. We can call this
+"trusted" content, because unlike content loaded from a source outside the
+add-on, the add-on author knows exactly what it's doing. To
+interact with trusted content you don't need to use content scripts:
+you can just include a script from the HTML file in the normal way, using
+`<script>` tags.
+
+Like a content script, these scripts can communicate with the add-on code
+using the
+[`postMessage()`](dev-guide/addon-development/content-scripts/using-postmessage.html)
+API or the
+[`port`](dev-guide/addon-development/content-scripts/using-port.html) API.
+The crucial difference is that these scripts access the `postMessage`
+and `port` objects through the `addon` object, whereas content scripts
+access them through the `self` object.
+
+To show the difference, let's convert the `player` add-on above
+to use normal page scripts instead of content scripts.
+
+First, in the content script, change `self` to `addon`, and wrap it in a
+function:
+
+    function init() {
+      var play_button = document.getElementById("play-button");
+      play_button.onclick = function() {
+        addon.port.emit("play");
+      }
+
+      var pause_button = document.getElementById("pause-button");
+      pause_button.onclick = function() {
+        addon.port.emit("pause");
+      }
+
+      var stop_button = document.getElementById("stop-button");
+      stop_button.onclick = function() {
+        addon.port.emit("stop");
+      }
+    }
+
+Next, add a `<script>` tag to reference "button-script.js", and
+call its `init()` function on load:
+
+<script type="syntaxhighlighter" class="brush: html"><![CDATA[
+<html>
+  <head>
+    <script src="button-script.js">&lt;/script>
+  </head>
+  <body onLoad="init()">
+    <img src="play.png" id="play-button"></img>
+    <img src="pause.png" id="pause-button"></img>
+    <img src="stop.png" id="stop-button"></img>
+  </body>
+</html>
+]]>
+</script>
+
+Finally, remove the line attaching the content script from "main.js":
+
+    const widgets = require("widget");
+    const data = require("self").data;
+
+    var player = widgets.Widget({
+      id: "player",
+      width: 72,
+      label: "Player",
+      contentURL: data.url("buttons.html")
+    });
+
+    player.port.emit("init");
+
+    player.port.on("play", function() {
+      console.log("playing");
+    });
+
+    player.port.on("pause", function() {
+      console.log("pausing");
+    });
+
+    player.port.on("stop", function() {
+      console.log("stopping");
+    });
 
 ## Attaching Panels to Widgets ##
 

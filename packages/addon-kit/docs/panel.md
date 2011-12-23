@@ -219,7 +219,7 @@ property might change in a future release.**
 We've already seen that you can package HTML files in your add-on's `data`
 directory and use them to define the panel's content. We can call this
 "trusted" content, because unlike content loaded from a source outside the
-add-on, the add-on author is in control of the content and can trust it. To
+add-on, the add-on author knows exactly what it's doing. To
 interact with trusted content you don't need to use content scripts:
 you can just include a script from the HTML file in the normal way, using
 `<script>` tags.
