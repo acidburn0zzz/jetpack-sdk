@@ -64,19 +64,23 @@ To access the panel's content, you need to load a script into the panel.
 In the SDK these scripts are called "content scripts" because they're
 explicitly used for interacting with web content.
 
-You can specify one or more content scripts to load into a panel using the
-`contentScript` or `contentScriptFile` options.
+While content scripts can access the content they're attached to, they can't
+use the SDK's APIs. So implementing a complete solution usually means you
+have to send messages between the content script and the main add-on code.
 
-You can communicate with the script using either the
+* You can specify one or more content scripts to load into a panel using the
+`contentScript` or `contentScriptFile` options to the
+[`Panel()` constructor](packages/addon-kit/docs/panel.html#Panel%28options%29).
+
+* You can communicate with the script using either the
 [`postMessage()`](dev-guide/addon-development/content-scripts/using-postmessage.html)
 API or (preferably, usually) the
 [`port`](dev-guide/addon-development/content-scripts/using-port.html) API.
 
 For example, here's an add-on whose content script intercepts mouse clicks
 on links inside the panel, and sends the target URL to the main add-on
-code. The content script sends the add-on code messages using
-`self.port.emit()` and the add-on script receives them using
-`panel.port.on()`.
+code. The content script sends messages using `self.port.emit()` and the
+add-on script receives them using `panel.port.on()`.
 
     var myScript = "window.addEventListener('click', function(event) {" +
                    "  var t = event.target;" + 
@@ -116,8 +120,8 @@ The add-on consists of three files:
 * **`get-text.js`**: the content script that interacts with the panel content
 * **`text-entry.html`**: the panel content itself, specified as HTML
 
-`main.js` is saved in your add-on's `lib` directory, and the other two go
-in your add-on's `data` directory:
+"main.js" is saved in your add-on's `lib` directory, and the other two files
+go in your add-on's `data` directory:
 
 <pre>
 my-addon/
@@ -144,7 +148,7 @@ The "main.js" looks like this:
     // Send the content script a message called "show" when
     // the panel is shown.
     text_entry.on("show", function() {
-      this.port.emit("show");
+      text_entry.emit("show");
     });
 
     // Listen for messages called "text-entered" coming from
@@ -251,7 +255,7 @@ previous example, except that we don't attach a content script:
     // Send the page script a message called "show" when
     // the panel is shown.
     text_entry.on("show", function() {
-      this.port.emit("show");
+      text_entry.port.emit("show");
     });
 
     // Listen for messages called "text-entered" coming from

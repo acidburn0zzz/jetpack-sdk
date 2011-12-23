@@ -79,13 +79,11 @@ While content scripts can access the content they're attached to, they can't
 use the SDK's APIs. So implementing a complete solution usually means you
 have to send messages between the content script and the main add-on code.
 
-You can load content scripts into a widget using the widget's
-[`contentScript`](packages/addon-kit/docs/widget.html#contentScript) or
-[`contentScriptFile`](packages/addon-kit/docs/widget.html#contentScriptFile)
-options.
+* You can specify one or more content scripts to load into the widget using the
+`contentScript` or `contentScriptFile` options to the
+[`Widget()` constructor](packages/addon-kit/docs/widget.html#Widget(options)).
 
-You can exchange messages between the content script and the main script
-using either the
+* You can communicate with the script using either the
 [`postMessage()`](dev-guide/addon-development/content-scripts/using-postmessage.html)
 API or (preferably, usually) the
 [`port`](dev-guide/addon-development/content-scripts/using-port.html) API.

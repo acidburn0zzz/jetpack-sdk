@@ -33,10 +33,13 @@ scripts are called "content scripts" because they're explicitly used for
 interacting with web content.
 
 You can specify one or more content scripts to load into the page using the
-`contentScript` or `contentScriptFile` options. With `contentScript` you pass
-the script as a string, as in the examples above. With `contentScriptFile`
-you pass a URL which points to a script saved under your add-on's `data`
-directory. You construct the URL using `data.url()`.
+`contentScript` or `contentScriptFile` options to the
+[`Page()` constructor](packages/addon-kit/docs/page-worker.html#Page(options)).
+With `contentScript` you pass the script as a string, as in the examples
+above. With `contentScriptFile` you pass a URL which points to a script
+saved under your add-on's `data` directory. You construct the URL using
+the `data.url()` method of the
+[`self`](packages/addon-kit/doc/self.html) module.
 
 While content scripts can access DOM content, they can't access any of the SDK
 APIs, so in many cases you'll need to exchange messages between the content
