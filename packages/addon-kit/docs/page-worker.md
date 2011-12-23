@@ -19,7 +19,7 @@ This can point to a remote file:
 It can also point to an HTML file which you've packaged with your add-on.
 To do this, save the file in your add-on's `data` directory and create the
 URL using the `data.url()` method of the
-[`self`](packages/addon-kit/doc/self.html) module:
+[`self`](packages/addon-kit/docs/self.html) module:
 
     pageWorker = require("page-worker").Page({
       contentScript: "console.log(document.body.innerHTML);",
@@ -39,7 +39,7 @@ With `contentScript` you pass the script as a string, as in the examples
 above. With `contentScriptFile` you pass a URL which points to a script
 saved under your add-on's `data` directory. You construct the URL using
 the `data.url()` method of the
-[`self`](packages/addon-kit/doc/self.html) module.
+[`self`](packages/addon-kit/docs/self.html) module.
 
 While content scripts can access DOM content, they can't access any of the SDK
 APIs, so in many cases you'll need to exchange messages between the content
