@@ -172,7 +172,8 @@ To learn much more about content scripts, see the
 [Working with Content Scripts](dev-guide/addon-development/web-content.html)
 guide.
 
-### Scripting Trusted Widget Content ###
+<div class="experimental">
+<h3>Scripting Trusted Widget Content</h3>
 
 **Note that the feature described in this section is experimental: we'll
 very probably continue to support it, but the name of the `addon`
@@ -260,6 +261,7 @@ Finally, remove the line attaching the content script from "main.js":
     player.port.on("stop", function() {
       console.log("stopping");
     });
+</div>
 
 ## Attaching Panels to Widgets ##
 

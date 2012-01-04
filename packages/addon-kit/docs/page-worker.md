@@ -83,7 +83,8 @@ To learn much more about content scripts, see the
 [Working with Content Scripts](dev-guide/addon-development/web-content.html)
 guide.
 
-### Scripting Trusted Page Content ###
+<div class="experimental">
+<h3>Scripting Trusted Page Content</h3>
 
 **Note that the feature described in this section is experimental: we'll
 very probably continue to support it, but the name of the `addon`
@@ -120,6 +121,8 @@ a line like `<script src="my-script.js"></script>` in the page header.
 
 * **in the "main.js" file**: remove the `contentScriptFile` option in
 the `Page()` constructor.
+
+</div>
 
 <api name="Page">
 @class

@@ -148,7 +148,7 @@ The "main.js" looks like this:
     // Send the content script a message called "show" when
     // the panel is shown.
     text_entry.on("show", function() {
-      text_entry.emit("show");
+      text_entry.port.emit("show");
     });
 
     // Listen for messages called "text-entered" coming from
@@ -214,7 +214,8 @@ To learn much more about content scripts, see the
 [Working with Content Scripts](dev-guide/addon-development/web-content.html)
 guide.
 
-### Scripting Trusted Panel Content ###
+<div class="experimental">
+<h3>Scripting Trusted Panel Content</h3>
 
 **Note that the feature described in this section is experimental: we'll
 very probably continue to support it, but the name of the `addon`
@@ -318,6 +319,8 @@ Finally, the HTML file now references "get-text.js" inside a `<script>` tag:
 </html>
 ]]>
 </script>
+
+</div>
 
 ## Styling Trusted Panel Content ##
 
