@@ -62,15 +62,16 @@ def generate_named_file(env_root, filename):
         raise ValueError("Not a valid path to a documentation file")
 
 def generate_docs(env_root, base_url=None, stdout=sys.stdout):
+    docs_dir = get_sdk_docs_path(env_root)
     # if the generated docs don't exist, generate everything
-    if not os.path.exists(os.path.join(get_sdk_docs_path(env_root), "dev-guide")):
+    if not os.path.exists(os.path.join(docs_dir, "dev-guide")):
         print >>stdout, "Generating documentation..."
         generate_docs_from_scratch(env_root, base_url)
         current_status = calculate_current_status(env_root)
-        open(os.path.join(get_sdk_docs_path(env_root), DIGEST), "w").write(current_status)
+        open(os.path.join(docs_dir, DIGEST), "w").write(current_status)
     else:
         current_status = calculate_current_status(env_root)
-        previous_status_file = os.path.join(get_sdk_docs_path(env_root), DIGEST)
+        previous_status_file = os.path.join(docs_dir, DIGEST)
         docs_are_up_to_date = False
         if os.path.exists(previous_status_file):
             docs_are_up_to_date = current_status == open(previous_status_file, "r").read()
@@ -78,13 +79,14 @@ def generate_docs(env_root, base_url=None, stdout=sys.stdout):
         if not docs_are_up_to_date:
             print >>stdout, "Regenerating documentation..."
             generate_docs_from_scratch(env_root, base_url)
-            open(os.path.join(get_sdk_docs_path(env_root), DIGEST), "w").write(current_status)
+            open(os.path.join(docs_dir, DIGEST), "w").write(current_status)
     return get_base_url(env_root) + "index.html"
 
 # this function builds a hash of the name and last modification date of:
 # * every file in "packages" which ends in ".md"
 # * every file in "static-files" which does not start with "."
 def calculate_current_status(env_root):
+    docs_dir = get_sdk_docs_path(env_root)
     current_status = hashlib.md5()
     package_src_dir = os.path.join(env_root, "packages")
     for (dirpath, dirnames, filenames) in os.walk(package_src_dir):
@@ -92,44 +94,45 @@ def calculate_current_status(env_root):
             if filename.endswith(".md"):
                 current_status.update(filename)
                 current_status.update(str(os.path.getmtime(os.path.join(dirpath, filename))))
-    guide_src_dir = os.path.join(get_sdk_docs_path(env_root), "dev-guide-source")
+    guide_src_dir = os.path.join(docs_dir, "dev-guide-source")
     for (dirpath, dirnames, filenames) in os.walk(guide_src_dir):
         for filename in filenames:
             if filename.endswith(".md"):
                 current_status.update(filename)
                 current_status.update(str(os.path.getmtime(os.path.join(dirpath, filename))))
-    base_html_file = os.path.join(get_sdk_docs_path(env_root), "static-files", "base.html")
+    base_html_file = os.path.join(docs_dir, "static-files", "base.html")
     current_status.update(base_html_file)
     current_status.update(str(os.path.getmtime(os.path.join(dirpath, base_html_file))))
     return current_status.digest()
 
 def generate_docs_from_scratch(env_root, base_url):
+    docs_dir = get_sdk_docs_path(env_root)
     web_docs = webdocs.WebDocs(env_root, base_url)
     must_rewrite_links = True
     if base_url:
         must_rewrite_links = False
-    clean_generated_docs(get_sdk_docs_path(env_root))
+    clean_generated_docs(docs_dir)
 
     # py2.5 doesn't have ignore=, so we delete tempfiles afterwards. If we
     # required >=py2.6, we could use ignore=shutil.ignore_patterns("*~")
-    for (dirpath, dirnames, filenames) in os.walk(get_sdk_docs_path(env_root)):
+    for (dirpath, dirnames, filenames) in os.walk(docs_dir):
         for n in filenames:
             if n.endswith("~"):
                 os.unlink(os.path.join(dirpath, n))
 
     # generate api docs from all packages
-    os.mkdir(os.path.join(get_sdk_docs_path(env_root), "packages"))
+    os.mkdir(os.path.join(docs_dir, "packages"))
     # create the index file and save that
     pkg_cfg = packaging.build_pkg_cfg(env_root)
     index = json.dumps(packaging.build_pkg_index(pkg_cfg))
-    index_path = os.path.join(get_sdk_docs_path(env_root), "packages", 'index.json')
+    index_path = os.path.join(docs_dir, "packages", 'index.json')
     open(index_path, 'w').write(index)
 
     # for each package, generate its docs
     for pkg_name, pkg in pkg_cfg['packages'].items():
         src_dir = pkg.root_dir
         package_dirname = os.path.basename(src_dir)
-        dest_dir = os.path.join(get_sdk_docs_path(env_root), "packages", package_dirname)
+        dest_dir = os.path.join(docs_dir, "packages", package_dirname)
         os.mkdir(dest_dir)
 
         src_readme = os.path.join(src_dir, "README.md")
@@ -150,12 +153,12 @@ def generate_docs_from_scratch(env_root, base_url):
         generate_file_tree(env_root, docs_src_dir, web_docs, generate_api_doc, must_rewrite_links)
 
     # generate all the guide docs
-    dev_guide_src = os.path.join(get_sdk_docs_path(env_root), "dev-guide-source")
+    dev_guide_src = os.path.join(docs_dir, "dev-guide-source")
     generate_file_tree(env_root, dev_guide_src, web_docs, generate_guide_doc, must_rewrite_links)
 
     # make /md/dev-guide/welcome.html the top level index file
-    doc_html, dest_dir, filename = generate_guide_doc(env_root, os.path.join(get_sdk_docs_path(env_root), 'dev-guide-source', 'welcome.md'), web_docs)
-    write_file(env_root, doc_html, get_sdk_docs_path(env_root), 'index', False)
+    doc_html, dest_dir, filename = generate_guide_doc(env_root, os.path.join(docs_dir, 'dev-guide-source', 'welcome.md'), web_docs)
+    write_file(env_root, doc_html, docs_dir, 'index', False)
 
 def generate_file_tree(env_root, src_dir, web_docs, generate_file, must_rewrite_links):
     for (dirpath, dirnames, filenames) in os.walk(src_dir):
