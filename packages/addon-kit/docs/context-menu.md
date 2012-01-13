@@ -309,6 +309,15 @@ create your content scripts in separate files and pass their URLs using the
 [Working with Content Scripts](dev-guide/addon-development/web-content.html)
 for more information.
 
+<div class="warning">
+<p>Unless your content script is extremely simple,
+don't use <code>contentScript</code>. Keep the script in
+a separate file and load it using <code>contentScriptFile</code>.</p>
+
+<p>This makes your code easier to maintain, secure, debug and review.</p>
+<p>You should never use <code>contentScript</code> with non-static strings.</p>
+</div>
+
 Show an "Edit Page Source" item when the user right-clicks a non-interactive
 part of the page:
 

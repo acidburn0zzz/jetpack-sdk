@@ -42,6 +42,15 @@ Scripts specified using contentScriptFile are loaded before those specified
 using contentScript. This enables you to load a JavaScript library like jQuery
 by URL, then pass in a simple script inline that can use jQuery.
 
+<div class="warning">
+<p>Unless your content script is extremely simple,
+don't use <code>contentScript</code>. Keep the script in
+a separate file and load it using <code>contentScriptFile</code>.</p>
+
+<p>This makes your code easier to maintain, secure, debug and review.</p>
+<p>You should never use <code>contentScript</code> with non-static strings.</p>
+</div>
+
 The `contentScriptWhen` option specifies when the content script(s) should be
 loaded. It takes one of three possible values:
 

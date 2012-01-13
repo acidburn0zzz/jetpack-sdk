@@ -88,6 +88,15 @@ have to send messages between the content script and the main add-on code.
 API or (preferably, usually) the
 [`port`](dev-guide/addon-development/content-scripts/using-port.html) API.
 
+<div class="warning">
+<p>Unless your content script is extremely simple,
+don't use <code>contentScript</code>. Keep the script in
+a separate file and load it using <code>contentScriptFile</code>.</p>
+
+<p>This makes your code easier to maintain, secure, debug and review.</p>
+<p>You should never use <code>contentScript</code> with non-static strings.</p>
+</div>
+
 <!-- The icons this widget displays, shown in the screenshot, is taken from the
 Glossy Buttons icon set created by IconEden which is made freely available for
 commercial and non-commercial use.

@@ -83,6 +83,15 @@ the `contentScript` property. In your own add-ons, you will probably want to
 create your content scripts in separate files and pass their URLs using the
 `contentScriptFile` property.
 
+<div class="warning">
+<p>Unless your content script is extremely simple,
+don't use <code>contentScript</code>. Keep the script in
+a separate file and load it using <code>contentScriptFile</code>.</p>
+
+<p>This makes your code easier to maintain, secure, debug and review.</p>
+<p>You should never use <code>contentScript</code> with non-static strings.</p>
+</div>
+
 To learn much more about content scripts, see the
 [Working with Content Scripts](dev-guide/addon-development/web-content.html)
 guide.

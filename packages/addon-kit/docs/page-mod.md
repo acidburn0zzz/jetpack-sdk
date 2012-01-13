@@ -70,7 +70,7 @@ then the content script can interact with the DOM itself:
 Most of the examples in this page define content scripts as strings,
 and use the `contentScript` option to assign them to page mods.
 
-In your code you will more often create content scripts in separate files
+Alternatively, you can create content scripts in separate files
 under your add-on's `data` directory. Then you can use the
 [`self`](packages/addon-kit/docs/self.html) module to retrieve a URL pointing
 to the file, and assign this to the page-mod's `contentScriptFile`
@@ -88,6 +88,15 @@ code like:
       contentScriptWhen: 'end',
       contentScriptFile: data.url("myScript.js")
     });
+
+<div class="warning">
+<p>Unless your content script is extremely simple,
+don't use <code>contentScript</code>. Keep the script in
+a separate file and load it using <code>contentScriptFile</code>.</p>
+
+<p>This makes your code easier to maintain, secure, debug and review.</p>
+<p>You should never use <code>contentScript</code> with non-static strings.</p>
+</div>
 
 ## Communicating With Content Scripts ##
 
