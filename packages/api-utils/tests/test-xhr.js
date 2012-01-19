@@ -1,13 +1,19 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 var xhr = require("xhr");
 var timer = require("timer");
 var { Loader } = require("./helpers");
 
+/* Test is intentionally disabled until platform bug 707256 is fixed.
 exports.testAbortedXhr = function(test) {
   var req = new xhr.XMLHttpRequest();
   test.assertEqual(xhr.getRequestCount(), 1);
   req.abort();
   test.assertEqual(xhr.getRequestCount(), 0);
 };
+*/
 
 exports.testLocalXhr = function(test) {
   var req = new xhr.XMLHttpRequest();

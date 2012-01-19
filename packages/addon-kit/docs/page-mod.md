@@ -1,3 +1,7 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
 <!-- contributed by Nickolay Ponomarev [asqueella@gmail.com] -->
 <!-- contributed by Myk Melez [myk@mozilla.org] -->
 <!-- contributed by Irakli Gozalishvil [gozala@mozilla.com] -->
@@ -50,6 +54,7 @@ loaded:
     });
 
 If you specify a value of "ready" or "end" for `contentScriptWhen`,
+as opposed to "start",
 then the content script can interact with the DOM itself:
 
     var pageMod = require("page-mod");

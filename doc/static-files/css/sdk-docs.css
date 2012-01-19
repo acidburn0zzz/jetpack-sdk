@@ -5,20 +5,22 @@ html, body {
 
 pre {
   color: black;
-  background-color: #e0effd;
+  background-color: whitesmoke;
   padding: 10px;
+  overflow:auto;
 }
 
 h2 {
   color: black;
   background-color: #F0F8FF;
   padding: 10px;
+  overflow:auto;
 }
 
 #columns {
   padding-left: 250px;      /* sidebar width + sidebar padding */
   padding-right: 65px;     /* main-content padding*/
-  padding-top: 40px;
+  padding-top: 20px;
   min-height: 100%;
   margin-bottom: 170px;
   position: relative;
@@ -37,7 +39,7 @@ h2 {
   left: 45px;
 }
 
-#site-header h1 a {
+#site-header {
   padding-left: 45px;
 }
 
@@ -323,4 +325,10 @@ h2 {
 .image-right {
   margin-left: 1.0em;
   float:right;
+}
+
+.experimental {
+  background-color: #FFFAAE;
+  color: black;
+  padding: 1px 10px;
 }
