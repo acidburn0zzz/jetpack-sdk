@@ -1,4 +1,8 @@
 @echo off
+rem This Source Code Form is subject to the terms of the Mozilla Public
+rem License, v. 2.0. If a copy of the MPL was not distributed with this
+rem file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 set VIRTUAL_ENV=%~dp0
 set VIRTUAL_ENV=%VIRTUAL_ENV:~0,-5%
 set CUDDLEFISH_ROOT=%VIRTUAL_ENV%
@@ -19,10 +23,6 @@ SET PYTHONVERSION=2.5
 call:CheckPython PYTHONINSTALL %PYTHONKEY%\%PYTHONVERSION%\InstallPath
 if "%PYTHONINSTALL%" NEQ "" goto FoundPython
 
-SET PYTHONVERSION=2.4
-call:CheckPython PYTHONINSTALL %PYTHONKEY%\%PYTHONVERSION%\InstallPath
-if "%PYTHONINSTALL%" NEQ "" goto FoundPython
-
 if not defined ProgramFiles(x86) goto win32
 
 rem look for 32-bit python on 64-bit windows
@@ -38,10 +38,6 @@ call:CheckPython PYTHONINSTALL %PYTHONKEY%\%PYTHONVERSION%\InstallPath
 if "%PYTHONINSTALL%" NEQ "" goto FoundPython
 
 SET PYTHONVERSION=2.5
-call:CheckPython PYTHONINSTALL %PYTHONKEY%\%PYTHONVERSION%\InstallPath
-if "%PYTHONINSTALL%" NEQ "" goto FoundPython
-
-SET PYTHONVERSION=2.4
 call:CheckPython PYTHONINSTALL %PYTHONKEY%\%PYTHONVERSION%\InstallPath
 if "%PYTHONINSTALL%" NEQ "" goto FoundPython
 

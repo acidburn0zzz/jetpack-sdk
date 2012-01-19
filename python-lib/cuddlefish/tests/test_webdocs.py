@@ -1,8 +1,11 @@
-import os, re
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+import os
 import unittest
 
 from cuddlefish.docs import webdocs
-from cuddlefish.tests import env_root
 
 class WebDocTests(unittest.TestCase):
     def test_create_package_doc(self):
@@ -34,6 +37,8 @@ class WebDocTests(unittest.TestCase):
             '<title>An Imposing Title - Add-on SDK Documentation</title>'\
             in guide)
         self.assertTrue('<p><em>Some words!</em></p>'\
+            in guide)
+        self.assertTrue('<div id="version">Version '\
             in guide)
 
     def test_create_guide2_doc(self):

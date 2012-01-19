@@ -1,15 +1,14 @@
-import sys, os, re, errno
+import os, re, errno
 import markdown
-import simplejson as json
 import cgi
 
 from cuddlefish import packaging
-from cuddlefish import Bunch
-from cuddlefish.docs import apiparser
 from cuddlefish.docs import apirenderer
+from cuddlefish._version import get_versions
 
 INDEX_PAGE = '/doc/static-files/base.html'
 BASE_URL_INSERTION_POINT = '<base '
+VERSION_INSERTION_POINT = '<div id="version">'
 HIGH_LEVEL_PACKAGE_SUMMARIES = '<li id="high-level-package-summaries">'
 LOW_LEVEL_PACKAGE_SUMMARIES = '<li id="low-level-package-summaries">'
 CONTENT_ID = '<div id="main-content">'
@@ -65,7 +64,7 @@ def insert_after(target, insertion_point_id, text_to_insert):
     return target[:insertion_point] + text_to_insert + target[insertion_point:]
 
 class WebDocs(object):
-    def __init__(self, root, base_url = '/'):
+    def __init__(self, root, base_url = None):
         self.root = root
         self.pkg_cfg = packaging.build_pkg_cfg(root)
         self.packages_json = packaging.build_pkg_index(self.pkg_cfg)
@@ -130,8 +129,11 @@ class WebDocs(object):
 
     def _create_base_page(self, root, base_url):
         base_page = unicode(open(root + INDEX_PAGE, 'r').read(), 'utf8')
-        base_tag = 'href="' + base_url + '"'
-        base_page = insert_after(base_page, BASE_URL_INSERTION_POINT, base_tag)
+        if base_url:
+            base_tag = 'href="' + base_url + '"'
+            base_page = insert_after(base_page, BASE_URL_INSERTION_POINT, base_tag)
+        sdk_version = get_versions()["version"]
+        base_page = insert_after(base_page, VERSION_INSERTION_POINT, "Version " + sdk_version)
         high_level_summaries = \
             self._create_package_summaries(self.packages_json, is_high_level)
         base_page = insert_after(base_page, \

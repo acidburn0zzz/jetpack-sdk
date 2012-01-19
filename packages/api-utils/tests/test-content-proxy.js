@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 const hiddenFrames = require("hidden-frame");
 const xulApp = require("xul-app");
 
@@ -140,6 +144,29 @@ exports.testKeyAccess = createProxyTest("", function(helper) {
 });
 
 
+// Bug 714778: There was some issue around `toString` functions
+//             that ended up being shared between content scripts
+exports.testSharedToStringProxies = createProxyTest("", function(helper) {
+
+  let worker = helper.createWorker(
+    'new ' + function ContentScriptScope() {
+      assert(document.location.toString() == "data:text/html,",
+             "document.location.toString()");
+      self.postMessage("next");
+    }
+  );
+  worker.on("message", function () {
+    helper.createWorker(
+      'new ' + function ContentScriptScope2() {
+        assert(document.location.toString() == "data:text/html,",
+               "document.location.toString()");
+        done();
+      }
+    );
+  });
+});
+
+
 // Ensure that postMessage is working correctly across documents with an iframe
 let html = '<iframe id="iframe" name="test" src="data:text/html," />';
 exports.testPostMessage = createProxyTest(html, function (helper, test) {
@@ -153,7 +180,10 @@ exports.testPostMessage = createProxyTest(html, function (helper, test) {
     test.assertEqual(event.source, ifWindow,
                      "event.source is the iframe window");
     test.assertEqual(event.origin, "null", "origin is null");
-    test.assertEqual(event.data, "ok", "message data is correct");
+
+    test.assertEqual(event.data, "{\"foo\":\"bar\\n \\\"escaped\\\".\"}",
+                     "message data is correct");
+
     helper.done();
   }, false);
 
@@ -161,7 +191,10 @@ exports.testPostMessage = createProxyTest(html, function (helper, test) {
     'new ' + function ContentScriptScope() {
       assert(postMessage === postMessage,
           "verify that we doesn't generate multiple functions for the same method");
-      document.getElementById("iframe").contentWindow.postMessage("ok", "*");
+
+      var json = JSON.stringify({foo : "bar\n \"escaped\"."});
+
+      document.getElementById("iframe").contentWindow.postMessage(json, "*");
     }
   );
 });

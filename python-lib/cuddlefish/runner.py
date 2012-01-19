@@ -1,19 +1,24 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 import os
 import sys
 import time
 import tempfile
 import atexit
-import shutil
 import shlex
 import subprocess
 import re
 
-import simplejson as json
 import mozrunner
 from cuddlefish.prefs import DEFAULT_COMMON_PREFS
 from cuddlefish.prefs import DEFAULT_FIREFOX_PREFS
 from cuddlefish.prefs import DEFAULT_THUNDERBIRD_PREFS
 from cuddlefish.prefs import DEFAULT_FENNEC_PREFS
+
+# Used to remove noise from ADB output
+CLEANUP_ADB = re.compile(r'^(I|E)/(stdout|stderr|GeckoConsole)\s*\(\s*\d+\):\s*(.*)$')
 
 # Maximum time we'll wait for tests to finish, in seconds.
 # The purpose of this timeout is to recover from infinite loops.  It should be
@@ -156,7 +161,7 @@ class RemoteFennecRunner(mozrunner.Runner):
         intents = self.getIntentNames()
         if not intents:
             raise ValueError("Unable to found any Firefox "
-                            "application on your device.")
+                             "application on your device.")
         elif mobile_app_name:
             if not mobile_app_name in intents:
                 raise ValueError("Unable to found Firefox application "
@@ -177,8 +182,10 @@ class RemoteFennecRunner(mozrunner.Runner):
         # First try to kill firefox if it is already running
         pid = self.getProcessPID(self._intent_name)
         if pid != None:
-            # Send a key "up" signal to mobile-killer addon
+            # Send a key "up" signal to mobile-utils addon
             # in order to kill running firefox instance
+            # KEYCODE_DPAD_UP = 19
+            # http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_DPAD_UP
             print "Killing running Firefox instance ..."
             subprocess.call([self._adb_path, "shell", "input keyevent 19"])
             subprocess.Popen(self.command, stdout=subprocess.PIPE).wait()
@@ -206,7 +213,7 @@ class RemoteFennecRunner(mozrunner.Runner):
                     remoteFile = os.path.join(remoteFile, relRoot)
                 remoteFile = os.path.join(remoteFile, file)
                 remoteFile = "/".join(remoteFile.split(os.sep))
-                subprocess.Popen([self._adb_path, "push", localFile, remoteFile], 
+                subprocess.Popen([self._adb_path, "push", localFile, remoteFile],
                                  stderr=subprocess.PIPE).wait()
             for dir in dirs:
                 targetDir = remoteDir.replace("/", os.sep)
@@ -366,7 +373,8 @@ class XulrunnerAppRunner(mozrunner.Runner):
 def run_app(harness_root_dir, manifest_rdf, harness_options,
             app_type, binary=None, profiledir=None, verbose=False,
             enforce_timeouts=False,
-            logfile=None, addons=None, args=None, norun=None,
+            logfile=None, addons=None, args=None, extra_environment={},
+            norun=None,
             used_files=None, enable_mobile=False,
             mobile_app_name=None):
     if binary:
@@ -406,7 +414,7 @@ def run_app(harness_root_dir, manifest_rdf, harness_options,
         raise ValueError("Unknown app: %s" % app_type)
     if sys.platform == 'darwin' and app_type != 'xulrunner':
         cmdargs.append('-foreground')
-    
+
     if args:
         cmdargs.extend(shlex.split(args))
 
@@ -441,13 +449,16 @@ def run_app(harness_root_dir, manifest_rdf, harness_options,
 
     logfile = os.path.abspath(os.path.expanduser(logfile))
     maybe_remove_logfile()
-    harness_options['logFile'] = logfile
+
+    if app_type != "fennec-on-device":
+        harness_options['logFile'] = logfile
 
     env = {}
     env.update(os.environ)
     env['MOZ_NO_REMOTE'] = '1'
     env['XPCOM_DEBUG_BREAK'] = 'stack'
     env['NS_TRACE_MALLOC_DISABLE_STACKS'] = '1'
+    env.update(extra_environment)
     if norun:
         cmdargs.append("-no-remote")
 
@@ -485,8 +496,8 @@ def run_app(harness_root_dir, manifest_rdf, harness_options,
         # Install a special addon when we run firefox on mobile device
         # in order to be able to kill it
         mydir = os.path.dirname(os.path.abspath(__file__))
-        killer_dir = os.path.join(mydir, "mobile-killer")
-        addons.append(killer_dir)
+        addon_dir = os.path.join(mydir, "mobile-utils")
+        addons.append(addon_dir)
 
     # the XPI file is copied into the profile here
     profile = profile_class(addons=addons,
@@ -505,12 +516,39 @@ def run_app(harness_root_dir, manifest_rdf, harness_options,
     sys.stdout.flush(); sys.stderr.flush()
 
     if app_type == "fennec-on-device":
-      # in case we run it on a mobile device, we only have to launch it
-      runner.start()
-      profile.cleanup()
-      time.sleep(1)
-      print >>sys.stderr, "Remote application launched successfully."
-      return 0
+        # In case of mobile device, we need to get stdio from `adb logcat` cmd:
+
+        # First flush logs in order to avoid catching previous ones
+        subprocess.call([binary, "logcat", "-c"])
+
+        # Launch adb command
+        runner.start()
+
+        # We can immediatly remove temporary profile folder
+        # as it has been uploaded to the device
+        profile.cleanup()
+        # We are not going to use the output log file
+        outf.close()
+
+        # Then we simply display stdout of `adb logcat`
+        p = subprocess.Popen([binary, "logcat", "stderr:V stdout:V GeckoConsole:V *:S"], stdout=subprocess.PIPE)
+        while True:
+            line = p.stdout.readline()
+            if line == '':
+                break
+            # mobile-utils addon contains an application quit event observer
+            # that will print this string:
+            if "APPLICATION-QUIT" in line:
+                break
+            m = CLEANUP_ADB.match(line)
+            if not m:
+                print line.rstrip()
+                continue
+            print m.group(3)
+
+        print >>sys.stderr, "Program terminated successfully."
+        return 0
+
 
     print >>sys.stderr, "Using binary at '%s'." % runner.binary
 
@@ -572,12 +610,12 @@ def run_app(harness_root_dir, manifest_rdf, harness_options,
 
     print >>sys.stderr, "Using profile at '%s'." % profile.profile
     sys.stderr.flush()
-    
+
     if norun:
         print "To launch the application, enter the following command:"
         print " ".join(runner.command) + " " + (" ".join(runner.cmdargs))
         return 0
-    
+
     runner.start()
 
     done = False
