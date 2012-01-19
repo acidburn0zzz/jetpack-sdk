@@ -84,12 +84,12 @@ create your content scripts in separate files and pass their URLs using the
 `contentScriptFile` property.
 
 <div class="warning">
-<p>Unless your content script is extremely simple,
-don't use <code>contentScript</code>. Keep the script in
-a separate file and load it using <code>contentScriptFile</code>.</p>
-
-<p>This makes your code easier to maintain, secure, debug and review.</p>
-<p>You should never use <code>contentScript</code> with non-static strings.</p>
+<p>Unless your content script is extremely simple and consists only of a
+static string, don't use <code>contentScript</code>: if you do, you may
+have problems getting your add-on approved on AMO.</p>
+<p>Instead, keep the script in a separate file and load it using
+<code>contentScriptFile</code>. This makes your code easier to maintain,
+secure, debug and review.</p>
 </div>
 
 To learn much more about content scripts, see the

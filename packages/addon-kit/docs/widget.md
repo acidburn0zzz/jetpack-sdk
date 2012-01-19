@@ -89,12 +89,12 @@ API or (preferably, usually) the
 [`port`](dev-guide/addon-development/content-scripts/using-port.html) API.
 
 <div class="warning">
-<p>Unless your content script is extremely simple,
-don't use <code>contentScript</code>. Keep the script in
-a separate file and load it using <code>contentScriptFile</code>.</p>
-
-<p>This makes your code easier to maintain, secure, debug and review.</p>
-<p>You should never use <code>contentScript</code> with non-static strings.</p>
+<p>Unless your content script is extremely simple and consists only of a
+static string, don't use <code>contentScript</code>: if you do, you may
+have problems getting your add-on approved on AMO.</p>
+<p>Instead, keep the script in a separate file and load it using
+<code>contentScriptFile</code>. This makes your code easier to maintain,
+secure, debug and review.</p>
 </div>
 
 <!-- The icons this widget displays, shown in the screenshot, is taken from the
