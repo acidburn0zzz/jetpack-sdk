@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<GoogleCustomizations>
+<CustomSearchEngine id="rvlazd1zehe" creator="017013284162333743052" keywords="" language="en" encoding="UTF-8">
+  <Title>Add-on SDK</Title>
+  <Description>Custom search for the Add-on SDK</Description>
+  <Context>
+    <BackgroundLabels>
+      <Label name="_cse_rvlazd1zehe" mode="FILTER" />
+      <Label name="_cse_exclude_rvlazd1zehe" mode="ELIMINATE" />
+    </BackgroundLabels>
+  </Context>
+  <LookAndFeel code="2" nonprofit="false" googlebranding="watermark" element_layout="1" theme="1" custom_theme="true" text_font="&quot;Trebuchet MS&quot;, sans-serif" url_length="full" enable_cse_thumbnail="true">
+    <Logo />
+    <Colors url="#003595" background="#F0F8FF" border="#F0F8FF" title="#000000" text="#000000" visited="#000000" title_hover="#000000" title_active="#000000" />
+    <Promotions title_color="#0000CC" title_visited_color="#0000CC" url_color="#008000" background_color="#FFFFFF" border_color="#336699" snippet_color="#000000" title_hover_color="#0000CC" title_active_color="#0000CC" />
+    <SearchControls input_border_color="#BCCDF0" button_border_color="#666666" button_background_color="#CECECE" tab_border_color="#E9E9E9" tab_background_color="#E9E9E9" tab_selected_border_color="#FF9900" tab_selected_background_color="#FFFFFF" />
+    <Results border_color="#F0F8FF" border_hover_color="#F0F8FF" background_color="#FFFFFF" background_hover_color="#FFFFFF" />
+  </LookAndFeel>
+  <AdSense />
+  <EnterpriseAccount />
+  <commerce_search_security_setting />
+  <autocomplete_settings />
+</CustomSearchEngine>
+
+<Include type="Annotations" href="http://members.shaw.ca/vill/docs/sdk/1.5/dev-guide/annotations.xml"/> 
+
+</GoogleCustomizations> 
