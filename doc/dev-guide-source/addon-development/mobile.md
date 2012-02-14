@@ -207,11 +207,6 @@ cfx xpi --force-mobile
 </pre>
 
 Actually installing the XPI on the device is a little tricky. The easiest way is
-probably to copy the XPI somewhere on the device, then navigate to it in the
-browser using the `file://` scheme.
-
-## Future Plans ##
-
-At the moment, mobile support is very experimental, and you'll have to work
-around a few rough edges to get it working. But we're working to add support
-for more modules, and to make the development and debugging process easier.
+probably to copy the XPI somewhere on the device, then navigate to it in Firefox
+using the `file://` scheme: the browser should open the XPI and ask if you
+want to install it.
