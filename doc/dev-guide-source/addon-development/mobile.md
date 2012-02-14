@@ -30,6 +30,8 @@ device connected via USB to a development machine containing the SDK, using the
 [Android Debug Bridge](http://developer.android.com/guide/developing/tools/adb.html)
 to communicate between the SDK tools and the device.
 
+<img class="image-center" src="static-files/media/mobile-setup-adb.png"/>
+
 It's possible to use the
 [Android emulator](http://developer.android.com/guide/developing/tools/emulator.html)
 to develop add-ons for Android without access to a device, but it's slow,
@@ -48,9 +50,9 @@ Then:
 on the device.
 * [enable USB debugging on the device (step 3 of this link only)](http://developer.android.com/guide/developing/device.html#setting-up)
 
-On the development machine, install:
+On the development machine:
 
-* version 1.5 or higher of the SDK
+* install version 1.5 or higher of the Add-on SDK
 * install the correct version of the
 [Android SDK](http://developer.android.com/sdk/index.html)
 for your device
@@ -59,11 +61,10 @@ for your device
 
 Next, attach the device to the development machine via USB.
 
-Android Platform Tools will install an executable called `adb` in the
-"platform-tools" directory under the directory in which you installed the
-SDK. Make sure this directory is in your path.
-
-Now open up a command prompt and type:
+Now open up a command prompt. Android Platform Tools will have
+installed an executable called `adb` in the "platform-tools"
+directory under the directory in which you installed the Android
+SDK. Make sure this directory is in your path. Then type:
 
 <pre>
 adb devices
