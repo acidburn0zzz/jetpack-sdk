@@ -15,7 +15,7 @@ You can use the same code to target both desktop Firefox and Firefox
 Mobile, and just specify some extra options to `cfx run`, `cfx test`,
 and `cfx xpi` when targeting Firefox Mobile.
 
-Right now only the following modules are supported:
+Right now only the following modules are fully functional:
 
 * [page-mod](packages/addon-kit/docs/page-mod.html)
 * [page-worker](packages/addon-kit/docs/page-worker.html)
@@ -91,12 +91,12 @@ to the supported modules.
 When you need to run the add-on, first ensure that Firefox is not running
 on the device. Then execute `cfx run` with some extra options:
 
-<span class="aside">See ["cfx Options for Mobile Development"](dev-guide/addon-development/mobile.html#cfx-options)
-for the details of this command.</span>
-
 <pre>
 cfx run -a fennec-on-device -b /path/to/adb --mobile-app fennec --force-mobile
 </pre>
+
+See ["cfx Options for Mobile Development"](dev-guide/addon-development/mobile.html#cfx-options)
+for the details of this command.
 
 In the command shell, you should see something like:
 
@@ -104,11 +104,12 @@ In the command shell, you should see something like:
 Launching mobile application with intent name org.mozilla.fennec
 Pushing the addon to your device
 Starting: Intent { act=android.activity.MAIN cmp=org.mozilla.fennec/.App (has extras) }
-Warning: Activity not started, its current task has been brought to the front
 --------- beginning of /dev/log/main
 --------- beginning of /dev/log/system
 Could not read chrome manifest 'file:///data/data/org.mozilla.fennec/chrome.manifest'.
-zerdatime 1329240908570 - browser chrome startup finished.
+info: starting
+info: starting
+zerdatime 1329258528988 - browser chrome startup finished.
 </pre>
 
 This will be followed by lots of debug output.
@@ -175,7 +176,7 @@ work on Android devices.
     <ul>
       <li><code>fennec</code>: if you're running Nightly</li>
       <li><code>fennec_aurora</code>: if you're running Aurora</li>
-      <li><code>fennec_beta</code>: if you're running Beta</li>
+      <li><code>firefox_beta</code>: if you're running Beta</li>
       <li><code>firefox</code>: if you're running Release</li>
     </ul>
     <p>If you're not sure, run a command like this (on OS X/Linux, or the equivalent on Windows):</p>
@@ -185,6 +186,8 @@ work on Android devices.
     <pre>package:org.mozilla.fennec</pre>
     <p>...then you need to specify:</p>
     <pre>--mobile-app fennec</pre>
+    <p>This option is not required if you have only one Firefox application
+    installed on the device.</p>
   </td>
 </tr>
 <tr>
@@ -207,6 +210,25 @@ cfx xpi --force-mobile
 </pre>
 
 Actually installing the XPI on the device is a little tricky. The easiest way is
-probably to copy the XPI somewhere on the device, then navigate to it in Firefox
-using the `file://` scheme: the browser should open the XPI and ask if you
+probably to copy the XPI somewhere on the device:
+
+<pre>
+adb push my-addon.xpi /mnt/sdcard/
+</pre>
+
+Then open Firefox Mobile and type this into the address bar:
+
+<pre>
+file:///mnt/sdcard/my-addon.xpi
+</pre>
+
+The browser should open the XPI and ask if you
 want to install it.
+
+Afterwards you can delete it using `adb` as follows:
+
+<pre>
+adb shell
+cd /mnt/sdcard
+rm my-addon.xpi
+</pre>
