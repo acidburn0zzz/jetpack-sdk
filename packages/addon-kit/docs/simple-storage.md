@@ -8,7 +8,7 @@ kind of like that, but for add-ons.
 
 [DOM storage]: https://developer.mozilla.org/en/DOM/Storage
 
-The `simple storage` module exports an object called `storage` that is persistent
+The simple storage module exports an object called `storage` that is persistent
 and private to your add-on.  It's a normal JavaScript object, and you can treat
 it as you would any other.
 
@@ -34,9 +34,9 @@ Be careful to set properties on the `storage` object and not the module itself:
 
 Simple Storage and "cfx run"
 ----------------------------
-The `simple storage` module stores its data in your profile.
+The simple storage module stores its data in your profile.
 Because `cfx run` by default uses a fresh profile each time it runs,
-`simple storage` won't work with add-ons executed using `cfx run` - that
+simple storage won't work with add-ons executed using `cfx run` - that
 is, stored data will not persist from one run to the next.
 
 The easiest solution to this problem is to use the `--profiledir`
@@ -45,7 +45,7 @@ argument, and tells `cfx` to use that profile, rather than create
 a fresh one. By specifying the same profile for each run, data
 stored using simple storage will persist across runs.
 
-If you give `-profiledir` a path to a nonexistent profile, `cfx`
+If you give `--profiledir` a path to a nonexistent profile, `cfx`
 will create a profile there for you. So you just have to make up
 a path and name the first time, and keep using it:
 
@@ -55,7 +55,7 @@ cfx run --profile-dir="~/addon-dev/profiles/boogaloo"
 
 If you use this method, you must end your debugging session by
 quitting Firefox normally, not by cancelling the shell command.
-If you don't close Firefox normally, then `simple-storage` will
+If you don't close Firefox normally, then simple storage will
 not be notified that the session is finished, and will not write
 your data to the backing store.
 
