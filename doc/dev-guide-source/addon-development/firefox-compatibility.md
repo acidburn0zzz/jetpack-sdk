@@ -14,7 +14,9 @@ release is tested against, and marked as compatible with, two
 versions of Firefox:
 
 * the currently shipping Firefox version at the time the SDK is released
-* the Beta Firefox version at the time the SDK is released
+* the Beta Firefox version at the time the SDK is released - which,
+because SDK and Firefox releases are staggered, will become the
+currently shipping Firefox three week later
 
 Add-ons built using a particular version of the SDK are marked
 as being compatible with those two versions of Firefox, meaning
