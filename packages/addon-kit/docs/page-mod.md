@@ -27,13 +27,13 @@ Like all modules that interact with web content, page-mod uses content
 scripts that execute in the content process and defines a messaging API to
 communicate between the content scripts and the main add-on script. For more
 details on content scripting see the tutorial on [interacting with web
-content](dev-guide/addon-development/web-content.html).
+content](dev-guide/guides/content-scripts/index.html).
 
 To create a PageMod the add-on developer supplies:
 
 * a set of rules to select the desired subset of web pages based on their URL.
 Each rule is specified using the
-[match-pattern](packages/api-utils/docs/match-pattern.html) syntax.
+[match-pattern](packages/api-utils/match-pattern.html) syntax.
 
 * a set of content scripts to execute in the context of the desired pages.
 
@@ -70,9 +70,9 @@ then the content script can interact with the DOM itself:
 Most of the examples in this page define content scripts as strings,
 and use the `contentScript` option to assign them to page mods.
 
-In your code you will more often create content scripts in separate files
+Alternatively, you can create content scripts in separate files
 under your add-on's `data` directory. Then you can use the
-[`self`](packages/addon-kit/docs/self.html) module to retrieve a URL pointing
+[`self`](packages/addon-kit/self.html) module to retrieve a URL pointing
 to the file, and assign this to the page-mod's `contentScriptFile`
 property.
 
@@ -81,13 +81,44 @@ file in your `data` directory as "myScript.js", you would assign it using
 code like:
 
     var data = require("self").data;
-    
+
     var pageMod = require("page-mod");
     pageMod.PageMod({
       include: "*.org",
       contentScriptWhen: 'end',
       contentScriptFile: data.url("myScript.js")
     });
+
+<div class="warning">
+<p>Unless your content script is extremely simple and consists only of a
+static string, don't use <code>contentScript</code>: if you do, you may
+have problems getting your add-on approved on AMO.</p>
+<p>Instead, keep the script in a separate file and load it using
+<code>contentScriptFile</code>. This makes your code easier to maintain,
+secure, debug and review.</p>
+</div>
+
+### Styling web pages ###
+
+Sometimes adding a script to web pages is not enough, you also want to styling
+them. `PageMod` provides an easy way to do that through options' `contentStyle`
+and `contentStyleFile` properties:
+
+    var data = require("self").data;
+    var pageMod = require("page-mod");
+
+    pageMod.PageMod({
+      include: "*.org",
+
+      contentStyleFile: data.url("my-page-mod.css"),
+      contentStyle: [
+        "div { padding: 10px; border: 1px solid silver}",
+        "img { display: none}"
+      ]
+    })
+
+It's important to note that `PageMod` will add these styles as
+[user style sheet](https://developer.mozilla.org/en/CSS/Getting_Started/Cascading_and_inheritance).
 
 ## Communicating With Content Scripts ##
 
@@ -186,9 +217,9 @@ The console output of this add-on is:
 
 ### Mapping workers to tabs ###
 
-The [`worker`](packages/api-utils/docs/content/worker.html) has a `tab`
+The [`worker`](packages/api-utils/content/worker.html) has a `tab`
 property which returns the tab associated with this worker. You can use this
-to access the [`tabs API`](packages/addon-kit/docs/tabs.html) for the tab
+to access the [`tabs API`](packages/addon-kit/tabs.html) for the tab
 associated with a specific page:
 
     var pageMod = require("page-mod");
@@ -211,7 +242,7 @@ For example, we might want to run a script in the context of the currently
 active tab when the user clicks a widget: to block certain content, to
 change the font style, or to display the page's DOM structure.
 
-Using the `attach` method of the [`tab`](packages/addon-kit/docs/tabs.html)
+Using the `attach` method of the [`tab`](packages/addon-kit/tabs.html)
 object, you can attach a set of content scripts to a particular tab. The
 scripts are executed immediately.
 
@@ -292,7 +323,7 @@ Creates a PageMod.
   @prop include {string,array}
     A match pattern string or an array of match pattern strings.  These define
     the pages to which the PageMod applies.  See the
-    [match-pattern](packages/api-utils/docs/match-pattern.html) module for
+    [match-pattern](packages/api-utils/match-pattern.html) module for
     a description of match pattern syntax.
     At least one match pattern must be supplied.
 
@@ -322,6 +353,15 @@ Creates a PageMod.
 
     This property is optional and defaults to "end".
 
+  @prop [contentStyleFile] {string,array}
+    The local file URLs of stylesheet to load. Content style specified by this
+    option are loaded *before* those specified by the `contentStyle` option.
+    Optional.
+  @prop [contentStyle] {string,array}
+    The texts of stylesheet rules to add. Content styles specified by this
+    option are loaded *after* those specified by the `contentStyleFile` option.
+    Optional.
+
   @prop [onAttach] {function}
 A function to call when the PageMod attaches content scripts to
 a matching page. The function will be called with one argument, a `worker`
@@ -332,9 +372,9 @@ attached to the page in question.
 
 <api name="include">
 @property {List}
-A [list](packages/api-utils/docs/list.html) of match pattern strings.  These
+A [list](packages/api-utils/list.html) of match pattern strings.  These
 define the pages to which the page mod applies.  See the
-[match-pattern](packages/api-utils/docs/match-pattern.html) module for a
+[match-pattern](packages/api-utils/match-pattern.html) module for a
 description of match patterns. Rules can be added to the list by calling its
 `add` method and removed by calling its `remove` method.
 
@@ -344,7 +384,8 @@ description of match patterns. Rules can be added to the list by calling its
 @method
 Stops the page mod from making any more modifications.  Once destroyed the page
 mod can no longer be used.  Note that modifications already made to open pages
-will not be undone.
+will not be undone, except for any stylesheet added by `contentStyle` or
+`contentStyleFile`, that are unregistered immediately.
 </api>
 
 <api name="attach">
@@ -353,7 +394,7 @@ This event is emitted this event when the page-mod's content scripts are
 attached to a page whose URL matches the page-mod's `include` filter.
 
 @argument {Worker}
-The listener function is passed a [`Worker`](packages/api-utils/docs/content/worker.html) object that can be used to communicate
+The listener function is passed a [`Worker`](packages/api-utils/content/worker.html) object that can be used to communicate
 with any content scripts attached to this page.
 </api>
 
