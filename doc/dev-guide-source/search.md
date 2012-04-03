@@ -1,6 +1,6 @@
 <div id="cse" style="width: 100%;">Loading</div>
 <script src="http://www.google.com/jsapi" type="text/javascript"></script>
-<script type="text/javascript"> 
+<script type="text/javascript">
 function parseQueryFromUrl () {
   var queryParamName = "q";
   var search = window.location.search.substr(1);
@@ -21,7 +21,7 @@ google.setOnLoadCallback(function() {
     '017013284162333743052:rvlazd1zehe', customSearchOptions);
   customSearchControl.setResultSetSize(google.search.Search.FILTERED_CSE_RESULTSET);
   var options = new google.search.DrawOptions();
-  options.enableSearchResultsOnly(); 
+  options.enableSearchResultsOnly();
   customSearchControl.draw('cse', options);
   var queryFromUrl = parseQueryFromUrl();
   if (queryFromUrl) {
