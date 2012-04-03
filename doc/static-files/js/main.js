@@ -74,10 +74,18 @@ function run(jQuery) {
     }
   }
 
+  function refreshSearchBox() {
+    var searchBox = document.getElementById("search-box");
+    searchBox.value = "";
+    searchBox.focus();
+    searchBox.blur();
+  }
+
   showThirdPartyModules();
   highlightCode();
   $(".syntaxhighlighter").width("auto");
   generateToC();
+  refreshSearchBox();
 }
 
 $(window).ready(function() {
