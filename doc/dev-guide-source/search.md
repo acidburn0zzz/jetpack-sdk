@@ -16,6 +16,7 @@
 
   google.load('search', '1', {language : 'en'});
   google.setOnLoadCallback(function() {
+    alert("searching");
     var customSearchOptions = {};
     var customSearchControl = new google.search.CustomSearchControl(
       '017013284162333743052:rvlazd1zehe', customSearchOptions);
