@@ -5,7 +5,7 @@
 function run(jQuery) {
 
   function showThirdPartyModules() {
-    if ($("#third-party-package-summaries").html() != "") {
+    if ($("#third-party-package-summaries").html() != null) {
       $("#third-party-packages-subsection").show();
     }
   }

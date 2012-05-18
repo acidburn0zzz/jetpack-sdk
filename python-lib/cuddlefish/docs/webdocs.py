@@ -13,9 +13,14 @@ from cuddlefish._version import get_versions
 INDEX_PAGE = '/doc/static-files/base.html'
 BASE_URL_INSERTION_POINT = '<base '
 VERSION_INSERTION_POINT = '<div id="version">'
-THIRD_PARTY_PACKAGE_SUMMARIES = '<ul id="third-party-package-summaries">'
-HIGH_LEVEL_PACKAGE_SUMMARIES = '<ul id="high-level-package-summaries">'
-LOW_LEVEL_PACKAGE_SUMMARIES = '<ul id="low-level-package-summaries">'
+
+THIRD_PARTY_PACKAGE_SUMMARIES_PLACEHOLDER = 'id="third-party-package-summaries-placeholder">'
+HIGH_LEVEL_PACKAGE_SUMMARIES_PLACEHOLDER = 'id="high-level-package-summaries-placeholder">'
+LOW_LEVEL_PACKAGE_SUMMARIES_PLACEHOLDER = 'id="low-level-package-summaries-placeholder">'
+
+THIRD_PARTY_PACKAGE_SUMMARIES = 'third-party-package-summaries'
+HIGH_LEVEL_PACKAGE_SUMMARIES = 'high-level-package-summaries'
+LOW_LEVEL_PACKAGE_SUMMARIES = 'low-level-package-summaries'
 CONTENT_ID = '<div id="main-content">'
 TITLE_ID = '<title>'
 DEFAULT_TITLE = 'Add-on SDK Documentation'
@@ -100,7 +105,7 @@ class WebDocs(object):
             module_items += module_link
         return module_items
 
-    def _create_package_summaries(self, packages_json, include):
+    def _create_package_summaries(self, packages_json, include, summary_id):
         packages = ''
         for package_name in packages_json.keys():
             package_json = packages_json[package_name]
@@ -116,6 +121,8 @@ class WebDocs(object):
             text += self._create_module_list(package_json)
             packages += tag_wrap(text, 'li', {'class':'package-summary', \
               'style':'display: block;'})
+        if packages:
+            packages = tag_wrap(packages, "ul", {"id":summary_id})
         return packages
 
     def _create_base_page(self, root, base_url):
@@ -126,17 +133,17 @@ class WebDocs(object):
         sdk_version = get_versions()["version"]
         base_page = insert_after(base_page, VERSION_INSERTION_POINT, "Version " + sdk_version)
         third_party_summaries = \
-            self._create_package_summaries(self.packages_json, is_third_party)
+            self._create_package_summaries(self.packages_json, is_third_party, THIRD_PARTY_PACKAGE_SUMMARIES)
         base_page = insert_after(base_page, \
-            THIRD_PARTY_PACKAGE_SUMMARIES, third_party_summaries)
+            THIRD_PARTY_PACKAGE_SUMMARIES_PLACEHOLDER, third_party_summaries)
         high_level_summaries = \
-            self._create_package_summaries(self.packages_json, is_high_level)
+            self._create_package_summaries(self.packages_json, is_high_level, HIGH_LEVEL_PACKAGE_SUMMARIES)
         base_page = insert_after(base_page, \
-            HIGH_LEVEL_PACKAGE_SUMMARIES, high_level_summaries)
+            HIGH_LEVEL_PACKAGE_SUMMARIES_PLACEHOLDER, high_level_summaries)
         low_level_summaries = \
-            self._create_package_summaries(self.packages_json, is_low_level)
+            self._create_package_summaries(self.packages_json, is_low_level, LOW_LEVEL_PACKAGE_SUMMARIES)
         base_page = insert_after(base_page, \
-            LOW_LEVEL_PACKAGE_SUMMARIES, low_level_summaries)
+            LOW_LEVEL_PACKAGE_SUMMARIES_PLACEHOLDER, low_level_summaries)
         return base_page
 
     def _create_package_detail_row(self, field_value, \
