@@ -100,6 +100,23 @@ function run(jQuery) {
   generateAnchors();
   generateToC();
   jumpToAnchor();
+
+  $.ajax({
+    url: "http://192.168.1.64/~Work/doc/index.html",
+    cache: false,
+    crossDomain: true,
+    complete: function(req, status) {
+ //     window.alert(req.responseText + status);
+    },
+    success: function(data, textStatus, jqXHR) {
+      window.alert(data);
+    },
+    error: function(req, textStatus, errorThrown) {
+ //     window.alert(req.getResponseHeader() + " : " + textStatus + " : " + errorThrown);
+    }
+  });
+
+
 }
 
 $(window).ready(function() {
