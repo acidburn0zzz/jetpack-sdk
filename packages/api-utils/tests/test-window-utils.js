@@ -7,11 +7,11 @@
 var windowUtils = require("api-utils/window-utils");
 var timer = require("api-utils/timer");
 var { Cc, Ci } = require("chrome");
-var { Loader } = require("./helpers");
+var { Loader, unload } = require("test-harness/loader");
 
 function toArray(iterator) {
   let array = [];
-  for each (let item in iterator())
+  for each (let item in iterator)
     array.push(item);
   return array;
 }
@@ -23,7 +23,7 @@ function makeEmptyWindow() {
                   '                 type="text/css"?>' +
                   '<window xmlns="' + xulNs + '" windowtype="test:window">' +
                   '</window>');
-  var url = "data:application/vnd.mozilla.xul+xml," + escape(blankXul);
+  var url = "data:application/vnd.mozilla.xul+xml;charset=utf-8," + escape(blankXul);
   var features = ["chrome", "width=10", "height=10"];
 
   var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"]
@@ -62,13 +62,14 @@ exports['test close on unload'] = function(assert) {
                    "unload listener added on closeOnUnload()");
   assert.equal(timesClosed, 0,
                    "window not closed when registered.");
-  loader.require("unload").send();
+  loader.unload();
   assert.equal(timesClosed, 1,
                    "window closed on module unload.");
   assert.equal(fakeWindow._listeners.length, 0,
                    "unload event listener removed on module unload");
 
   timesClosed = 0;
+  loader = Loader(module);
   loader.require("window-utils").closeOnUnload(fakeWindow);
   assert.equal(timesClosed, 0,
                    "window not closed when registered.");
@@ -77,10 +78,9 @@ exports['test close on unload'] = function(assert) {
                    "window closed when close() called.");
   assert.equal(fakeWindow._listeners.length, 0,
                    "unload event listener removed on window close");
-  loader.require("unload").send();
+  loader.unload();
   assert.equal(timesClosed, 1,
                    "window not closed again on module unload.");
-  loader.unload();  
 };
 
 exports['test window watcher'] = function(assert, done) {
@@ -317,5 +317,34 @@ exports['test active window'] = function(assert, done) {
 
   nextTest();
 };
+
+exports['test windowIterator'] = function(assert, done) {
+  // make a new window
+  let window = makeEmptyWindow();
+
+  // make sure that the window hasn't loaded yet
+  assert.notEqual(
+      window.document.readyState,
+      "complete",
+      "window hasn't loaded yet.");
+
+  // this window should only appear in windowIterator() while its loading
+  assert.ok(toArray(windowUtils.windowIterator()).indexOf(window) === -1,
+            "window isn't in windowIterator()");
+
+  // Then it should be in windowIterator()
+  window.addEventListener("load", function onload() {
+    window.addEventListener("load", onload, false);
+    assert.ok(toArray(windowUtils.windowIterator()).indexOf(window) !== -1,
+              "window is now in windowIterator(false)");
+
+    // Wait for the window unload before ending test
+    window.addEventListener("unload", function onunload() {
+      window.addEventListener("unload", onunload, false);
+      done();
+    }, false);
+    window.close();
+  }, false);
+}
 
 require("test").run(exports);

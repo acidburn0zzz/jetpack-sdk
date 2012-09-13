@@ -6,8 +6,11 @@
 
 var pageMod = require("page-mod");
 var testPageMod = require("pagemod-test-helpers").testPageMod;
-const { Loader } = require('./helpers');
+const { Loader } = require('test-harness/loader');
 const tabs = require("tabs");
+const timer = require("timer");
+const { Cc, Ci } = require("chrome");
+const windowUtils = require('api-utils/window/utils');
 
 /* XXX This can be used to delay closing the test Firefox instance for interactive
  * testing or visual inspection. This test is registered first so that it runs
@@ -15,7 +18,7 @@ const tabs = require("tabs");
 exports.delay = function(test) {
   if (false) {
     test.waitUntilDone(60000);
-    require("timer").setTimeout(function() {test.done();}, 4000);
+    timer.setTimeout(function() {test.done();}, 4000);
   } else
     test.pass();
 }
@@ -180,7 +183,7 @@ exports.testCommunication2 = function(test) {
   let callbackDone = null,
       window;
 
-  testPageMod(test, "about:credits", [{
+  testPageMod(test, "about:license", [{
       include: "about:*",
       contentScriptWhen: 'start',
       contentScript: 'new ' + function WorkerScope() {
@@ -267,7 +270,7 @@ exports.testMixedContext = function(test) {
   let doneCallback = null;
   let messages = 0;
   let modObject = {
-    include: "data:text/html,",
+    include: "data:text/html;charset=utf-8,",
     contentScript: 'new ' + function WorkerScope() {
       // Both scripts will execute this,
       // context is shared if one script see the other one modification.
@@ -288,7 +291,7 @@ exports.testMixedContext = function(test) {
       });
     }
   };
-  testPageMod(test, "data:text/html,", [modObject, modObject],
+  testPageMod(test, "data:text/html;charset=utf-8,", [modObject, modObject],
     function(win, done) {
       doneCallback = done;
     }
@@ -347,6 +350,29 @@ exports.testRelatedTab = function(test) {
 
 };
 
+exports.testWorksWithExistingTabs = function(test) {
+  test.waitUntilDone();
+
+  let url = "data:text/html;charset=utf-8," + encodeURI("Test unique document");
+  let { PageMod } = require("page-mod");
+  tabs.open({
+    url: url,
+    onReady: function onReady(tab) {
+      let pageMod = new PageMod({
+        include: url,
+        attachTo: ["existing", "top", "frame"],
+        onAttach: function(worker) {
+          test.assertEqual(tab, worker.tab, "A worker has been created on this existing tab");
+          pageMod.destroy();
+          tab.close();
+          test.done();
+        }
+      });
+    }
+  });
+
+};
+
 exports['test tab worker on message'] = function(test) {
   test.waitUntilDone();
 
@@ -354,12 +380,12 @@ exports['test tab worker on message'] = function(test) {
   let tabs = require("tabs");
   let { PageMod } = require("page-mod");
 
-  let url1 = "data:text/html,<title>tab1</title><h1>worker1.tab</h1>";
-  let url2 = "data:text/html,<title>tab2</title><h1>worker2.tab</h1>";
+  let url1 = "data:text/html;charset=utf-8,<title>tab1</title><h1>worker1.tab</h1>";
+  let url2 = "data:text/html;charset=utf-8,<title>tab2</title><h1>worker2.tab</h1>";
   let worker1 = null;
 
   let mod = PageMod({
-    include: "data:text/html,*",
+    include: "data:text/html*",
     contentScriptWhen: "ready",
     contentScript: "self.postMessage('#1');",
     onAttach: function onAttach(worker) {
@@ -419,9 +445,199 @@ exports.testAutomaticDestroy = function(test) {
 
 }
 
+exports['test attachment to tabs only'] = function(test) {
+  test.waitUntilDone();
+
+  let { PageMod } = require('page-mod');
+  let openedTab = null; // Tab opened in openTabWithIframe()
+  let workerCount = 0;
+
+  let mod = PageMod({
+    include: 'data:text/html*',
+    contentScriptWhen: 'start',
+    contentScript: '',
+    onAttach: function onAttach(worker) {
+      if (worker.tab === openedTab) {
+        if (++workerCount == 3) {
+          test.pass('Succesfully applied to tab documents and its iframe');
+          worker.destroy();
+          mod.destroy();
+          test.done();
+        }
+      }
+      else {
+        test.fail('page-mod attached to a non-tab document');
+      }
+    }
+  });
+
+  function openHiddenFrame() {
+    console.info('Open iframe in hidden window');
+    let hiddenFrames = require('api-utils/hidden-frame');
+    let hiddenFrame = hiddenFrames.add(hiddenFrames.HiddenFrame({
+      onReady: function () {
+        let element = this.element;
+        element.addEventListener('DOMContentLoaded', function onload() {
+          element.removeEventListener('DOMContentLoaded', onload, false);
+          hiddenFrames.remove(hiddenFrame);
+          openToplevelWindow();
+        }, false);
+        element.setAttribute('src', 'data:text/html;charset=utf-8,foo');
+      }
+    }));
+  }
+
+  function openToplevelWindow() {
+    console.info('Open toplevel window');
+    let win = windowUtils.open('data:text/html;charset=utf-8,bar');
+    win.addEventListener('DOMContentLoaded', function onload() {
+      win.removeEventListener('DOMContentLoaded', onload, false);
+      win.close();
+      openBrowserIframe();
+    }, false);
+  }
+
+  function openBrowserIframe() {
+    console.info('Open iframe in browser window');
+    let window = require('api-utils/window-utils').activeBrowserWindow;
+    let document = window.document;
+    let iframe = document.createElement('iframe');
+    iframe.setAttribute('type', 'content');
+    iframe.setAttribute('src', 'data:text/html;charset=utf-8,foobar');
+    iframe.addEventListener('DOMContentLoaded', function onload() {
+      iframe.removeEventListener('DOMContentLoaded', onload, false);
+      iframe.parentNode.removeChild(iframe);
+      openTabWithIframes();
+    }, false);
+    document.documentElement.appendChild(iframe);
+  }
+
+  // Only these three documents will be accepted by the page-mod
+  function openTabWithIframes() {
+    console.info('Open iframes in a tab');
+    let subContent = '<iframe src="data:text/html;charset=utf-8,sub frame" />'
+    let content = '<iframe src="data:text/html,' +
+                  encodeURIComponent(subContent) + '" />';
+    require('tabs').open({
+      url: 'data:text/html;charset=utf-8,' + encodeURIComponent(content),
+      onOpen: function onOpen(tab) {
+        openedTab = tab;
+      }
+    });
+  }
+
+  openHiddenFrame();
+};
+
+exports['test111 attachTo [top]'] = function(test) {
+  test.waitUntilDone();
+
+  let { PageMod } = require('page-mod');
+
+  let subContent = '<iframe src="data:text/html;charset=utf-8,sub frame" />'
+  let content = '<iframe src="data:text/html;charset=utf-8,' +
+                encodeURIComponent(subContent) + '" />';
+  let topDocumentURL = 'data:text/html;charset=utf-8,' + encodeURIComponent(content)
+
+  let workerCount = 0;
+
+  let mod = PageMod({
+    include: 'data:text/html*',
+    contentScriptWhen: 'start',
+    contentScript: 'self.postMessage(document.location.href);',
+    attachTo: ['top'],
+    onAttach: function onAttach(worker) {
+      if (++workerCount == 1) {
+        worker.on('message', function (href) {
+          test.assertEqual(href, topDocumentURL,
+                           "worker on top level document only");
+          worker.destroy();
+          mod.destroy();
+          test.done();
+        });
+      }
+      else {
+        test.fail('page-mod attached to a non-top document');
+      }
+    }
+  });
+
+  require('tabs').open(topDocumentURL);
+};
+
+exports['test111 attachTo [frame]'] = function(test) {
+  test.waitUntilDone();
+
+  let { PageMod } = require('page-mod');
+
+  let subFrameURL = 'data:text/html;charset=utf-8,subframe';
+  let subContent = '<iframe src="' + subFrameURL + '" />';
+  let frameURL = 'data:text/html;charset=utf-8,' + encodeURIComponent(subContent);
+  let content = '<iframe src="' + frameURL + '" />';
+  let topDocumentURL = 'data:text/html;charset=utf-8,' + encodeURIComponent(content)
+
+  let workerCount = 0, messageCount = 0;
+
+  function onMessage(href) {
+    if (href == frameURL)
+      test.pass("worker on first frame");
+    else if (href == subFrameURL)
+      test.pass("worker on second frame");
+    else
+      test.fail("worker on unexpected document: " + href);
+    this.destroy();
+    if (++messageCount == 2) {
+      mod.destroy();
+      test.done();
+    }
+  }
+  let mod = PageMod({
+    include: 'data:text/html*',
+    contentScriptWhen: 'start',
+    contentScript: 'self.postMessage(document.location.href);',
+    attachTo: ['frame'],
+    onAttach: function onAttach(worker) {
+      if (++workerCount <= 2) {
+        worker.on('message', onMessage);
+      }
+      else {
+        test.fail('page-mod attached to a non-frame document');
+      }
+    }
+  });
+
+  require('tabs').open(topDocumentURL);
+};
+
+exports.testContentScriptOptionsOption = function(test) {
+	test.waitUntilDone();
+
+  let callbackDone = null;
+  testPageMod(test, "about:", [{
+      include: "about:*",
+      contentScript: "self.postMessage( [typeof self.options.d, self.options] );",
+      contentScriptWhen: "end",
+      contentScriptOptions: {a: true, b: [1,2,3], c: "string", d: function(){ return 'test'}},
+      onAttach: function(worker) {
+        worker.on('message', function(msg) {
+          test.assertEqual( msg[0], 'undefined', 'functions are stripped from contentScriptOptions' );
+          test.assertEqual( typeof msg[1], 'object', 'object as contentScriptOptions' );
+          test.assertEqual( msg[1].a, true, 'boolean in contentScriptOptions' );
+          test.assertEqual( msg[1].b.join(), '1,2,3', 'array and numbers in contentScriptOptions' );
+          test.assertEqual( msg[1].c, 'string', 'string in contentScriptOptions' );
+          callbackDone();
+        });
+      }
+    }],
+    function(win, done) {
+      callbackDone = done;
+    }
+  );
+};
+
 exports.testPageModCss = function(test) {
   let [pageMod] = testPageMod(test,
-    'data:text/html,<div style="background: silver">css test</div>', [{
+    'data:text/html;charset=utf-8,<div style="background: silver">css test</div>', [{
       include: "data:*",
       contentStyle: "div { height: 100px; }",
       contentStyleFile:
@@ -446,16 +662,16 @@ exports.testPageModCss = function(test) {
 
 exports.testPageModCssList = function(test) {
   let [pageMod] = testPageMod(test,
-    'data:text/html,<div style="width:320px; max-width: 480px!important">css test</div>', [{
+    'data:text/html;charset=utf-8,<div style="width:320px; max-width: 480px!important">css test</div>', [{
       include: "data:*",
       contentStyleFile: [
         // Highlight evaluation order in this list
-        "data:text/css,div { border: 1px solid black; }",
-        "data:text/css,div { border: 10px solid black; }",
+        "data:text/css;charset=utf-8,div { border: 1px solid black; }",
+        "data:text/css;charset=utf-8,div { border: 10px solid black; }",
         // Highlight evaluation order between contentStylesheet & contentStylesheetFile
-        "data:text/css,div { height: 1000px; }",
+        "data:text/cs;charset=utf-8s,div { height: 1000px; }",
         // Highlight precedence between the author and user style sheet
-        "data:text/css,div { width: 200px; max-width: 640px!important}",
+        "data:text/css;charset=utf-8,div { width: 200px; max-width: 640px!important}",
       ],
       contentStyle: [
         "div { height: 10px; }",
@@ -497,7 +713,7 @@ exports.testPageModCssList = function(test) {
 
 exports.testPageModCssDestroy = function(test) {
   let [pageMod] = testPageMod(test,
-    'data:text/html,<div style="width:200px">css test</div>', [{
+    'data:text/html;charset=utf-8,<div style="width:200px">css test</div>', [{
       include: "data:*",
       contentStyle: "div { width: 100px!important; }"
     }],

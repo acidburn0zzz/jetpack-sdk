@@ -5,6 +5,10 @@
 
 "use strict";
 
+module.metadata = {
+  "stability": "deprecated"
+};
+
 const memory = require('api-utils/memory');
 var timer = require("./timer");
 
@@ -43,6 +47,8 @@ TestRunner.prototype = {
   PAUSE_DELAY: 500,
 
   _logTestFailed: function _logTestFailed(why) {
+    if (!(why in this.test.errors))
+      this.test.errors[why] = 0;
     this.test.errors[why]++;
     if (!this.testFailureLogged) {
       this.console.error("TEST FAILED: " + this.test.name + " (" + why + ")");
@@ -239,6 +245,8 @@ TestRunner.prototype = {
         timer.clearTimeout(this.waitTimeout);
         this.waitTimeout = null;
       }
+      // Do not leave any callback set when calling to `waitUntil`
+      this.waitUntilCallback = null;
       if (this.test.passed == 0 && this.test.failed == 0) {
         this._logTestFailed("empty test");
         this.failed++;
@@ -348,7 +356,8 @@ TestRunner.prototype = {
             a = a();
           }
           catch(e) {
-            test.fail("Exception when calling asynchronous assertion: " + e);
+            test.fail("Exception when calling asynchronous assertion: " + e +
+                      "\n" + e.stack);
             finished = true;
             return;
           }

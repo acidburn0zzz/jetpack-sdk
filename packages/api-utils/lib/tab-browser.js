@@ -3,6 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 "use strict";
+
+module.metadata = {
+  "stability": "deprecated"
+};
+
 const {Cc,Ci,Cu} = require("chrome");
 var NetUtil = {};
 Cu.import("resource://gre/modules/NetUtil.jsm", NetUtil);
@@ -260,11 +265,13 @@ exports.whenContentLoaded = function whenContentLoaded(callback) {
   return tracker;
 };
 
-exports.__defineGetter__("activeTab", function() {
-  const wm = Cc["@mozilla.org/appshell/window-mediator;1"].
-             getService(Ci.nsIWindowMediator);
-  let mainWindow = wm.getMostRecentWindow("navigator:browser");
-  return mainWindow.gBrowser.selectedTab;
+Object.defineProperty(exports, 'activeTab', {
+  get: function() {
+    const wm = Cc["@mozilla.org/appshell/window-mediator;1"].
+                getService(Ci.nsIWindowMediator);
+    let mainWindow = wm.getMostRecentWindow("navigator:browser");
+    return mainWindow.gBrowser.selectedTab;
+  }
 });
 
 /******************* TabModule *********************/

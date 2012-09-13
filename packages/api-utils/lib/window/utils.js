@@ -4,6 +4,10 @@
 
 'use strict';
 
+module.metadata = {
+  "stability": "unstable"
+};
+
 const { Cc, Ci } = require('chrome');
 
 const windowWatcher = Cc['@mozilla.org/embedcomp/window-watcher;1'].
@@ -54,6 +58,15 @@ function getBaseWindow(window) {
     QueryInterface(Ci.nsIBaseWindow);
 }
 exports.getBaseWindow = getBaseWindow;
+
+function getWindowDocShell(window) window.gBrowser.docShell;
+exports.getWindowDocShell = getWindowDocShell;
+
+function getWindowLoadingContext(window) {
+  return getWindowDocShell(window).
+         QueryInterface(Ci.nsILoadContext);
+}
+exports.getWindowLoadingContext = getWindowLoadingContext;
 
 /**
  * Removes given window from the application's window registry. Unless
@@ -108,3 +121,35 @@ function open(uri, options) {
                null);
 }
 exports.open = open;
+
+/**
+ * Returns an array of all currently opened windows.
+ * Note that these windows may still be loading.
+ */
+function windows() {
+  let list = [];
+  let winEnum = windowWatcher.getWindowEnumerator();
+  while (winEnum.hasMoreElements()) {
+    let window = winEnum.getNext().QueryInterface(Ci.nsIDOMWindow);
+    list.push(window);
+  }
+  return list;
+}
+exports.windows = windows;
+
+/**
+ * Check if the given window is completely loaded.
+ * i.e. if its "load" event has already been fired and all possible DOM content
+ * is done loading (the whole DOM document, images content, ...)
+ * @params {nsIDOMWindow} window
+ */
+function isDocumentLoaded(window) {
+  return window.document.readyState == "complete";
+}
+exports.isDocumentLoaded = isDocumentLoaded;
+
+function isBrowser(window) {
+  return window.document.documentElement.getAttribute("windowtype") ===
+         "navigator:browser";
+};
+exports.isBrowser = isBrowser;

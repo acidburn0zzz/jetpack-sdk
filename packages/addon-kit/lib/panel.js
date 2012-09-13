@@ -118,25 +118,25 @@ const Panel = Symbiont.resolve({
     if (!xulPanel) {
       xulPanel = this._xulPanel = document.createElementNS(XUL_NS, 'panel');
       xulPanel.setAttribute("type", "arrow");
-      
-      // One anonymous node has a big padding that doesn't work well with 
-      // Jetpack, as we would like to display an iframe that completely fills 
-      // the panel. 
+
+      // One anonymous node has a big padding that doesn't work well with
+      // Jetpack, as we would like to display an iframe that completely fills
+      // the panel.
       // -> Use a XBL wrapper with inner stylesheet to remove this padding.
       let css = ".panel-inner-arrowcontent, .panel-arrowcontent {padding: 0;}";
       let originalXBL = "chrome://global/content/bindings/popup.xml#arrowpanel";
-      let binding = 
+      let binding =
       '<bindings xmlns="http://www.mozilla.org/xbl">' +
-        '<binding id="id" extends="' + originalXBL + '">' + 
-          '<resources>' + 
-            '<stylesheet src="data:text/css,' + 
+        '<binding id="id" extends="' + originalXBL + '">' +
+          '<resources>' +
+            '<stylesheet src="data:text/css;charset=utf-8,' +
               document.defaultView.encodeURIComponent(css) + '"/>' +
           '</resources>' +
         '</binding>' +
       '</bindings>';
-      xulPanel.style.MozBinding = 'url("data:text/xml,' + 
+      xulPanel.style.MozBinding = 'url("data:text/xml;charset=utf-8,' +
         document.defaultView.encodeURIComponent(binding) + '")';
-      
+
       let frame = document.createElementNS(XUL_NS, 'iframe');
       frame.setAttribute('type', 'content');
       frame.setAttribute('flex', '1');
@@ -145,32 +145,32 @@ const Panel = Symbiont.resolve({
         frame.style.borderRadius = "6px";
         frame.style.padding = "1px";
       }
-      
-      // Load an empty document in order to have an immediatly loaded iframe, 
+
+      // Load an empty document in order to have an immediatly loaded iframe,
       // so swapFrameLoaders is going to work without having to wait for load.
-      frame.setAttribute("src","data:,"); 
-      
+      frame.setAttribute("src","data:;charset=utf-8,");
+
       xulPanel.appendChild(frame);
       document.getElementById("mainPopupSet").appendChild(xulPanel);
     }
     let { width, height } = this, x, y, position;
-    
+
     if (!anchor) {
       // Open the popup in the middle of the window.
       x = document.documentElement.clientWidth / 2 - width / 2;
       y = document.documentElement.clientHeight / 2 - height / 2;
       position = null;
-    } 
+    }
     else {
       // Open the popup by the anchor.
       let rect = anchor.getBoundingClientRect();
-      
+
       let window = anchor.ownerDocument.defaultView;
-      
+
       let zoom = window.mozScreenPixelsPerCSSPixel;
       let screenX = rect.left + window.mozInnerScreenX * zoom;
       let screenY = rect.top + window.mozInnerScreenY * zoom;
-      
+
       // Set up the vertical position of the popup relative to the anchor
       // (always display the arrow on anchor center)
       let horizontal, vertical;
@@ -178,26 +178,26 @@ const Panel = Symbiont.resolve({
         vertical = "top";
       else
         vertical = "bottom";
-      
+
       if (screenY > window.screen.availWidth / 2 + width)
         horizontal = "left";
       else
         horizontal = "right";
-      
+
       let verticalInverse = vertical == "top" ? "bottom" : "top";
       position = vertical + "center " + verticalInverse + horizontal;
-      
+
       // Allow panel to flip itself if the panel can't be displayed at the
-      // specified position (useful if we compute a bad position or if the 
+      // specified position (useful if we compute a bad position or if the
       // user moves the window and panel remains visible)
       xulPanel.setAttribute("flip","both");
     }
-    
+
     // Resize the iframe instead of using panel.sizeTo
     // because sizeTo doesn't work with arrow panels
     xulPanel.firstChild.style.width = width + "px";
     xulPanel.firstChild.style.height = height + "px";
-    
+
     // Wait for the XBL binding to be constructed
     function waitForBinding() {
       if (!xulPanel.openPopup) {
@@ -207,7 +207,7 @@ const Panel = Symbiont.resolve({
       xulPanel.openPopup(anchor, position, x, y);
     }
     waitForBinding();
-    
+
     return this._public;
   },
   /* Public API: Panel.hide */
@@ -256,7 +256,7 @@ const Panel = Symbiont.resolve({
     this.__xulPanel = value;
   },
   __xulPanel: null,
-  get _viewFrame() this.__xulPanel.children[0], 
+  get _viewFrame() this.__xulPanel.children[0],
   /**
    * When the XUL panel becomes hidden, we swap frame loaders back to move
    * the content of the panel to the hidden frame & remove panel element.
@@ -270,6 +270,40 @@ const Panel = Symbiont.resolve({
       this._emit('error', e);
     }
   },
+
+  /**
+   * Retrieve computed text color style in order to apply to the iframe
+   * document. As MacOS background is dark gray, we need to use skin's
+   * text color.
+   */
+  _applyStyleToDocument: function _applyStyleToDocument() {
+    try {
+      let win = this._xulPanel.ownerDocument.defaultView;
+      let node = win.document.getAnonymousElementByAttribute(
+        this._xulPanel, "class", "panel-arrowcontent");
+      if (!node) {
+        // Before bug 764755, anonymous content was different:
+        // TODO: Remove this when targeting FF16+
+        node = win.document.getAnonymousElementByAttribute(
+          this._xulPanel, "class", "panel-inner-arrowcontent");
+      }
+      let textColor = win.getComputedStyle(node).getPropertyValue("color");
+      let doc = this._xulPanel.firstChild.contentDocument;
+      let style = doc.createElement("style");
+      style.textContent = "body { color: " + textColor + "; }";
+      let container = doc.head ? doc.head : doc.documentElement;
+
+      if (container.firstChild)
+        container.insertBefore(style, container.firstChild);
+      else
+        container.appendChild(style);
+    }
+    catch(e) {
+      console.error("Unable to apply panel style");
+      console.exception(e);
+    }
+  },
+
   /**
    * When the XUL panel becomes shown, we swap frame loaders between panel
    * frame and hidden frame to preserve state of the content dom.
@@ -280,24 +314,7 @@ const Panel = Symbiont.resolve({
         this.on('inited', this._onShow.bind(this));
       } else {
         this._frameLoadersSwapped = true;
-
-        // Retrieve computed text color style in order to apply to the iframe
-        // document. As MacOS background is dark gray, we need to use skin's
-        // text color.
-        let win = this._xulPanel.ownerDocument.defaultView;
-        let node = win.document.getAnonymousElementByAttribute(this._xulPanel,
-                    "class", "panel-inner-arrowcontent");
-        let textColor = win.getComputedStyle(node).getPropertyValue("color");
-        let doc = this._xulPanel.firstChild.contentDocument;
-        let style = doc.createElement("style");
-        style.textContent = "body { color: " + textColor + "; }";
-        let container = doc.head ? doc.head : doc.documentElement;
-
-        if (container.firstChild)
-          container.insertBefore(style, container.firstChild);
-        else
-          container.appendChild(style);
-
+        this._applyStyleToDocument();
         this._emit('show');
       }
     } catch(e) {

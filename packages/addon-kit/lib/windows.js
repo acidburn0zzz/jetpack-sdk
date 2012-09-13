@@ -11,22 +11,22 @@ if (!require("api-utils/xul-app").is("Firefox")) {
   ].join(""));
 }
 
-const { Cc, Ci } = require('chrome'),
+const { Cc, Ci, Cr } = require('chrome'),
       { Trait } = require('api-utils/traits'),
       { List } = require('api-utils/list'),
       { EventEmitter } = require('api-utils/events'),
       { WindowTabs, WindowTabTracker } = require('api-utils/windows/tabs'),
       { WindowDom } = require('api-utils/windows/dom'),
       { WindowLoader } = require('api-utils/windows/loader'),
-      { WindowTrackerTrait } = require('api-utils/window-utils'),
+      { isBrowser, getWindowDocShell } = require('api-utils/window/utils'),
       { Options } = require('api-utils/tabs/tab'),
       apiUtils = require('api-utils/api-utils'),
       unload = require('api-utils/unload'),
-
-      WM = Cc['@mozilla.org/appshell/window-mediator;1'].
-        getService(Ci.nsIWindowMediator),
-
-      BROWSER = 'navigator:browser';
+      windowUtils = require('api-utils/window-utils'),
+      { WindowTrackerTrait } = windowUtils,
+      { ns } = require('api-utils/namespace'),
+      { observer: windowObserver } = require("api-utils/windows/observer"),
+      { isWindowPBEnabled } = require('api-utils/private-browsing/utils');
 
 /**
  * Window trait composes safe wrappers for browser window that are E10S
@@ -51,7 +51,7 @@ const BrowserWindowTrait = Trait.compose(
       // Register this window ASAP, in order to avoid loop that would try
       // to create this window instance over and over (see bug 648244)
       windows.push(this);
-      
+
       // make sure we don't have unhandled errors
       this.on('error', console.exception.bind(console));
 
@@ -59,6 +59,10 @@ const BrowserWindowTrait = Trait.compose(
         this.on('open', options.onOpen);
       if ('onClose' in options)
         this.on('close', options.onClose);
+      if ('onActivate' in options)
+        this.on('activate', options.onActivate);
+      if ('onDeactivate' in options)
+        this.on('deactivate', options.onDeactivate);
       if ('window' in options)
         this._window = options.window;
       if ('tabs' in options) {
@@ -80,6 +84,9 @@ const BrowserWindowTrait = Trait.compose(
       } catch(e) {
         this._emit('error', e)
       }
+
+      this._initWindowPrivateBrowser();
+
       this._emitOnObject(browserWindows, 'open', this._public);
     },
     _onUnload: function() {
@@ -92,6 +99,58 @@ const BrowserWindowTrait = Trait.compose(
       windows.splice(windows.indexOf(this), 1);
       this._removeAllListeners();
     },
+    _privateBrowsingObserver: {},
+    _initWindowPrivateBrowser: function() {
+      let unloaded = false;
+      let emitPBChange = (function() {
+        // need this check because there will be a delay between the moment
+        // that our reference to this observer is removed, and the moment
+        // that the observer is garbage collected
+        if (unloaded) return;
+        let browserWindowsPrivate = browser(browserWindows).internals;
+        this._emitOnObject(browserWindows, 'private-browsing', this._public);
+        browserWindowsPrivate._emit('private-browsing', this._public);
+      }.bind(this));
+
+      // check that per-window private browsing events is implemented
+      if (isWindowPBEnabled(this._window)) {
+        // create the observer and keep a reference to it
+        this._privateBrowsingObserver = {
+          QueryInterface: function(iid) {
+            if (Ci.nsIPrivacyTransitionObserver.equals(iid) ||
+                Ci.nsISupportsWeakReference.equals(iid) ||
+                Ci.nsISupports.equals(iid))
+              return this;
+            throw Cr.NS_ERROR_NO_INTERFACE;
+          },
+          privateModeChanged: emitPBChange
+        };
+
+        // add the observer
+        getWindowDocShell(this._window).addWeakPrivacyTransitionObserver(this._privateBrowsingObserver);
+      }
+      else {
+        let pb = require('./private-browsing');
+        pb.on('start', emitPBChange);
+        pb.on('stop', emitPBChange);
+
+        // on close cleanup
+        this.once('close', function onUnload(window) {
+          pb.removeListener('start', emitPBChange);
+          pb.removeListener('stop', emitPBChange);
+        });
+      }
+
+      this.once('close', function onUnload() {
+        // note that the window has closed or the module has unloaded so that
+        // our per-window PB observer is no longer active while it waits
+        // to be garbage collected.
+        unloaded = true;
+        // remove our reference to the per-window PB observer, so that it can
+        // be garbage collected.
+        this._privateBrowsingObserver = {};
+      }.bind(this));
+    },
     close: function close(callback) {
       // maybe we should deprecate this with message ?
       if (callback) this.on('close', callback);
@@ -99,6 +158,20 @@ const BrowserWindowTrait = Trait.compose(
     }
   })
 );
+
+/**
+ * Gets a `BrowserWindowTrait` for the given `chromeWindow` if previously
+ * registered, `null` otherwise.
+ */
+function getRegisteredWindow(chromeWindow) {
+  for each (let window in windows) {
+    if (chromeWindow === window._window)
+      return window;
+  }
+
+  return null;
+}
+
 /**
  * Wrapper for `BrowserWindowTrait`. Creates new instance if wrapper for
  * window doesn't exists yet. If wrapper already exists then returns it
@@ -109,18 +182,36 @@ const BrowserWindowTrait = Trait.compose(
  * @see BrowserWindowTrait
  */
 function BrowserWindow(options) {
-  let chromeWindow = options.window;
-  for each (let window in windows) {
-    if (chromeWindow == window._window)
-      return window._public
-  }
-  let window = BrowserWindowTrait(options);
-  return window._public;
+  let window = null;
+
+  if ("window" in options)
+    window = getRegisteredWindow(options.window);
+
+  return (window || BrowserWindowTrait(options))._public;
 }
 // to have proper `instanceof` behavior will go away when #596248 is fixed.
 BrowserWindow.prototype = BrowserWindowTrait.prototype;
-exports.BrowserWindow = BrowserWindow
+exports.BrowserWindow = BrowserWindow;
+
 const windows = [];
+
+const browser = ns();
+
+function onWindowActivation (chromeWindow, event) {
+  if (!isBrowser(chromeWindow)) return; // Ignore if it's not a browser window.
+
+  let window = getRegisteredWindow(chromeWindow);
+
+  if (window)
+    window._emit(event.type, window._public);
+  else
+    window = BrowserWindowTrait({ window: chromeWindow });
+
+  browser(browserWindows).internals._emit(event.type, window._public);
+}
+
+windowObserver.on("activate", onWindowActivation);
+windowObserver.on("deactivate", onWindowActivation);
 
 /**
  * `BrowserWindows` trait is composed out of `List` trait and it represents
@@ -144,6 +235,8 @@ const browserWindows = Trait.resolve({ toString: null }).compose(
      * windows.
      */
     constructor: function BrowserWindows() {
+      browser(this._public).internals = this;
+
       this._trackedWindows = [];
       this._initList();
       this._initTracker();
@@ -152,7 +245,11 @@ const browserWindows = Trait.resolve({ toString: null }).compose(
     _destructor: function _destructor() {
       this._removeAllListeners('open');
       this._removeAllListeners('close');
+      this._removeAllListeners('activate');
+      this._removeAllListeners('deactivate');
       this._clear();
+
+      delete browser(this._public).internals;
     },
     /**
      * This property represents currently active window.
@@ -160,8 +257,9 @@ const browserWindows = Trait.resolve({ toString: null }).compose(
      * @type {Window|null}
      */
     get activeWindow() {
-      let window = WM.getMostRecentWindow(BROWSER);
-      return this._isBrowser(window) ? BrowserWindow({ window: window }) : null;
+      let window = windowUtils.activeBrowserWindow;
+
+      return window ? BrowserWindow({window: window}) : null;
     },
     open: function open(options) {
       if (typeof options === "string")
@@ -169,21 +267,14 @@ const browserWindows = Trait.resolve({ toString: null }).compose(
         options = { tabs: [Options(options)] };
       return BrowserWindow(options);
     },
-    /**
-     * Returns true if specified window is a browser window.
-     * @param {nsIWindow} window
-     * @returns {Boolean}
-     */
-    _isBrowser: function _isBrowser(window)
-      BROWSER === window.document.documentElement.getAttribute("windowtype")
-    ,
+
      /**
       * Internal listener which is called whenever new window gets open.
       * Creates wrapper and adds to this list.
       * @param {nsIWindow} chromeWindow
       */
     _onTrack: function _onTrack(chromeWindow) {
-      if (!this._isBrowser(chromeWindow)) return;
+      if (!isBrowser(chromeWindow)) return;
       let window = BrowserWindow({ window: chromeWindow });
       this._add(window);
       this._emit('open', window);
@@ -194,7 +285,7 @@ const browserWindows = Trait.resolve({ toString: null }).compose(
      * @param {nsIWindow} window
      */
     _onUntrack: function _onUntrack(chromeWindow) {
-      if (!this._isBrowser(chromeWindow)) return;
+      if (!isBrowser(chromeWindow)) return;
       let window = BrowserWindow({ window: chromeWindow });
       this._remove(window);
       this._emit('close', window);
@@ -206,5 +297,6 @@ const browserWindows = Trait.resolve({ toString: null }).compose(
     }
   }).resolve({ toString: null })
 )();
+
 exports.browserWindows = browserWindows;
 

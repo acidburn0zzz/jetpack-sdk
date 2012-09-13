@@ -41,7 +41,7 @@ a red border around the page. Try it out:
 
 * create a new directory and navigate to it
 * run `cfx init`
-* open the `lib/main.js` file, and replace its contents with the code above
+* open the `lib/main.js` file, and add the code above
 * run `cfx run`, then run `cfx run` again
 
 You should see the Mozilla icon appear in the bottom-right corner of the
@@ -130,8 +130,16 @@ using the object returned from `attach()`:
       }
     });
 
-The "drawBorder" message isn't a built-in message, it's one that this
+The `drawBorder` message isn't a built-in message, it's one that this
 add-on defines in the `port.emit()` call.
+
+## Injecting CSS ##
+
+Unlike the [`page-mod`](dev-guide/tutorials/modifying-web-pages-url.html) API,
+`tab.attach()` doesn't enable you to inject CSS directly into a page.
+
+To modify the style of a page you have to use JavaScript, as in
+the example above.
 
 ## Learning More ##
 

@@ -42,6 +42,8 @@ const LightTrait = require('api-utils/light-traits').Trait;
 const { Loader, Symbiont } = require("api-utils/content");
 const { Cortex } = require('api-utils/cortex');
 const windowsAPI = require("./windows");
+const { WindowTracker } = require("api-utils/window-utils");
+const { isBrowser } = require("api-utils/window/utils");
 const { setTimeout } = require("api-utils/timer");
 const unload = require("api-utils/unload");
 const { uuid } = require("api-utils/uuid");
@@ -487,13 +489,13 @@ let browserManager = {
   // that calling this method can cause onTrack to be called immediately if
   // there are open windows.
   init: function () {
-    let windowTracker = new (require("api-utils/window-utils").WindowTracker)(this);
+    let windowTracker = new WindowTracker(this);
     unload.ensure(windowTracker);
   },
 
   // Registers a window with the manager.  This is a WindowTracker callback.
   onTrack: function browserManager_onTrack(window) {
-    if (this._isBrowserWindow(window)) {
+    if (isBrowser(window)) {
       let win = new BrowserWindow(window);
       win.addItems(this.items);
       this.windows.push(win);
@@ -507,7 +509,7 @@ let browserManager = {
   // unload itself, since unloading the browserManager means untracking all
   // currently opened windows.
   onUntrack: function browserManager_onUntrack(window) {
-    if (this._isBrowserWindow(window)) {
+    if (isBrowser(window)) {
       this.items.forEach(function(i) i._onWindowClosed(window));
       for (let i = 0; i < this.windows.length; i++) {
         if (this.windows[i].window == window) {
@@ -547,11 +549,6 @@ let browserManager = {
     let idx = this.items.indexOf(item);
     if (idx > -1)
       this.items.splice(idx, 1);
-  },
-
-  _isBrowserWindow: function browserManager__isBrowserWindow(win) {
-    let winType = win.document.documentElement.getAttribute("windowtype");
-    return winType === "navigator:browser";
   }
 };
 
@@ -768,14 +765,14 @@ WidgetChrome.prototype.setContent = function WC_setContent() {
 
   switch (type) {
     case CONTENT_TYPE_HTML:
-      contentURL = "data:text/html," + encodeURIComponent(this._widget.content);
+      contentURL = "data:text/html;charset=utf-8," + encodeURIComponent(this._widget.content);
       break;
     case CONTENT_TYPE_URI:
       contentURL = this._widget.contentURL;
       break;
     case CONTENT_TYPE_IMAGE:
       let imageURL = this._widget.contentURL;
-      contentURL = "data:text/html,<html><body><img src='" +
+      contentURL = "data:text/html;charset=utf-8,<html><body><img src='" +
                    encodeURI(imageURL) + "'></body></html>";
       break;
     default:
@@ -802,6 +799,7 @@ WidgetChrome.prototype.setContent = function WC_setContent() {
     contentScriptFile: this._widget.contentScriptFile,
     contentScript: this._widget.contentScript,
     contentScriptWhen: this._widget.contentScriptWhen,
+    contentScriptOptions: this._widget.contentScriptOptions,
     allow: this._widget.allow,
     onMessage: function(message) {
       setTimeout(function() {
@@ -841,7 +839,7 @@ WidgetChrome.prototype.addEventHandlers = function WC_addEventHandlers() {
 
   this.eventListeners = {};
   let iframe = this.node.firstElementChild;
-  for (let [type, method] in Iterator(EVENTS)) {
+  for (let type in EVENTS) {
     iframe.addEventListener(type, listener, true, true);
 
     // Store listeners for later removal
@@ -905,8 +903,10 @@ WidgetChrome.prototype.addEventHandlers = function WC_addEventHandlers() {
 // Remove and unregister the widget from everything
 WidgetChrome.prototype.destroy = function WC_destroy(removedItems) {
   // remove event listeners
-  for (let [type, listener] in Iterator(this.eventListeners))
+  for (let type in this.eventListeners) {
+    let listener = this.eventListeners[type];
     this.node.firstElementChild.removeEventListener(type, listener, true);
+  }
   // remove dom node
   this.node.parentNode.removeChild(this.node);
   // cleanup symbiont

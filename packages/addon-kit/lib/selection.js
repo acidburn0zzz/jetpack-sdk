@@ -16,13 +16,56 @@ let { Ci, Cc } = require("chrome"),
     { setTimeout } = require("api-utils/timer"),
     { emit, off } = require("api-utils/event/core"),
     { Unknown } = require("api-utils/xpcom"),
-    { Base } = require("api-utils/base"),
-    { EventTarget } = require("api-utils/event/target");
+    { Class, obscure } = require("api-utils/heritage"),
+    { EventTarget } = require("api-utils/event/target"),
+    observers = require("api-utils/observer-service"),
+    { ns } = require("api-utils/namespace");
 
+// When a document is not visible anymore the selection object is detached, and
+// a new selection object is created when it becomes visible again.
+// That makes the previous selection's listeners added previously totally
+// useless – the listeners are not notified anymore.
+// To fix that we're listening for `document-shown` event in order to add
+// the listeners to the new selection object created.
+//
+// See bug 665386 for further details.
+
+let selections = ns();
+
+observers.add("document-shown", function (document) {
+  var window = document.defaultView;
+
+  // We are not interested in documents without valid defaultView
+  if (!window)
+    return;
+
+  let selection = selections(window).selection;
+
+  // We want to handle only the windows where we added selection's listeners
+  if (selection) {
+    let currentSelection = window.getSelection();
+
+    // If the current selection for the window given is different from the one
+    // stored in the namespace, we need to add the listeners again, and replace
+    // the previous selection in our list with the new one.
+    //
+    // Notice that we don't have to remove the listeners from the old selection,
+    // because is detached. An attempt to remove the listener, will raise an
+    // error (see http://mxr.mozilla.org/mozilla-central/source/layout/generic/nsSelection.cpp#5343 )
+    //
+    // We ensure that the current selection is an instance of
+    // `nsISelectionPrivate` before working on it, in case is `null`.
+    if (currentSelection instanceof Ci.nsISelectionPrivate &&
+      currentSelection !== selection) {
+
+      currentSelection.addSelectionListener(SelectionListenerManager);
+      selections(window).selection = currentSelection;
+    }
+  }
+});
 
 const windowMediator = Cc["@mozilla.org/appshell/window-mediator;1"].
                        getService(Ci.nsIWindowMediator);
-
 
 // The selection type HTML
 const HTML = 0x01;
@@ -38,7 +81,7 @@ const DOM  = 0x03;
 const ERR_CANNOT_CHANGE_SELECTION =
   "It isn't possible to change the selection, as there isn't currently a selection";
 
-const Selection = Base.extend({
+const Selection = Class({
   /**
    * Creates an object from which a selection can be set, get, etc. Each
    * object has an associated with a range number. Range numbers are the
@@ -274,7 +317,8 @@ function onSelect() {
   SelectionListenerManager.onSelect();
 }
 
-let SelectionListenerManager = Unknown.extend({
+let SelectionListenerManager = Class({
+  extends: Unknown,
   interfaces: [ 'nsISelectionListener' ],
   /**
    * This is the nsISelectionListener implementation. This function is called
@@ -299,7 +343,7 @@ let SelectionListenerManager = Unknown.extend({
   },
 
   onSelect : function onSelect() {
-    setTimeout(emit, 0, exports, "select");
+    setTimeout(emit, 0, module.exports, "select");
   },
 
   /**
@@ -338,19 +382,27 @@ let SelectionListenerManager = Unknown.extend({
   },
 
   addSelectionListener: function addSelectionListener(window) {
-    if (window.jetpack_core_selection_listener)
+    // Don't add the selection's listener more than once to the same window.
+    if ("selection" in selections(window))
       return;
+
     let selection = window.getSelection();
-    if (selection instanceof Ci.nsISelectionPrivate)
+
+    // We ensure that the current selection is an instance of
+    // `nsISelectionPrivate` before working on it, in case is `null`.
+    if (selection instanceof Ci.nsISelectionPrivate) {
       selection.addSelectionListener(this);
 
-    // nsISelectionListener implementation seems not fire a notification if
-    // a selection is in a text field, therefore we need to add a listener to
-    // window.onselect, that is fired only for text fields.
-    // https://developer.mozilla.org/en/DOM/window.onselect
-    window.addEventListener("select", onSelect, true);
+      // nsISelectionListener implementation seems not fire a notification if
+      // a selection is in a text field, therefore we need to add a listener to
+      // window.onselect, that is fired only for text fields.
+      // For consistency, we add it only when the nsISelectionListener is added.
+      //
+      // https://developer.mozilla.org/en/DOM/window.onselect
+      window.addEventListener("select", onSelect, true);
 
-    window.jetpack_core_selection_listener = true;
+      selections(window).selection = selection;
+    }
   },
 
   onUnload: function onUnload(event) {
@@ -363,15 +415,21 @@ let SelectionListenerManager = Unknown.extend({
   },
 
   removeSelectionListener: function removeSelectionListener(window) {
-    if (!window.jetpack_core_selection_listener)
+    // Don't remove the selection's listener to a window that wasn't handled.
+    if (!("selection" in selections(window)))
       return;
+
     let selection = window.getSelection();
-    if (selection instanceof Ci.nsISelectionPrivate)
+
+    // We ensure that the current selection is an instance of
+    // `nsISelectionPrivate` before working on it, in case is `null`.
+    if (selection instanceof Ci.nsISelectionPrivate) {
       selection.removeSelectionListener(this);
 
-    window.removeEventListener("select", onSelect);
+      window.removeEventListener("select", onSelect);
 
-    window.jetpack_core_selection_listener = false;
+      delete selections(window).selection;
+    }
   },
 
   /**
@@ -386,7 +444,7 @@ let SelectionListenerManager = Unknown.extend({
     browser.removeEventListener("load", onLoad, true);
     browser.removeEventListener("unload", onUnload, true);
   }
-});
+})();
 
 /**
  * Install |SelectionListenerManager| as tab tracker in order to watch
@@ -394,9 +452,7 @@ let SelectionListenerManager = Unknown.extend({
  */
 require("api-utils/tab-browser").Tracker(SelectionListenerManager);
 
-// Note: We use `Object.create` form just in order to define `__iterator__`
-// as non-enumerable, to ensure that it won't be returned by an `Object.keys`.
-var SelectionIterator = Object.create(Object.prototype, {
+var SelectionIterator = Class(obscure({
   /**
    * Exports an iterator so that discontiguous selections can be iterated.
    *
@@ -404,18 +460,18 @@ var SelectionIterator = Object.create(Object.prototype, {
    * is returned because the text field selection APIs doesn't support
    * multiple selections.
    */
-  __iterator__: { enumerable: false, value: function() {
+  __iterator__: function() {
     let selection = getSelection(DOM);
     let count = selection.rangeCount || (getElementWithSelection() ? 1 : 0);
 
     for (let i = 0; i < count; i++)
-      yield Selection.new(i);
-  }}
-});
+      yield Selection(i);
+  }
+}));
 
-var selection = EventTarget.extend(Selection, SelectionIterator).new(0);
+var selection = Class({
+  extends: EventTarget,
+  implements: [ Selection, SelectionIterator ]
+})(0);
 
-// This is workaround making sure that exports is wrapped before it's
-// frozen, which needs to happen in order to workaround Bug 673468.
-off(selection, 'workaround-bug-673468');
 module.exports = selection;

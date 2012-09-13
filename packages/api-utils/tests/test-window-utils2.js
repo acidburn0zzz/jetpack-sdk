@@ -5,16 +5,9 @@
 'use strict';
 
 const { Ci } = require('chrome');
-const { open, backgroundify,
+const { open, backgroundify, windows,
         getXULWindow, getBaseWindow } = require('api-utils/window/utils');
 const windowUtils = require('api-utils/window-utils');
-
-function windows(iterator) {
-  let array = [];
-  for each (let item in windowUtils.windowIterator())
-    array.push(item);
-  return array;
-}
 
 exports['test get nsIBaseWindow from nsIDomWindow'] = function(assert) {
   let active = windowUtils.activeBrowserWindow;
@@ -35,13 +28,13 @@ exports['test get nsIXULWindow from nsIDomWindow'] = function(assert) {
 };
 
 exports['test top window creation'] = function(assert) {
-  let window = open('data:text/html,Hello top window');
+  let window = open('data:text/html;charset=utf-8,Hello top window');
   assert.ok(~windows().indexOf(window), 'window was opened');
   window.close();
 };
 
 exports['test new top window with options'] = function(assert) {
-  let window = open('data:text/html,Hi custom top window', {
+  let window = open('data:text/html;charset=utf-8,Hi custom top window', {
     name: 'test',
     features: { height: 100, width: 200, toolbar: true }
   });
@@ -54,7 +47,7 @@ exports['test new top window with options'] = function(assert) {
 };
 
 exports['test backgroundify'] = function(assert) {
-  let window = open('data:text/html,backgroundy');
+  let window = open('data:text/html;charset=utf-8,backgroundy');
   assert.ok(~windows().indexOf(window),
             'window is in the list of windows');
   let backgroundy = backgroundify(window);

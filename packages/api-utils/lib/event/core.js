@@ -6,6 +6,10 @@
 
 "use strict";
 
+module.metadata = {
+  "stability": "unstable"
+};
+
 const UNCAUGHT_ERROR = 'An error event was emitted for which there was no listener.';
 const BAD_LISTENER = 'The event listener must be a function.';
 
@@ -76,8 +80,9 @@ exports.once = once;
  *    More arguments that will be passed to listeners.
  */
 function emit(target, type, message /*, ...*/) {
-  for each (let item in emit.lazy.apply(emit.lazy, arguments))
-    item;
+  for each (let item in emit.lazy.apply(emit.lazy, arguments)) {
+    // We just iterate, iterator take care of emitting events.
+  }
 }
 
 /**

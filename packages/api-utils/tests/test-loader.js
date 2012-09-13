@@ -2,34 +2,26 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const { Loader } = require("./helpers");
+'use strict';
 
-exports.testLoader = function(test) {
-  var prints = [];
-  function print(message) {
-    prints.push(message);
-  }
+let { Loader, main, unload } = require('api-utils/loader');
 
-  var loader = Loader(module, { dump: print, foo: 1 });
+exports['test dependency cycles'] = function(assert) {
+  let uri = module.uri.substr(0, module.uri.lastIndexOf('/')) +
+            '/fixtures/loader/cycles/'
 
-  var fixture = loader.require('./loader/fixture');
-
-  test.assertEqual(fixture.foo, 1, "custom globals must work.");
-
-  test.assertEqual(prints[0], "info: testing 1 2,3,4\n",
-                   "global console must work.");
-
-  var unloadsCalled = '';
-
-  loader.require("unload").when(function() {
-    unloadsCalled += 'a';
-  });
-  loader.require("unload.js").when(function() {
-    unloadsCalled += 'b';
+  let loader = Loader({
+    paths: { '': uri }
   });
 
-  loader.unload();
+  let program = main(loader, 'main')
 
-  test.assertEqual(unloadsCalled, 'ba',
-                   "loader.unload() must call cb's in LIFO order.");
+  assert.equal(program.a.b, program.b, 'module `a` gets correct `b`')
+  assert.equal(program.b.a, program.a, 'module `b` gets correct `a`')
+  assert.equal(program.c.main, program, 'module `c` gets correct `main`')
+
+  unload(loader);
 };
+
+require('test').run(exports);
+

@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 let tests = {}, Pages, Page;
-const { Loader } = require('./helpers');
+const { Loader } = require('test-harness/loader');
 
 const ERR_DESTROYED =
-  "The page has been destroyed and can no longer be used.";
+  "Couldn't find the worker to receive this message. " +
+  "The script may not be initialized yet, or may already have been unloaded.";
 
 tests.testSimplePageCreation = function(test) {
   test.waitUntilDone();
@@ -23,16 +24,16 @@ tests.testSimplePageCreation = function(test) {
   });
 }
 
-/* 
- * Tests that we can't be tricked by document overloads as we have access 
- * to wrapped nodes 
+/*
+ * Tests that we can't be tricked by document overloads as we have access
+ * to wrapped nodes
  */
 tests.testWrappedDOM = function(test) {
   test.waitUntilDone();
 
   let page = Page({
     allow: { script: true },
-    contentURL: "data:text/html,<script>document.getElementById=3;window.scrollTo=3;</script>",
+    contentURL: "data:text/html;charset=utf-8,<script>document.getElementById=3;window.scrollTo=3;</script>",
     contentScript: "window.addEventListener('load', function () " +
                    "self.postMessage([typeof(document.getElementById), " +
                    "typeof(window.scrollTo)]), true)",
@@ -58,7 +59,7 @@ tests.testUnwrappedDOM = function(test) {
 
   let page = Page({
     allow: { script: true },
-    contentURL: "data:text/html,<script>document.getElementById=3;window.scrollTo=3;</script>",
+    contentURL: "data:text/html;charset=utf-8,<script>document.getElementById=3;window.scrollTo=3;</script>",
     contentScript: "window.addEventListener('load', function () " +
                    "self.postMessage([typeof(unsafeWindow.document.getElementById), " +
                    "typeof(unsafeWindow.scrollTo)]), true)",
@@ -162,7 +163,7 @@ tests.testValidateOptions = function(test) {
 
 tests.testContentAndAllowGettersAndSetters = function(test) {
   test.waitUntilDone();
-  let content = "data:text/html,<script>window.localStorage.allowScript=3;</script>";
+  let content = "data:text/html;charset=utf-8,<script>window.localStorage.allowScript=3;</script>";
   let page = Page({
     contentURL: content,
     contentScript: "self.postMessage(window.localStorage.allowScript)",
@@ -178,8 +179,8 @@ tests.testContentAndAllowGettersAndSetters = function(test) {
     page.removeListener('message', step0);
     page.on('message', step1);
     page.allow = { script: false };
-    page.contentURL = content = 
-      "data:text/html,<script>window.localStorage.allowScript='f'</script>";
+    page.contentURL = content =
+      "data:text/html;charset=utf-8,<script>window.localStorage.allowScript='f'</script>";
   }
 
   function step1(message) {
@@ -190,7 +191,7 @@ tests.testContentAndAllowGettersAndSetters = function(test) {
     page.on('message', step2);
     page.allow = { script: true };
     page.contentURL = content =
-      "data:text/html,<script>window.localStorage.allowScript='g'</script>";
+      "data:text/html;charset=utf-8,<script>window.localStorage.allowScript='g'</script>";
   }
 
   function step2(message) {
@@ -200,8 +201,8 @@ tests.testContentAndAllowGettersAndSetters = function(test) {
     page.removeListener('message', step2);
     page.on('message', step3);
     page.allow.script = false;
-    page.contentURL = content = 
-      "data:text/html,<script>window.localStorage.allowScript=3</script>";
+    page.contentURL = content =
+      "data:text/html;charset=utf-8,<script>window.localStorage.allowScript=3</script>";
   }
 
   function step3(message) {
@@ -211,8 +212,8 @@ tests.testContentAndAllowGettersAndSetters = function(test) {
     page.removeListener('message', step3);
     page.on('message', step4);
     page.allow.script = true;
-    page.contentURL = content = 
-      "data:text/html,<script>window.localStorage.allowScript=4</script>";
+    page.contentURL = content =
+      "data:text/html;charset=utf-8,<script>window.localStorage.allowScript=4</script>";
   }
 
   function step4(message) {
@@ -280,7 +281,7 @@ tests.testAllowScriptDefault = function(test) {
       test.assert(message, "Script is allowed to run by default.");
       test.done();
     },
-    contentURL: "data:text/html,<script>document.documentElement.setAttribute('foo', 3);</script>",
+    contentURL: "data:text/html;charset=utf-8,<script>document.documentElement.setAttribute('foo', 3);</script>",
     contentScript: "self.postMessage(document.documentElement.getAttribute('foo'))",
     contentScriptWhen: "ready"
   });
@@ -296,7 +297,7 @@ tests.testAllowScript = function(test) {
       test.done();
     },
     allow: { script: true },
-    contentURL: "data:text/html,<script>document.documentElement.setAttribute('foo', 3);</script>",
+    contentURL: "data:text/html;charset=utf-8,<script>document.documentElement.setAttribute('foo', 3);</script>",
     contentScript: "self.postMessage(document.documentElement.hasAttribute('foo') && " +
                    "                 document.documentElement.getAttribute('foo') == 3)",
     contentScriptWhen: "ready"
@@ -306,7 +307,7 @@ tests.testAllowScript = function(test) {
 tests.testPingPong = function(test) {
   test.waitUntilDone();
   let page = Page({
-    contentURL: 'data:text/html,ping-pong',
+    contentURL: 'data:text/html;charset=utf-8,ping-pong',
     contentScript: 'self.on("message", function(message) self.postMessage("pong"));'
       + 'self.postMessage("ready");',
     onMessage: function(message) {
@@ -328,6 +329,23 @@ tests.testMultipleDestroys = function(test) {
   test.pass("Multiple destroys should not cause an error");
 };
 
+exports.testContentScriptOptionsOption = function(test) {
+  test.waitUntilDone();
+
+  let page = new Page({
+      contentScript: "self.postMessage( [typeof self.options.d, self.options] );",
+      contentScriptWhen: "end",
+      contentScriptOptions: {a: true, b: [1,2,3], c: "string", d: function(){ return 'test'}},
+      onMessage: function(msg) {
+        test.assertEqual( msg[0], 'undefined', 'functions are stripped from contentScriptOptions' );
+        test.assertEqual( typeof msg[1], 'object', 'object as contentScriptOptions' );
+        test.assertEqual( msg[1].a, true, 'boolean in contentScriptOptions' );
+        test.assertEqual( msg[1].b.join(), '1,2,3', 'array and numbers in contentScriptOptions' );
+        test.assertEqual( msg[1].c, 'string', 'string in contentScriptOptions' );
+        test.done();
+      }
+    });
+};
 
 function isDestroyed(page) {
   try {

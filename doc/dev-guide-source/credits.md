@@ -19,6 +19,7 @@ We'd like to thank our many Jetpack project contributors!  They include:
 * [Shane Caraveo](https://github.com/mixedpuppy)
 * [Matěj Cepl](https://github.com/mcepl)
 * Hernán Rodriguez Colmeiro
+* [David Creswick](https://github.com/dcrewi)
 * dexter
 * [Matteo Ferretti (ZER0)](https://github.com/ZER0)
 * fuzzykiller
@@ -45,6 +46,7 @@ We'd like to thank our many Jetpack project contributors!  They include:
 * Alexandre Poirot
 * Nickolay Ponomarev
 * Aza Raskin
+* Till Schneidereit
 * Justin Scott
 * Ayan Shah
 * [skratchdot](https://github.com/skratchdot)
@@ -62,3 +64,5 @@ We'd like to thank our many Jetpack project contributors!  They include:
 * Piotr Zalewa
 * [David Guo](https://github.com/dglol)
 * [Nils Maier](https://github.com/nmaier)
+* [Louis-Rémi Babé](https://github.com/louisremi)
+* [Matthias Tylkowski](https://github.com/tylkomat)

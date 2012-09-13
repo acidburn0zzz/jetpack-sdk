@@ -4,15 +4,20 @@
 
 "use strict";
 
+module.metadata = {
+  "stability": "unstable"
+};
+
 const { Cc, Ci, Cu } = require("chrome");
+const base64 = require("../base64");
+
 const IOService = Cc["@mozilla.org/network/io-service;1"].
   getService(Ci.nsIIOService);
-const AppShellService = Cc["@mozilla.org/appshell/appShellService;1"].
-  getService(Ci.nsIAppShellService);
 
 const { NetUtil } = Cu.import("resource://gre/modules/NetUtil.jsm");
 const FaviconService = Cc["@mozilla.org/browser/favicon-service;1"].
                           getService(Ci.nsIFaviconService);
+const { deprecateFunction } = require("api-utils/deprecate");
 
 const PNG_B64 = "data:image/png;base64,";
 const DEF_FAVICON_URI = "chrome://mozapps/skin/places/defaultFavicon.png";
@@ -34,7 +39,7 @@ exports.getFaviconURIForLocation = function getFaviconURIForLocation(uri) {
   catch(e) {
     if (!DEF_FAVICON) {
       DEF_FAVICON = PNG_B64 +
-                    base64Encode(getChromeURIContent(DEF_FAVICON_URI));
+                    base64.encode(getChromeURIContent(DEF_FAVICON_URI));
     }
     return DEF_FAVICON;
   }
@@ -49,7 +54,7 @@ function getChromeURIContent(chromeURI) {
   let channel = IOService.newChannel(chromeURI, null, null);
   let input = channel.open();
   let stream = Cc["@mozilla.org/binaryinputstream;1"].
-                createInstance(Ci.nsIBinaryInputStream); 
+                createInstance(Ci.nsIBinaryInputStream);
   stream.setInputStream(input);
   let content = stream.readBytes(input.available());
   stream.close();
@@ -61,11 +66,14 @@ exports.getChromeURIContent = getChromeURIContent;
 /**
  * Creates a base-64 encoded ASCII string from a string of binary data.
  */
-function base64Encode(data) AppShellService.hiddenDOMWindow.btoa(String(data));
-exports.base64Encode = base64Encode;
-
+exports.base64Encode = deprecateFunction(base64.encode,
+  'require("api-utils/utils/data").base64Encode is deprecated, ' +
+  'please use require("api-utils/base64").encode instead'
+);
 /**
  * Decodes a string of data which has been encoded using base-64 encoding.
  */
-function base64Decode(data) AppShellService.hiddenDOMWindow.atob(String(data));
-exports.base64Decode = base64Decode;
+exports.base64Decode = deprecateFunction(base64.decode,
+  'require("api-utils/utils/data").base64Dencode is deprecated, ' +
+  'please use require("api-utils/base64").decode instead'
+);

@@ -4,7 +4,9 @@
 "use strict";
 
 var {Cc,Ci} = require("chrome");
-const { Loader } = require("./helpers");
+const { Loader } = require("test-harness/loader");
+const timer = require("timer");
+const { StringBundle } = require('api-utils/app-strings');
 
 // test tab.activeTab getter
 exports.testActiveTab_getter = function(test) {
@@ -13,7 +15,7 @@ exports.testActiveTab_getter = function(test) {
   openBrowserWindow(function(window, browser) {
     let tabs = require("tabs");
 
-    let url = "data:text/html,<html><head><title>foo</title></head></html>";
+    let url = "data:text/html;charset=utf-8,<html><head><title>foo</title></head></html>";
     require("tab-browser").addTab(
       url,
       {
@@ -28,21 +30,73 @@ exports.testActiveTab_getter = function(test) {
   });
 };
 
+// Bug 682681 - tab.title should never be empty
+exports.testBug682681_aboutURI = function(test) {
+  test.waitUntilDone();
+
+  let tabStrings = StringBundle('chrome://browser/locale/tabbrowser.properties');
+
+  openBrowserWindow(function(window, browser) {
+    let tabs = require("tabs");
+
+    tabs.on('ready', function onReady(tab) {
+      tabs.removeListener('ready', onReady);
+
+      test.assertEqual(tab.title,
+                       tabStrings.get('tabs.emptyTabTitle'),
+                       "title of about: tab is not blank");
+
+      // end of test
+      closeBrowserWindow(window, function() test.done());
+    });
+
+    // open a about: url
+    tabs.open({
+      url: "about:blank",
+      inBackground: true
+    });
+  });
+};
+
+// related to Bug 682681
+exports.testTitleForDataURI = function(test) {
+  test.waitUntilDone();
+
+  openBrowserWindow(function(window, browser) {
+    let tabs = require("tabs");
+
+    tabs.on('ready', function onReady(tab) {
+      tabs.removeListener('ready', onReady);
+
+      test.assertEqual(tab.title, "tab", "data: title is not Connecting...");
+
+      // end of test
+      closeBrowserWindow(window, function() test.done());
+    });
+
+    // open a about: url
+    tabs.open({
+      url: "data:text/html;charset=utf-8,<title>tab</title>",
+      inBackground: true
+    });
+  });
+};
+
 // test 'BrowserWindow' instance creation on tab 'activate' event
 // See bug 648244: there was a infinite loop.
 exports.testBrowserWindowCreationOnActivate = function(test) {
   test.waitUntilDone();
-  
+
   let windows = require("windows").browserWindows;
   let tabs = require("tabs");
-  
+
   let gotActivate = false;
-  
+
   tabs.once('activate', function onActivate(eventTab) {
     test.assert(windows.activeWindow, "Is able to fetch activeWindow");
     gotActivate = true;
   });
-  
+
   openBrowserWindow(function(window, browser) {
     test.assert(gotActivate, "Received activate event before openBrowserWindow's callback is called");
     closeBrowserWindow(window, function () test.done());
@@ -55,7 +109,7 @@ exports.testActiveTab_setter = function(test) {
 
   openBrowserWindow(function(window, browser) {
     let tabs = require("tabs");
-    let url = "data:text/html,<html><head><title>foo</title></head></html>";
+    let url = "data:text/html;charset=utf-8,<html><head><title>foo</title></head></html>";
 
     tabs.on('ready', function onReady(tab) {
       tabs.removeListener('ready', onReady);
@@ -83,28 +137,28 @@ exports.testAutomaticDestroy = function(test) {
 
   openBrowserWindow(function(window, browser) {
     let tabs = require("tabs");
-    
+
     // Create a second tab instance that we will destroy
     let called = false;
-    
+
     let loader = Loader(module);
     let tabs2 = loader.require("tabs");
     tabs2.on('open', function onOpen(tab) {
       called = true;
     });
-    
+
     loader.unload();
-    
+
     // Fire a tab event an ensure that this destroyed tab is inactive
     tabs.once('open', function () {
-      require("timer").setTimeout(function () {
+      timer.setTimeout(function () {
         test.assert(!called, "Unloaded tab module is destroyed and inactive");
         closeBrowserWindow(window, function() test.done());
       }, 0);
     });
-    
-    tabs.open("data:text/html,foo");
-    
+
+    tabs.open("data:text/html;charset=utf-8,foo");
+
   });
 };
 
@@ -113,17 +167,39 @@ exports.testTabProperties = function(test) {
   test.waitUntilDone();
   openBrowserWindow(function(window, browser) {
     let tabs= require("tabs");
-    let url = "data:text/html,<html><head><title>foo</title></head><body>foo</body></html>";
+    let url = "data:text/html;charset=utf-8,<html><head><title>foo</title></head><body>foo</body></html>";
     tabs.open({
       url: url,
       onReady: function(tab) {
         test.assertEqual(tab.title, "foo", "title of the new tab matches");
+        test.assertEqual(tab.contentType, "text/html");
         test.assertEqual(tab.url, url, "URL of the new tab matches");
         test.assert(tab.favicon, "favicon of the new tab is not empty");
         test.assertEqual(tab.style, null, "style of the new tab matches");
         test.assertEqual(tab.index, 1, "index of the new tab matches");
         test.assertNotEqual(tab.getThumbnail(), null, "thumbnail of the new tab matches");
         closeBrowserWindow(window, function() test.done());
+      }
+    });
+  });
+};
+
+exports.testTabContentTypeAndReload = function(test) {
+  test.waitUntilDone();
+  openBrowserWindow(function(window, browser) {
+    let tabs= require("tabs");
+    let url = "data:text/html;charset=utf-8,<html><head><title>foo</title></head><body>foo</body></html>";
+    let urlXML = "data:text/xml;charset=utf-8,<foo>bar</foo>";
+    tabs.open({
+      url: url,
+      onReady: function(tab) {
+        if (tab.url === url) {
+          test.assertEqual(tab.contentType, "text/html");
+          tab.url = urlXML;
+        } else {
+          test.assertEqual(tab.contentType, "text/xml");
+          closeBrowserWindow(window, function() test.done());
+        }
       }
     });
   });
@@ -137,7 +213,7 @@ exports.testTabsIteratorAndLength = function(test) {
     let startCount = 0;
     for each (let t in tabs) startCount++;
     test.assertEqual(startCount, tabs.length, "length property is correct");
-    let url = "data:text/html,default";
+    let url = "data:text/html;charset=utf-8,default";
     tabs.open(url);
     tabs.open(url);
     tabs.open({
@@ -158,8 +234,8 @@ exports.testTabLocation = function(test) {
   test.waitUntilDone();
   openBrowserWindow(function(window, browser) {
     let tabs = require("tabs");
-    let url1 = "data:text/html,foo";
-    let url2 = "data:text/html,bar";
+    let url1 = "data:text/html;charset=utf-8,foo";
+    let url2 = "data:text/html;charset=utf-8,bar";
 
     tabs.on('ready', function onReady(tab) {
       if (tab.url != url2)
@@ -183,7 +259,7 @@ exports.testTabClose = function(test) {
   test.waitUntilDone();
   openBrowserWindow(function(window, browser) {
     let tabs = require("tabs");
-    let url = "data:text/html,foo";
+    let url = "data:text/html;charset=utf-8,foo";
 
     test.assertNotEqual(tabs.activeTab.url, url, "tab is now the active tab");
     tabs.on('ready', function onReady(tab) {
@@ -204,7 +280,7 @@ exports.testTabReload = function(test) {
   test.waitUntilDone();
   openBrowserWindow(function(window, browser) {
     let tabs = require("tabs");
-    let url = "data:text/html,<!doctype%20html><title></title>";
+    let url = "data:text/html;charset=utf-8,<!doctype%20html><title></title>";
 
     tabs.open({ url: url, onReady: function onReady(tab) {
       tab.removeListener("ready", onReady);
@@ -237,7 +313,7 @@ exports.testTabMove = function(test) {
   test.waitUntilDone();
   openBrowserWindow(function(window, browser) {
     let tabs = require("tabs");
-    let url = "data:text/html,foo";
+    let url = "data:text/html;charset=utf-8,foo";
 
     tabs.open({
       url: url,
@@ -256,7 +332,7 @@ exports.testOpen = function(test) {
   test.waitUntilDone();
   openBrowserWindow(function(window, browser) {
     let tabs = require("tabs");
-    let url = "data:text/html,default";
+    let url = "data:text/html;charset=utf-8,default";
     tabs.open({
       url: url,
       onReady: function(tab) {
@@ -276,7 +352,7 @@ exports.testOpenPinned = function(test) {
     test.waitUntilDone();
     openBrowserWindow(function(window, browser) {
       let tabs = require("tabs");
-      let url = "data:text/html,default";
+      let url = "data:text/html;charset=utf-8,default";
       tabs.open({
         url: url,
         isPinned: true,
@@ -299,7 +375,7 @@ exports.testPinUnpin = function(test) {
     test.waitUntilDone();
     openBrowserWindow(function(window, browser) {
       let tabs = require("tabs");
-      let url = "data:text/html,default";
+      let url = "data:text/html;charset=utf-8,default";
       tabs.open({
         url: url,
         onOpen: function(tab) {
@@ -323,7 +399,7 @@ exports.testInBackground = function(test) {
   openBrowserWindow(function(window, browser) {
     let tabs = require("tabs");
     let activeUrl = tabs.activeTab.url;
-    let url = "data:text/html,background";
+    let url = "data:text/html;charset=utf-8,background";
     test.assertEqual(activeWindow, window, "activeWindow matches this window");
     tabs.on('ready', function onReady(tab) {
       tabs.removeListener('ready', onReady);
@@ -358,7 +434,7 @@ exports.testOpenInNewWindow = function(test) {
     });
     let startWindowCount = cache.length;
 
-    let url = "data:text/html,newwindow";
+    let url = "data:text/html;charset=utf-8,newwindow";
     tabs.open({
       url: url,
       inNewWindow: true,
@@ -384,7 +460,7 @@ exports.testTabsEvent_onOpen = function(test) {
   test.waitUntilDone();
   openBrowserWindow(function(window, browser) {
     var tabs = require("tabs");
-    let url = "data:text/html,1";
+    let url = "data:text/html;charset=utf-8,1";
     let eventCount = 0;
 
     // add listener via property assignment
@@ -410,7 +486,7 @@ exports.testTabsEvent_onClose = function(test) {
   test.waitUntilDone();
   openBrowserWindow(function(window, browser) {
     var tabs = require("tabs");
-    let url = "data:text/html,onclose";
+    let url = "data:text/html;charset=utf-8,onclose";
     let eventCount = 0;
 
     // add listener via property assignment
@@ -458,19 +534,19 @@ exports.testTabsEvent_onCloseWindow = function(test) {
     }
 
     tabs.open({
-      url: "data:text/html,tab2",
+      url: "data:text/html;charset=utf-8,tab2",
       onOpen: function() testCasePossiblyLoaded(),
       onClose: function() individualCloseCount++
     });
 
     tabs.open({
-      url: "data:text/html,tab3",
+      url: "data:text/html;charset=utf-8,tab3",
       onOpen: function() testCasePossiblyLoaded(),
       onClose: function() individualCloseCount++
     });
 
     tabs.open({
-      url: "data:text/html,tab4",
+      url: "data:text/html;charset=utf-8,tab4",
       onOpen: function() testCasePossiblyLoaded(),
       onClose: function() individualCloseCount++
     });
@@ -496,7 +572,7 @@ exports.testTabsEvent_onReady = function(test) {
   test.waitUntilDone();
   openBrowserWindow(function(window, browser) {
     var tabs = require("tabs");
-    let url = "data:text/html,onready";
+    let url = "data:text/html;charset=utf-8,onready";
     let eventCount = 0;
 
     // add listener via property assignment
@@ -522,7 +598,7 @@ exports.testTabsEvent_onActivate = function(test) {
   test.waitUntilDone();
   openBrowserWindow(function(window, browser) {
     var tabs = require("tabs");
-    let url = "data:text/html,onactivate";
+    let url = "data:text/html;charset=utf-8,onactivate";
     let eventCount = 0;
 
     // add listener via property assignment
@@ -548,7 +624,7 @@ exports.testTabsEvent_onDeactivate = function(test) {
   test.waitUntilDone();
   openBrowserWindow(function(window, browser) {
     var tabs = require("tabs");
-    let url = "data:text/html,ondeactivate";
+    let url = "data:text/html;charset=utf-8,ondeactivate";
     let eventCount = 0;
 
     // add listener via property assignment
@@ -567,7 +643,7 @@ exports.testTabsEvent_onDeactivate = function(test) {
 
     tabs.on('open', function onOpen(tab) {
       tabs.removeListener('open', onOpen);
-      tabs.open("data:text/html,foo");
+      tabs.open("data:text/html;charset=utf-8,foo");
     });
 
     tabs.open(url);
@@ -578,7 +654,7 @@ exports.testTabsEvent_pinning = function(test) {
   test.waitUntilDone();
   openBrowserWindow(function(window, browser) {
     var tabs = require("tabs");
-    let url = "data:text/html,1";
+    let url = "data:text/html;charset=utf-8,1";
 
     tabs.on('open', function onOpen(tab) {
       tabs.removeListener('open', onOpen);
@@ -609,7 +685,7 @@ exports.testPerTabEvents = function(test) {
     let eventCount = 0;
 
     tabs.open({
-      url: "data:text/html,foo",
+      url: "data:text/html;charset=utf-8,foo",
       onOpen: function(tab) {
         // add listener via property assignment
         function listener1() {
@@ -634,14 +710,14 @@ exports.testAttachOnOpen = function (test) {
   test.waitUntilDone();
   openBrowserWindow(function(window, browser) {
     let tabs = require("tabs");
-    
+
     tabs.open({
-      url: "data:text/html,foobar",
+      url: "data:text/html;charset=utf-8,foobar",
       onOpen: function (tab) {
         let worker = tab.attach({
           contentScript: 'self.postMessage(document.location.href); ',
           onMessage: function (msg) {
-            test.assertEqual(msg, "about:blank", 
+            test.assertEqual(msg, "about:blank",
               "Worker document url is about:blank on open");
             worker.destroy();
             closeBrowserWindow(window, function() test.done());
@@ -649,7 +725,7 @@ exports.testAttachOnOpen = function (test) {
         });
       }
     });
-    
+
   });
 }
 
@@ -658,9 +734,9 @@ exports.testAttachOnMultipleDocuments = function (test) {
   test.waitUntilDone();
   openBrowserWindow(function(window, browser) {
     let tabs = require("tabs");
-    let firstLocation = "data:text/html,foobar";
-    let secondLocation = "data:text/html,bar";
-    let thirdLocation = "data:text/html,fox";
+    let firstLocation = "data:text/html;charset=utf-8,foobar";
+    let secondLocation = "data:text/html;charset=utf-8,bar";
+    let thirdLocation = "data:text/html;charset=utf-8,fox";
     let onReadyCount = 0;
     let worker1 = null;
     let worker2 = null;
@@ -675,7 +751,7 @@ exports.testAttachOnMultipleDocuments = function (test) {
                            '  function () self.postMessage(document.location.href)' +
                            ');',
             onMessage: function (msg) {
-              test.assertEqual(msg, firstLocation, 
+              test.assertEqual(msg, firstLocation,
                                "Worker url is equal to the 1st document");
               tab.url = secondLocation;
             },
@@ -684,22 +760,22 @@ exports.testAttachOnMultipleDocuments = function (test) {
               test.pass("Got worker1 detach event");
               test.assertRaises(function () {
                   worker1.postMessage("ex-1");
-                }, 
-                /The page has been destroyed/, 
+                },
+                /Couldn't find the worker/,
                 "postMessage throw because worker1 is destroyed");
               checkEnd();
             }
           });
           worker1.postMessage("new-doc-1");
-        } 
+        }
         else if (onReadyCount == 2) {
-          
+
           worker2 = tab.attach({
             contentScript: 'self.on("message", ' +
                            '  function () self.postMessage(document.location.href)' +
                            ');',
             onMessage: function (msg) {
-              test.assertEqual(msg, secondLocation, 
+              test.assertEqual(msg, secondLocation,
                                "Worker url is equal to the 2nd document");
               tab.url = thirdLocation;
             },
@@ -708,32 +784,32 @@ exports.testAttachOnMultipleDocuments = function (test) {
               test.pass("Got worker2 detach event");
               test.assertRaises(function () {
                   worker2.postMessage("ex-2");
-                }, 
-                /The page has been destroyed/, 
+                },
+                /Couldn't find the worker/,
                 "postMessage throw because worker2 is destroyed");
               checkEnd();
             }
           });
           worker2.postMessage("new-doc-2");
-        } 
-        else if (onReadyCount == 3) {
-          
-          tab.close();
-          
         }
-        
+        else if (onReadyCount == 3) {
+
+          tab.close();
+
+        }
+
       }
     });
-    
+
     function checkEnd() {
       if (detachEventCount != 2)
         return;
-      
+
       test.pass("Got all detach events");
-      
+
       closeBrowserWindow(window, function() test.done());
     }
-    
+
   });
 }
 
@@ -743,10 +819,10 @@ exports.testAttachWrappers = function (test) {
   test.waitUntilDone();
   openBrowserWindow(function(window, browser) {
     let tabs = require("tabs");
-    let document = "data:text/html,<script>var globalJSVar = true; " +
+    let document = "data:text/html;charset=utf-8,<script>var globalJSVar = true; " +
                    "                       document.getElementById = 3;</script>";
     let count = 0;
-    
+
     tabs.open({
       url: document,
       onReady: function (tab) {
@@ -765,7 +841,7 @@ exports.testAttachWrappers = function (test) {
         });
       }
     });
-    
+
   });
 }
 
@@ -777,9 +853,9 @@ exports.testAttachUnwrapped = function (test) {
   test.waitUntilDone();
   openBrowserWindow(function(window, browser) {
     let tabs = require("tabs");
-    let document = "data:text/html,<script>var globalJSVar=true;</script>";
+    let document = "data:text/html;charset=utf-8,<script>var globalJSVar=true;</script>";
     let count = 0;
-    
+
     tabs.open({
       url: document,
       onReady: function (tab) {
@@ -796,7 +872,7 @@ exports.testAttachUnwrapped = function (test) {
         });
       }
     });
-    
+
   });
 }
 */
@@ -814,13 +890,13 @@ exports['test window focus changes active tab'] = function(test) {
         });
       });
       win1.focus();
-    }, "data:text/html,test window focus changes active tab</br><h1>Window #2");
-  }, "data:text/html,test window focus changes active tab</br><h1>Window #1");
+    }, "data:text/html;charset=utf-8,test window focus changes active tab</br><h1>Window #2");
+  }, "data:text/html;charset=utf-8,test window focus changes active tab</br><h1>Window #1");
 };
 
 exports['test ready event on new window tab'] = function(test) {
   test.waitUntilDone();
-  let uri = encodeURI("data:text/html,Waiting for ready event!");
+  let uri = encodeURI("data:text/html;charset=utf-8,Waiting for ready event!");
 
   require("tabs").on("ready", function onReady(tab) {
     if (tab.url === uri) {
@@ -852,14 +928,14 @@ function openBrowserWindow(callback, url) {
   urlString.data = url;
   let window = ww.openWindow(null, "chrome://browser/content/browser.xul",
                              "_blank", "chrome,all,dialog=no", urlString);
-  
+
   if (callback) {
     window.addEventListener("load", function onLoad(event) {
       if (event.target && event.target.defaultView == window) {
         window.removeEventListener("load", onLoad, true);
         let browsers = window.document.getElementsByTagName("tabbrowser");
         try {
-          require("timer").setTimeout(function () {
+          timer.setTimeout(function () {
             callback(window, browsers[0]);
           }, 10);
         } catch (e) { console.exception(e); }
@@ -888,13 +964,13 @@ try {
 catch (err) {
   // This bug should be mentioned in the error message.
   let bug = "https://bugzilla.mozilla.org/show_bug.cgi?id=560716";
+
   if (err.message.indexOf(bug) < 0)
     throw err;
-  for (let [prop, val] in Iterator(exports)) {
-    if (/^test/.test(prop) && typeof(val) === "function")
-      delete exports[prop];
+
+  module.exports = {
+    testAppNotSupported: function (test) {
+      test.pass("the tabs module does not support this application.");
+    }
   }
-  exports.testAppNotSupported = function (test) {
-    test.pass("the tabs module does not support this application.");
-  };
 }

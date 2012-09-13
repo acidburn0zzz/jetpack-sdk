@@ -24,11 +24,11 @@ const { MatchPattern } = require("api-utils/match-pattern");
 const { EventEmitterTrait: EventEmitter } = require("api-utils/events");
 const observerServ = require("api-utils/observer-service");
 const jpSelf = require("self");
-const winUtils = require("api-utils/window-utils");
-const { getInnerId } = require("api-utils/window/utils");
+const { WindowTracker } = require("api-utils/window-utils");
+const { getInnerId, isBrowser } = require("api-utils/window/utils");
 const { Trait } = require("api-utils/light-traits");
 const { Cortex } = require("api-utils/cortex");
-const timer = require("timer");
+const timer = require("timers");
 
 // All user items we add have this class name.
 const ITEM_CLASS = "jetpack-context-menu-item";
@@ -708,7 +708,8 @@ WorkerRegistry.prototype = {
 
   // Creates a worker for each window that needs a worker but doesn't have one.
   createNeededWorkers: function WR_createNeededWorkers() {
-    for (let [innerWinID, win] in Iterator(this.winsWithoutWorkers)) {
+    for (let innerWinID in this.winsWithoutWorkers) {
+      let win = this.winsWithoutWorkers[innerWinID]
       delete this.winsWithoutWorkers[innerWinID];
       this.registerContentWin(win);
     }
@@ -716,7 +717,8 @@ WorkerRegistry.prototype = {
 
   // Destroys the worker for each window that has a worker but doesn't need it.
   destroyUnneededWorkers: function WR_destroyUnneededWorkers() {
-    for (let [innerWinID, winWorker] in Iterator(this.winWorkers)) {
+    for (let innerWinID in this.winWorkers) {
+      let winWorker = this.winWorkers[innerWinID];
       if (!this._doesURLNeedWorker(winWorker.win.document.URL)) {
         this.unregisterContentWin(innerWinID);
         this.winsWithoutWorkers[innerWinID] = winWorker.win;
@@ -837,7 +839,7 @@ let browserManager = {
   // for each currently open browser window.
   init: function BM_init() {
     require("api-utils/unload").ensure(this);
-    let windowTracker = winUtils.WindowTracker(this);
+    let windowTracker = WindowTracker(this);
 
     // Register content windows on content-document-global-created and
     // unregister them on inner-window-destroyed.  For rationale, see bug 667957
@@ -912,7 +914,7 @@ let browserManager = {
   // chrome window, and for each chrome window that is open when the loader
   // loads this module.
   onTrack: function BM_onTrack(window) {
-    if (!this._isBrowserWindow(window))
+    if (!isBrowser(window))
       return;
 
     let browserWin = new BrowserWindow(window);
@@ -953,7 +955,7 @@ let browserManager = {
   // chrome window, and for each chrome window that is open when this module is
   // unloaded.
   onUntrack: function BM_onUntrack(window) {
-    if (!this._isBrowserWindow(window))
+    if (!isBrowser(window))
       return;
 
     // Remove the window from the window list.
@@ -968,11 +970,6 @@ let browserManager = {
     // Remove all top-level items from the window.
     this.topLevelItems.forEach(function (i) browserWin.removeTopLevelItem(i));
     browserWin.destroy();
-  },
-
-  _isBrowserWindow: function BM__isBrowserWindow(win) {
-    let winType = win.document.documentElement.getAttribute("windowtype");
-    return winType === "navigator:browser";
   }
 };
 
@@ -1363,7 +1360,8 @@ ContextMenuPopup.prototype = {
     let popupNode = this._getPopupNode();
     // Show and hide items.  Set a "jetpackContextCurrent" property on the
     // DOM elements to signal which of our items match the current context.
-    for (let [itemID, item] in Iterator(this.topLevelItems)) {
+    for (let itemID in this.topLevelItems) {
+      let item = this.topLevelItems[itemID]
       let areContextsCurr =
         this.browserWin.areAllContextsCurrent(item, popupNode);
 

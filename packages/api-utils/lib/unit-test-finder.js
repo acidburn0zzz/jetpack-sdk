@@ -4,10 +4,13 @@
 
 "use strict";
 
+module.metadata = {
+  "stability": "deprecated"
+};
+
 const file = require("./file");
-const packaging = require('@packaging');
 const memory = require('api-utils/memory');
-const suites = packaging.allTestModules;
+const suites = require('@test/options').allTestModules;
 
 
 const NOT_TESTS = ['setup', 'teardown'];

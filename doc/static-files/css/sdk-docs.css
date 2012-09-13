@@ -14,6 +14,13 @@ pre {
   overflow: auto;
 }
 
+.quote {
+  color: black;
+  background-color: whitesmoke;
+  padding: 10px;
+  overflow: auto;
+}
+
 h1 {
   color: black;
 }
@@ -23,6 +30,11 @@ h2 {
   overflow:auto;
   font-style: normal;
   padding: 5px 0px;
+}
+
+/* Enable image scaling */
+img {
+  max-width: 100%;
 }
 
 h2.top {
@@ -307,7 +319,8 @@ hr {
   border-style: solid;
   border-top-width: 1px;
   border-color: #a0d0fb;
-  margin-left: 0em;
+  margin-left: 0;
+  padding-bottom: 0;
 }
 
 #sidebar ul li:first-child {  

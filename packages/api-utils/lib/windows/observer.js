@@ -5,6 +5,10 @@
 
 "use strict";
 
+module.metadata = {
+  "stability": "unstable"
+};
+
 const { EventEmitterTrait: EventEmitter } = require("../events");
 const { WindowTracker, windowIterator } = require("../window-utils");
 const { DOMEventAssembler } = require("../events/assembler");
@@ -45,9 +49,5 @@ WindowTracker({
     observer.ignore(chromeWindow);
   }
 });
-
-// Making observer aware of already opened windows.
-for each (let window in windowIterator())
-  observer.observe(window);
 
 exports.observer = observer;

@@ -40,7 +40,7 @@ Try it out:
 
 * create a new directory and navigate to it
 * run `cfx init`
-* open the `lib/main.js` file, and replace its contents with the code above
+* open the `lib/main.js` file, and add the code above
 * run `cfx run`, then run `cfx run` again
 * open [ietf.org](http://www.ietf.org) in the browser window that opens
 
@@ -178,8 +178,45 @@ In the add-on script, we'll send the content script a message inside `onAttach`:
       }
     });
 
-The "replacePage" message isn't a built-in message: it's a message defined by
+The `replacePage` message isn't a built-in message: it's a message defined by
 the add-on in the `port.emit()` call.
+
+<div class="experimental">
+
+## Injecting CSS ##
+
+**Note that the feature described in this section is experimental
+at the moment: we'll very probably continue to support the feature,
+but details of the API might need to change.**
+
+Rather than injecting JavaScript into a page, you can inject CSS by
+setting the page-mod's `contentStyle` option:
+
+    var pageMod = require("page-mod").PageMod({
+      include: "*",
+      contentStyle: "body {" +
+                    "  border: 5px solid green;" +
+                    "}"
+    });
+
+As with `contentScript`, there's a corresponding `contentStyleFile` option
+that's given the URL of a CSS file in your "data" directory, and it is
+good practice to use this option in preference to `contentStyle` if the
+CSS is at all complex:
+
+    var pageMod = require("page-mod").PageMod({
+      include: "*",
+      contentStyleFile: require("self").data.url("my-style.css")
+    });
+
+You can't currently use relative URLs in style sheets loaded with
+`contentStyle` or `contentStyleFile`. If you do, the files referenced
+by the relative URLs will not be found.
+
+To learn more about this, and read about a workaround, see the
+[relevant section in the page-mod API documentation](packages/addon-kit/page-mod.html#Working_with_Relative_URLs_in_CSS_Rules).
+
+</div>
 
 ## Learning More ##
 
