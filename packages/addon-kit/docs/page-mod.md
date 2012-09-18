@@ -7,8 +7,9 @@
 <!-- contributed by Myk Melez [myk@mozilla.org] -->
 <!-- contributed by Irakli Gozalishvil [gozala@mozilla.com] -->
 
-Overview
---------
+The `page-mod` module enables you to run scripts in the context of
+specific web pages.
+
 The page-mod module enables add-on developers to execute scripts in the context
 of specific web pages. Most obviously you could use page-mod to dynamically
 modify the content of certain pages.
