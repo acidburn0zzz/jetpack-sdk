@@ -8,93 +8,61 @@
 <!-- contributed by Irakli Gozalishvil [gozala@mozilla.com] -->
 
 The `page-mod` module enables you to run scripts in the context of
-specific web pages.
+specific web pages. To use it, you specify:
 
-The page-mod module enables add-on developers to execute scripts in the context
-of specific web pages. Most obviously you could use page-mod to dynamically
-modify the content of certain pages.
+* one or more scripts to attach. The SDK calls scripts like this
+"content scripts". For all the details on content scripts, see the
+[guide to content scripts](dev-guide/guides/content-scripts/index.html).
+* a pattern that a page's URL must match, in order for the script(s)
+to be attached to that page
 
-The module exports a constructor function `PageMod` which creates a new page
-modification (or "mod" for short).
-
-A page mod does not modify its pages until those pages are loaded or reloaded.
-In other words, if your add-on is loaded while the user's browser is open, the
-user will have to reload any open pages that match the mod for the mod to affect
-them.
-
-To stop a page mod from making any more modifications, call its `destroy`
-method.
-
-Like all modules that interact with web content, page-mod uses content
-scripts that execute in the content process and defines a messaging API to
-communicate between the content scripts and the main add-on script. For more
-details on content scripting see the tutorial on [interacting with web
-content](dev-guide/guides/content-scripts/index.html).
-
-To create a PageMod the add-on developer supplies:
-
-* a set of rules to select the desired subset of web pages based on their URL.
-Each rule is specified using the
-[match-pattern](packages/api-utils/match-pattern.html) syntax.
-
-* a set of content scripts to execute in the context of the desired pages.
-
-* a value for the onAttach option: this value is a function which will be
-called when a page is loaded that matches the ruleset. This is used to set up a
-communication channel between the add-on code and the content script.
-
-All these parameters are optional except for the ruleset, which must include
-at least one rule.
-
-The following add-on displays an alert whenever a page matching the ruleset is
-loaded:
+For example, the following add-on displays an alert whenever the user
+visits any page hosted at "mozilla.org":
 
     var pageMod = require("page-mod");
     pageMod.PageMod({
-      include: "*.org",
+      include: "*mozilla.org",
       contentScript: 'window.alert("Page matches ruleset");'
     });
 
-If you specify a value of "ready" or "end" for `contentScriptWhen`,
-as opposed to "start",
-then the content script can interact with the DOM itself:
+You can modify the page in your script:
 
     var pageMod = require("page-mod");
     pageMod.PageMod({
-      include: "*.org",
-      contentScriptWhen: 'end',
+      include: "*mozilla.org",
       contentScript: 'document.body.innerHTML = ' +
                      ' "<h1>Page matches ruleset</h1>";'
     });
 
-<div class="warning">
-  Starting with SDK 1.11, page-mod only attaches scripts to documents loaded
-  in tabs. It will not attach scripts to add-on panels, page-workers, widgets,
-  or  Firefox hidden windows.
-</div>
+You can supply the content script(s) in one of two ways:
 
-### Using `contentScriptFile` ###
+* as a string literal, or an array of string literals, assigned to the `contentScript` option, as above
+* as separate files supplied in your add-on's "data" directory, assigning
+the filename, or array of filenames, to the `contentScriptFile` option:
 
-Most of the examples in this page define content scripts as strings,
-and use the `contentScript` option to assign them to page mods.
+<!-- -->
 
-Alternatively, you can create content scripts in separate files
-under your add-on's `data` directory. Then you can use the
+<span class="aside">
+In these examples we're using the
 [`self`](packages/addon-kit/self.html) module to retrieve a URL pointing
-to the file, and assign this to the page-mod's `contentScriptFile`
-property.
-
-For example, if you save the content script
-file in your `data` directory as "myScript.js", you would assign it using
-code like:
+to the file.</span>
 
     var data = require("self").data;
-
     var pageMod = require("page-mod");
     pageMod.PageMod({
       include: "*.org",
-      contentScriptWhen: 'end',
-      contentScriptFile: data.url("myScript.js")
+      contentScriptFile: data.url("my-script.js")
+    });
+
+<!-- -->
+
+    var data = require("self").data;
+    var pageMod = require("page-mod");
+
+    pageMod.PageMod({
+      include: "*.mozilla.org",
+      contentScriptFile: [self.data.url("jquery-1.7.min.js"),
+                          self.data.url("my-script.js")]
     });
 
 <div class="warning">
@@ -104,6 +72,140 @@ have problems getting your add-on approved on AMO.</p>
 <p>Instead, keep the script in a separate file and load it using
 <code>contentScriptFile</code>. This makes your code easier to maintain,
 secure, debug and review.</p>
+</div>
+
+## Communicating With the Content Scripts ##
+
+Your add-on's "main.js" can't directly access the state of content scripts
+you load, but you can communicate between your add-on and its content scripts
+by exchanging messages.
+
+To do this, you'll need to listen to the page-mod's `attach` event.
+This event is triggered every time the page-mod's content script is attached
+to a page. The listener is passed a `worker` object that your add-on can use
+to send and receive messages.
+
+For example, this add-on retrieves the HTML content of specific tags from
+pages that match the pattern.
+
+main.js:
+
+    var tag = "p";
+    var data = require("self").data;
+    var pageMod = require("page-mod");
+
+    pageMod.PageMod({
+      include: "*.mozilla.org",
+      contentScriptFile: data.url("element-getter.js"),
+      onAttach: function(worker) {
+        worker.port.emit("getElements", tag);
+        worker.port.on("gotElement", function(elementContent) {
+          console.log(elementContent);
+        });
+      }
+    });
+
+element-getter.js:
+
+    self.port.on("getElements", function(tag) {
+      var elements = document.getElementsByTagName(tag);
+      for (var i = 0; i < elements.length; i++) {
+        self.port.emit("gotElement", elements[i].innerHTML);
+      }
+    });
+
+When the user loads a page hosted at "mozilla.org":
+
+<img class="image-right" alt="page-mod messaging diagram" src="static-files/media/page-mod-messaging.png"/>
+
+* The content script "element-getter.js" is attached to the page
+and runs. It adds a listener to the `getElements` message.
+* The `attach` event is sent to the "main.js" code. Its event handler sends
+the `getElements` message to the content script, and then adds a listener
+to the `gotElement` message.
+* The content script receives the `getElements` message, retrieves all
+elements of that type, and for each element sends a `gotElement` message
+containing the element's `innerHTML`.
+* The "main.js" code receives each `gotElement` message and logs the
+contents.
+
+If multiple matching pages are loaded then each page is loaded into its
+own execution context with its own copy of the content scripts. In this
+case `onAttach` is called once for each loaded page, and the add-on code
+will have a separate worker for each page.
+
+However, this worker will be shared across all content scripts loaded into
+
+
+while there is a separate worker for each execution context,
+the worker is shared across all the content scripts associated with a single
+execution context.
+
+To learn much more about communicating with content scripts, see the
+[guide to content scripts](dev-guide/guides/content-scripts/index.html) and in
+particular the chapter on
+[communicating using `port`](dev-guide/guides/content-scripts/using-port.html).
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+A page mod does not modify its pages until those pages are loaded or reloaded.
+In other words, if your add-on is loaded while the user's browser is open, the
+user will have to reload any open pages that match the mod for the mod to affect
+them.
+
+To stop a page mod from making any more modifications, call its `destroy`
+method.
+
+<div class="warning">
+  Starting with SDK 1.11, page-mod only attaches scripts to documents loaded
+  in tabs. It will not attach scripts to add-on panels, page-workers, widgets,
+  or  Firefox hidden windows.
 </div>
 
 ### Styling web pages ###
