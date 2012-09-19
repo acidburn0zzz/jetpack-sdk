@@ -134,12 +134,22 @@ own execution context with its own copy of the content scripts. In this
 case `onAttach` is called once for each loaded page, and the add-on code
 will have a separate worker for each page.
 
-However, this worker will be shared across all content scripts loaded into
+### Mapping Workers to Tabs ###
 
+The `worker` has a `tab` property which returns the tab associated with
+this worker. You can use this to access
+the [`tabs API`](packages/addon-kit/tabs.html) for the tab associated
+with a specific page:
 
-while there is a separate worker for each execution context,
-the worker is shared across all the content scripts associated with a single
-execution context.
+    var pageMod = require("page-mod");
+    var tabs = require("tabs");
+
+    pageMod.PageMod({
+      include: ["*"],
+      onAttach: function onAttach(worker) {
+        console.log(worker.tab.title);
+      }
+    });
 
 To learn much more about communicating with content scripts, see the
 [guide to content scripts](dev-guide/guides/content-scripts/index.html) and in
@@ -362,22 +372,6 @@ The console output of this add-on is:
   info: Content script 2 is attached to http://www.mozilla.com/en-US/
 </pre>
 
-### Mapping workers to tabs ###
-
-The `worker` has a `tab` property which returns the tab associated with
-this worker. You can use this to access
-the [`tabs API`](packages/addon-kit/tabs.html) for the tab associated
-with a specific page:
-
-    var pageMod = require("page-mod");
-    var tabs = require("tabs");
-
-    pageMod.PageMod({
-      include: ["*"],
-      onAttach: function onAttach(worker) {
-        console.log(worker.tab.title);
-      }
-    });
 
 ### Attaching content scripts to tabs ###
 
