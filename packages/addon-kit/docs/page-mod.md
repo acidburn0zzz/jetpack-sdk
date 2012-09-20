@@ -257,11 +257,12 @@ The following add-on creates a widget which, when clicked, highlights all the
 A PageMod object. Once activated a page mod will execute the supplied content
 scripts in the context of any pages matching the pattern specified by the
 'include' property.
+
 <api name="PageMod">
 @constructor
 Creates a PageMod.
 @param options {object}
-  Options for the PageMod, with the following keys:
+  Options for the PageMod. All these options are optional except for `include`.
   @prop include {string,array}
     A match pattern string or an array of match pattern strings.  These define
     the pages to which the PageMod applies. At least one match pattern must
@@ -308,40 +309,121 @@ Creates a PageMod.
     pages.
 
     Each script is supplied as a separate file under your add-on's "data"
-   directory, and is specified by a URL typically constructed using the
-   `url()` method of the
-   [`self` module's `data` object](packages/addon-kit/self.html#data).
-   To attach multiple scripts, pass an array of URLs.
+    directory, and is specified by a URL typically constructed using the
+    `url()` method of the
+    [`self` module's `data` object](packages/addon-kit/self.html#data).
 
-    Content scripts specified
-    by this option are loaded *before* those specified by the `contentScript`
-    option. Optional.
+        var data = require("self").data;
+        var pageMod = require("page-mod");
+        pageMod.PageMod({
+          include: "*",
+          contentScriptFile: data.url("my-script.js")
+        });
+
+    To attach multiple scripts, pass an array of URLs.
+
+        var data = require("self").data;
+        var pageMod = require("page-mod");
+
+        pageMod.PageMod({
+          include: "*",
+          contentScriptFile: [self.data.url("jquery-1.7.min.js"),
+                              self.data.url("my-script.js")]
+        });
+
+    Content scripts specified using this option are loaded before those
+    specified by the `contentScript` option.
+
   @prop [contentScript] {string,array}
-    The texts of content scripts to load.  Content scripts specified by this
-    option are loaded *after* those specified by the `contentScriptFile` option.
-    Optional.
+   This option specifies one or more content scripts to attach to targeted
+   pages. Each script is supplied directly as a single string:
+
+        var pageMod = require("page-mod");
+        pageMod.PageMod({
+          include: "*",
+          contentScript: 'window.alert("Page matches ruleset");'
+        });
+
+   To attach multiple scripts, supply an array of strings.
+
+   Content scripts specified by this option are loaded after those
+   specified by the `contentScriptFile` option.
+
+<div class="warning">
+<p>Unless your content script is extremely simple and consists only of a
+static string, don't use <code>contentScript</code>: if you do, you may
+have problems getting your add-on approved on AMO.</p>
+<p>Instead, keep the script in a separate file and load it using
+<code>contentScriptFile</code>. This makes your code easier to maintain,
+secure, debug and review.</p>
+</div>
+
   @prop [contentScriptWhen="end"] {string}
-    When to load the content scripts. This may take one of the following
-    values:
+   By default, content scripts are attached after all the content
+   (DOM, JS, CSS, images) for the page has been loaded, at the time the
+   [window.onload event](https://developer.mozilla.org/en/DOM/window.onload)
+   fires. Using this option you can customize this behavior.
 
-    * "start": load content scripts immediately after the document
-    element for the page is inserted into the DOM, but before the DOM content
-    itself has been loaded
-    * "ready": load content scripts once DOM content has been loaded,
-    corresponding to the
-    [DOMContentLoaded](https://developer.mozilla.org/en/Gecko-Specific_DOM_Events)
-    event
-    * "end": load content scripts once all the content (DOM, JS, CSS,
-    images) for the page has been loaded, at the time the
-    [window.onload event](https://developer.mozilla.org/en/DOM/window.onload)
-    fires
+   The option takes a single string that may take any one of the following
+   values:
 
-    This property is optional and defaults to "end".
+   * `"start"`: load content scripts immediately after the document
+   element for the page is inserted into the DOM, but before the DOM content
+   itself has been loaded
+   * `"ready"`: load content scripts once DOM content has been loaded,
+   corresponding to the
+   [DOMContentLoaded](https://developer.mozilla.org/en/Gecko-Specific_DOM_Events)
+   event
+   * `"end"`: the default. Load content scripts once all the content
+   (DOM, JS, CSS, images) for the page has been loaded, at the time the
+   [window.onload event](https://developer.mozilla.org/en/DOM/window.onload)
+   fires
+
+<!-- -->
+
+       var pageMod = require("page-mod");
+       pageMod.PageMod({
+         include: "*",
+         contentScript: 'window.alert("Page matches ruleset");',
+         contentScriptWhen: "start"
+       });
+
+   If you specify `"start"` for `contentScriptWhen`, your scripts will not be
+   able to interact with the page DOM right away (although they could listen
+   for `window.onload` or `DOMContentLoaded` themselves).
+
   @prop [contentScriptOptions] {object}
-    Read-only value exposed to content scripts under `self.options` property.
+   You can use this option to define some read-only values for your content
+   scripts.
 
-    Any kind of jsonable value (object, array, string, etc.) can be used here.
-    Optional.
+   It consists of an object literal listing `name:value` paris for the values
+   you want to provide to the content script. For example:
+
+       var data = require("self").data;
+       var pageMod = require("page-mod");
+       pageMod.PageMod({
+         include: "*",
+         contentScriptFile: data.url("my-script.js"),
+         contentScriptOptions: {
+           showOptions: true,
+           someNumbers: [1, 2],
+           greeting: "Hello!"
+         }
+       });
+
+   The values are accessible to content scripts via the `self.options`
+   property:
+
+       // my-script.js
+       if (self.options.showOptions) {
+         window.alert(self.options.greeting);
+         window.alert(self.options.someNumbers[0] + self.options.someNumbers[1]);
+       }
+
+   The values can be any json-serializable value: a string, number,
+   boolean, null, array of JSON-serializable values, or an object whose
+   property values are themselves JSON-serializable. This means you can't send
+   functions, and if the object contains methods they won't be usable.
 
   @prop [contentStyleFile] {string,array}
     Use this option to load one or more style sheets into the targeted pages as
