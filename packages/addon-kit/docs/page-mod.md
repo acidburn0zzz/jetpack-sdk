@@ -82,12 +82,12 @@ The `PageMod` constructor takes a number of other options to control its
 behavior, all documented in detail in the
 [API Reference](packages/addon-kit/page-mod.html#API Reference) section below:
 
-* `contentStyle` or `contentStyleFile` attach stylesheets
+* `contentStyle` or `contentStyleFile` list stylesheets to attach
 * `attachTo` controls whether to attach scripts to tabs
 that were already open when the page-mod was created, and whether to attach
 scripts to iframes as well as the topmost document.
 * `contentScriptWhen` controls when the scripts should be attached to
-the page
+the page.
 
 ## Communicating With Content Scripts ##
 
@@ -101,7 +101,9 @@ to a page. The listener is passed a `worker` object that your add-on can use
 to send and receive messages.
 
 For example, this add-on retrieves the HTML content of specific tags from
-pages that match the pattern.
+pages that match the pattern. The main add-on code sends the desired tag to
+the content script, and the content script replies by sending the HTML
+content of all the elements with that tag.
 
 main.js:
 
@@ -262,13 +264,56 @@ Creates a PageMod.
   Options for the PageMod, with the following keys:
   @prop include {string,array}
     A match pattern string or an array of match pattern strings.  These define
-    the pages to which the PageMod applies.  See the
-    [match-pattern](packages/api-utils/match-pattern.html) module for
-    a description of match pattern syntax.
-    At least one match pattern must be supplied.
+    the pages to which the PageMod applies. At least one match pattern must
+    be supplied: `include` is the only mandatory argument to the `PageMod`
+    constructor.
+
+    You can specify a URL exactly:
+
+        var pageMod = require("page-mod");
+        pageMod.PageMod({
+          include: "http://www.iana.org/domains/example/",
+          contentScript: 'window.alert("Page matches ruleset");'
+        });
+
+    You can specify a number of wildcard forms, for example:
+
+        var pageMod = require("page-mod");
+        pageMod.PageMod({
+          include: "*.mozilla.org",
+          contentScript: 'window.alert("Page matches ruleset");'
+        });
+
+    You can specify a set of URLs using a regular expression:
+
+        var pageMod = require("page-mod");
+        pageMod.PageMod({
+          include: /.*developer.*/,
+          contentScript: 'window.alert("Page matches ruleset");'
+        });
+
+  To specify multiple patterns, pass an array of match patterns:
+
+      var pageMod = require("page-mod");
+      pageMod.PageMod({
+        include: ["*.developer.mozilla.org", "*.addons.mozilla.org"],
+        contentScript: 'window.alert("Page matches ruleset");'
+      });
+
+    See the [match-pattern](packages/api-utils/match-pattern.html) module for
+    a detailed description of match pattern syntax.
 
   @prop [contentScriptFile] {string,array}
-    The local file URLs of content scripts to load.  Content scripts specified
+    This option specifies one or more content scripts to attach to targeted
+    pages.
+
+    Each script is supplied as a separate file under your add-on's "data"
+   directory, and is specified by a URL typically constructed using the
+   `url()` method of the
+   [`self` module's `data` object](packages/addon-kit/self.html#data).
+   To attach multiple scripts, pass an array of URLs.
+
+    Content scripts specified
     by this option are loaded *before* those specified by the `contentScript`
     option. Optional.
   @prop [contentScript] {string,array}
