@@ -14,7 +14,7 @@ specific web pages. To use it, you specify:
 "content scripts". For all the details on content scripts, see the
 [guide to content scripts](dev-guide/guides/content-scripts/index.html).
 * a pattern that a page's URL must match, in order for the script(s)
-to be attached to that page
+to be attached to that page.
 
 For example, the following add-on displays an alert whenever the user
 visits any page hosted at "mozilla.org":
@@ -77,7 +77,7 @@ A page-mod only attaches scripts to documents loaded in tabs. It will not
 attach scripts to add-on panels, page-workers, widgets, or Firefox hidden
 windows.
 
-To stop a page mod from making any more modifications, call its `destroy`
+To stop a page-mod from making any more modifications, call its `destroy`
 method.
 
 The `PageMod` constructor takes a number of other options to control its
@@ -99,8 +99,9 @@ by exchanging messages.
 
 To do this, you'll need to listen to the page-mod's `attach` event.
 This event is triggered every time the page-mod's content script is attached
-to a page. The listener is passed a `worker` object that your add-on can use
-to send and receive messages.
+to a page. The listener is passed a
+[`worker`](packages/api-utils/content/worker.html) object that your add-on
+can use to send and receive messages.
 
 For example, this add-on retrieves the HTML content of specific tags from
 pages that match the pattern. The main add-on code sends the desired tag to
@@ -148,10 +149,16 @@ containing the element's `innerHTML`.
 * The "main.js" code receives each `gotElement` message and logs the
 contents.
 
-If multiple matching pages are loaded then each page is loaded into its
-own execution context with its own copy of the content scripts. In this
-case `onAttach` is called once for each loaded page, and the add-on code
-will have a separate worker for each page.
+If multiple pages that match the page-mod's `include` pattern are loaded,
+then each page is loaded into its own execution context with its own copy
+of the content scripts. In this case the listener assigned to `onAttach`
+is called once for each loaded page, and the add-on code will have a
+separate worker for each page.
+
+To learn much more about communicating with content scripts, see the
+[guide to content scripts](dev-guide/guides/content-scripts/index.html) and in
+particular the chapter on
+[communicating using `port`](dev-guide/guides/content-scripts/using-port.html).
 
 ## Mapping Workers to Tabs ##
 
@@ -170,19 +177,14 @@ with a specific page:
       }
     });
 
-To learn much more about communicating with content scripts, see the
-[guide to content scripts](dev-guide/guides/content-scripts/index.html) and in
-particular the chapter on
-[communicating using `port`](dev-guide/guides/content-scripts/using-port.html).
-
 ## Destroying Workers ##
 
 Workers generate a `detach` event when their associated page is closed: that
 is, when the tab is closed or the tab's location changes. If
-you are maintaining a list of workers belonging to a page mod, you can use
+you are maintaining a list of workers belonging to a page-mod, you can use
 this event to remove workers that are no longer valid.
 
-For example, if you maintain a list of workers attached to a page mod:
+For example, if you maintain a list of workers attached to a page-mod:
 
     var workers = [];
 
@@ -221,7 +223,7 @@ You can remove workers when they are no longer valid by listening to `detach`:
 
 ## Attaching Content Scripts to Tabs ##
 
-We've seen that the page mod API attaches content scripts to pages based on
+We've seen that the page-mod API attaches content scripts to pages based on
 their URL. Sometimes, though, we don't care about the URL: we just want
 to execute a script on demand in the context of a particular tab.
 
@@ -256,18 +258,18 @@ The following add-on creates a widget which, when clicked, highlights all the
 
 <api name="PageMod">
 @class
-A PageMod object. Once activated a page mod will execute the supplied content
-scripts in the context of any pages matching the pattern specified by the
-'include' property.
+A page-mod object. Once activated a page-mod will execute the supplied content
+scripts, and load any supplied stylesheets, in the context of any pages
+matching the pattern specified by the `include` property.
 
 <api name="PageMod">
 @constructor
-Creates a PageMod.
+Creates a page-mod.
 @param options {object}
-  Options for the PageMod. All these options are optional except for `include`.
+  Options for the page-mod. All these options are optional except for `include`.
   @prop include {string,array}
     A match pattern string or an array of match pattern strings.  These define
-    the pages to which the PageMod applies. At least one match pattern must
+    the pages to which the page-mod applies. At least one match pattern must
     be supplied: `include` is the only mandatory argument to the `PageMod`
     constructor.
 
@@ -398,8 +400,8 @@ secure, debug and review.</p>
    You can use this option to define some read-only values for your content
    scripts.
 
-   It consists of an object literal listing `name:value` pairs for the values
-   you want to provide to the content script. For example:
+   The option consists of an object literal listing `name:value` pairs for
+   the values you want to provide to the content script. For example:
 
        var data = require("self").data;
        var pageMod = require("page-mod");
@@ -428,14 +430,14 @@ secure, debug and review.</p>
    functions, and if the object contains methods they won't be usable.
 
   @prop [contentStyleFile] {string,array}
-    Use this option to load one or more style sheets into the targeted pages as
+    Use this option to load one or more stylesheets into the targeted pages as
     [user stylesheets](https://developer.mozilla.org/en/CSS/Getting_Started/Cascading_and_inheritance).
 
     Each stylesheet is supplied as a separate file under your add-on's "data"
     directory, and is specified by a URL typically constructed using the
     `url()` method of the
     [`self` module's `data` object](packages/addon-kit/self.html#data).
-    To add multiple style sheet files, pass an array of URLs.
+    To add multiple stylesheet files, pass an array of URLs.
 
         var data = require("self").data;
         var pageMod = require("page-mod");
@@ -446,9 +448,9 @@ secure, debug and review.</p>
         });
 
     Content styles specified by this
-    option are loaded *before* those specified by the `contentStyle` option.
+    option are loaded before those specified by the `contentStyle` option.
 
-    You can't currently use relative URLs in style sheets loaded in this way.
+    You can't currently use relative URLs in stylesheets loaded in this way.
     For example, consider a CSS file that references an external file like this:
 
         background: rgb(249, 249, 249) url('../../img/my-background.png') repeat-x top center;
@@ -500,8 +502,7 @@ secure, debug and review.</p>
         });
 
     Content styles specified by this
-    option are loaded *after* those specified by the `contentStyleFile` option.
-    Optional.
+    option are loaded after those specified by the `contentStyleFile` option.
 
   @prop [attachTo] {string,array}
    By default, content scripts:
@@ -511,24 +512,26 @@ secure, debug and review.</p>
    * are attached to all documents whose URL matches the rule: so if your
    rule matches a specific hostname and path, and the topmost document that
    satisfies the rule includes ten iframes using a relative URL, then your
-   PageMod is applied eleven times.
+   page-mod is applied eleven times.
 
 <!-- -->
+
    You can modify this behavior using the `attachTo` option.
 
    It accepts the following values:
 
-   * `"existing"`: the page mod will be automatically applied on already
+   * `"existing"`: the page-mod will be automatically applied on already
    opened tabs.
-   * `"top"`: the page mod will be applied to top-level tab documents
-   * `"frame"`: the page mod will be applied to all iframes inside tab
+   * `"top"`: the page-mod will be applied to top-level tab documents
+   * `"frame"`: the page-mod will be applied to all iframes inside tab
    documents
 
 <!-- -->
+
    If the option is set at all, you must set at least one of `"top"` and
    `"frame"`.
 
-   For example, the following page mod will be attached to already opened
+   For example, the following page-mod will be attached to already opened
    tabs, but not to any iframes:
 
        var pageMod = require("page-mod");
@@ -542,7 +545,7 @@ secure, debug and review.</p>
        });
 
   @prop [onAttach] {function}
-   Assign a listener function to this option to listen to the page mod's
+   Assign a listener function to this option to listen to the page-mod's
    `attach` event. See the
    [documentation for `attach`](packages/addon-kit/page-mod.html#attach) and
    [Communicating With Content Scripts](packages/addon-kit/page-mod.html#Communicating With Content Scripts).
@@ -552,7 +555,7 @@ secure, debug and review.</p>
 <api name="include">
 @property {List}
   A [list](packages/api-utils/list.html) of match pattern strings.  These
-  define the pages to which the page mod applies. See the documentation of
+  define the pages to which the page-mod applies. See the documentation of
   the `include` option above for details of `include` syntax.
   Rules can be added to the list by calling its
   `add` method and removed by calling its `remove` method.
@@ -561,8 +564,8 @@ secure, debug and review.</p>
 
 <api name="destroy">
 @method
-  Stops the page mod from making any more modifications. Once destroyed
-  the page mod can no longer be used.
+  Stops the page-mod from making any more modifications. Once destroyed
+  the page-mod can no longer be used.
 
   Modifications already made to open pages by content scripts
   will not be undone, but stylesheets added by `contentStyle` or
@@ -571,22 +574,22 @@ secure, debug and review.</p>
 
 <api name="attach">
 @event
-  This event is emitted this event when the page-mod's content scripts are
+  This event is emitted when the page-mod's content scripts are
   attached to a page whose URL matches the page-mod's `include` pattern.
 
    The listener function is passed a
    [`worker`](packages/api-utils/content/worker.html) object that you
    can use to
-   [communicate with the content scripts](packages/addon-kit/page-mod.html#Communicating With Content Scripts) your page mod has
+   [communicate with the content scripts](packages/addon-kit/page-mod.html#Communicating With Content Scripts) your page-mod has
    loaded into this particular tab.
 
-   The `attach` event is triggered every time this page mod's content
+   The `attach` event is triggered every time this page-mod's content
    scripts are attached to a page (or frame). So if the user loads several
-   pages which match this page mod's `include` pattern, `attach` will be
+   pages which match this page-mod's `include` pattern, `attach` will be
    triggered for each page, each time with a distinct `worker` instance.
 
    Each worker then represents a channel of communication with the set of
-   content scripts loaded by this particular page mod into that
+   content scripts loaded by this particular page-mod into that
    particular page.
 
 @argument {Worker}
