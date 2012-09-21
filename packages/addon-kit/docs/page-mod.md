@@ -20,16 +20,18 @@ For example, the following add-on displays an alert whenever the user
 visits any page hosted at "mozilla.org":
 
     var pageMod = require("page-mod");
+
     pageMod.PageMod({
-      include: "*mozilla.org",
+      include: "*.mozilla.org",
       contentScript: 'window.alert("Page matches ruleset");'
     });
 
 You can modify the page in your script:
 
     var pageMod = require("page-mod");
+
     pageMod.PageMod({
-      include: "*mozilla.org",
+      include: "*.mozilla.org",
       contentScript: 'document.body.innerHTML = ' +
                      ' "<h1>Page matches ruleset</h1>";'
     });
@@ -47,7 +49,7 @@ In this case files are specified by a URL typically constructed using the
     var data = require("self").data;
     var pageMod = require("page-mod");
     pageMod.PageMod({
-      include: "*.org",
+      include: "*.mozilla.org",
       contentScriptFile: data.url("my-script.js")
     });
 
@@ -396,7 +398,7 @@ secure, debug and review.</p>
    You can use this option to define some read-only values for your content
    scripts.
 
-   It consists of an object literal listing `name:value` paris for the values
+   It consists of an object literal listing `name:value` pairs for the values
    you want to provide to the content script. For example:
 
        var data = require("self").data;
@@ -420,7 +422,7 @@ secure, debug and review.</p>
          window.alert(self.options.someNumbers[0] + self.options.someNumbers[1]);
        }
 
-   The values can be any json-serializable value: a string, number,
+   The values can be any JSON-serializable value: a string, number,
    boolean, null, array of JSON-serializable values, or an object whose
    property values are themselves JSON-serializable. This means you can't send
    functions, and if the object contains methods they won't be usable.
@@ -540,53 +542,57 @@ secure, debug and review.</p>
        });
 
   @prop [onAttach] {function}
-   Assign a listener function to this option to be notified when the
-   content scripts assigned to this page mod are attached to a page.
-
-   The listener function is passed a
-   [`worker`](packages/api-utils/content/worker.html) object that you
-   can use to communicate with the content scripts your page mod has
-   loaded into this particular tab.
-
-   See [Communicating With Content Scripts](packages/addon-kit/page-mod.html#Communicating With Content Scripts)
-   for more details.
-
-   The `attach` event is triggered every time this page mod's content
-   scripts are attached to a page
-
-  A function to call when the PageMod attaches content scripts to
-a matching page. The function will be called with one argument, a `worker`
-object which the add-on script can use to communicate with the content scripts
-attached to the page in question.
+   Assign a listener function to this option to listen to the page mod's
+   `attach` event. See the
+   [documentation for `attach`](packages/addon-kit/page-mod.html#attach) and
+   [Communicating With Content Scripts](packages/addon-kit/page-mod.html#Communicating With Content Scripts).
 
 </api>
 
 <api name="include">
 @property {List}
-A [list](packages/api-utils/list.html) of match pattern strings.  These
-define the pages to which the page mod applies.  See the
-[match-pattern](packages/api-utils/match-pattern.html) module for a
-description of match patterns. Rules can be added to the list by calling its
-`add` method and removed by calling its `remove` method.
+  A [list](packages/api-utils/list.html) of match pattern strings.  These
+  define the pages to which the page mod applies. See the documentation of
+  the `include` option above for details of `include` syntax.
+  Rules can be added to the list by calling its
+  `add` method and removed by calling its `remove` method.
 
 </api>
 
 <api name="destroy">
 @method
-Stops the page mod from making any more modifications.  Once destroyed the page
-mod can no longer be used.  Note that modifications already made to open pages
-will not be undone, except for any stylesheet added by `contentStyle` or
-`contentStyleFile`, that are unregistered immediately.
+  Stops the page mod from making any more modifications. Once destroyed
+  the page mod can no longer be used.
+
+  Modifications already made to open pages by content scripts
+  will not be undone, but stylesheets added by `contentStyle` or
+  `contentStyleFile`, will be unregistered immediately.
 </api>
 
 <api name="attach">
 @event
-This event is emitted this event when the page-mod's content scripts are
-attached to a page whose URL matches the page-mod's `include` filter.
+  This event is emitted this event when the page-mod's content scripts are
+  attached to a page whose URL matches the page-mod's `include` pattern.
+
+   The listener function is passed a
+   [`worker`](packages/api-utils/content/worker.html) object that you
+   can use to
+   [communicate with the content scripts](packages/addon-kit/page-mod.html#Communicating With Content Scripts) your page mod has
+   loaded into this particular tab.
+
+   The `attach` event is triggered every time this page mod's content
+   scripts are attached to a page (or frame). So if the user loads several
+   pages which match this page mod's `include` pattern, `attach` will be
+   triggered for each page, each time with a distinct `worker` instance.
+
+   Each worker then represents a channel of communication with the set of
+   content scripts loaded by this particular page mod into that
+   particular page.
 
 @argument {Worker}
-The listener function is passed a [`Worker`](packages/api-utils/content/worker.html) object that can be used to communicate
-with any content scripts attached to this page.
+   The listener function is passed a [`Worker`](packages/api-utils/content/worker.html)
+   object that can be used to communicate with any content scripts
+   attached to this page.
 </api>
 
 <api name="error">
