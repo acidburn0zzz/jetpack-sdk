@@ -511,6 +511,7 @@ secure, debug and review.</p>
    satisfies the rule includes ten iframes using a relative URL, then your
    PageMod is applied eleven times.
 
+<!-- -->
    You can modify this behavior using the `attachTo` option.
 
    It accepts the following values:
@@ -521,6 +522,7 @@ secure, debug and review.</p>
    * `"frame"`: the page mod will be applied to all iframes inside tab
    documents
 
+<!-- -->
    If the option is set at all, you must set at least one of `"top"` and
    `"frame"`.
 
@@ -538,7 +540,21 @@ secure, debug and review.</p>
        });
 
   @prop [onAttach] {function}
-A function to call when the PageMod attaches content scripts to
+   Assign a listener function to this option to be notified when the
+   content scripts assigned to this page mod are attached to a page.
+
+   The listener function is passed a
+   [`worker`](packages/api-utils/content/worker.html) object that you
+   can use to communicate with the content scripts your page mod has
+   loaded into this particular tab.
+
+   See [Communicating With Content Scripts](packages/addon-kit/page-mod.html#Communicating With Content Scripts)
+   for more details.
+
+   The `attach` event is triggered every time this page mod's content
+   scripts are attached to a page
+
+  A function to call when the PageMod attaches content scripts to
 a matching page. The function will be called with one argument, a `worker`
 object which the add-on script can use to communicate with the content scripts
 attached to the page in question.
