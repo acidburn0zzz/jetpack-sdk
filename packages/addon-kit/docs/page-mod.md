@@ -459,7 +459,6 @@ secure, debug and review.</p>
     in your rule. For example:
 
         var data = require("self").data;
-
         var pageMod = require("page-mod").PageMod({
           include: "*",
           contentStyleFile: data.url("my-style.css"),
@@ -488,7 +487,6 @@ secure, debug and review.</p>
     Each stylesheet rule is supplied as a separate string. To supply
     multiple rules, pass an array of strings:
 
-        var data = require("self").data;
         var pageMod = require("page-mod");
 
         pageMod.PageMod({
@@ -504,29 +502,40 @@ secure, debug and review.</p>
     Optional.
 
   @prop [attachTo] {string,array}
-    By default, content scripts:
+   By default, content scripts:
 
-    * are not attached to any tabs that are already open when the page-mod is
-    created. In other words, if your add-on is loaded while the user's browser
-    is open, the user will have to reload any open pages that match the mod
-    for the mod to affect them.
-    * are attached to all documents whose URL matches the rule: so if your
-    rule matches a specific hostname and path, and the topmost document that
-    satisfies the rule includes ten iframes using a relative URL, then your
-    PageMod is applied eleven times.
+   * are not attached to any tabs that are already open when the page-mod is
+   created.
+   * are attached to all documents whose URL matches the rule: so if your
+   rule matches a specific hostname and path, and the topmost document that
+   satisfies the rule includes ten iframes using a relative URL, then your
+   PageMod is applied eleven times.
 
-    You can modify this behavior using the `attachTo` option.
+   You can modify this behavior using the `attachTo` option.
 
-    It accepts following values:
+   It accepts the following values:
 
-    * "existing": the PageMod will be automatically applied on already opened
-    tabs.
-    * "top": the PageMod will be applied to top-level tab documents
-    * "frame": the PageMod will be applied to all iframe inside tab documents
+   * `"existing"`: the page mod will be automatically applied on already
+   opened tabs.
+   * `"top"`: the page mod will be applied to top-level tab documents
+   * `"frame"`: the page mod will be applied to all iframes inside tab
+   documents
 
-    When omitted, it defaults to ["top", "frame"]. When set, you have to at
-    least set either "top" and/or "frame".
-    Optional.
+   If the option is set at all, you must set at least one of `"top"` and
+   `"frame"`.
+
+   For example, the following page mod will be attached to already opened
+   tabs, but not to any iframes:
+
+       var pageMod = require("page-mod");
+       pageMod.PageMod({
+         include: "*",
+         contentScript: "",
+         attachTo: ["existing", "top"],
+         onAttach: function(worker) {
+           console.log("attached to: " + worker.tab.url);
+         }
+       });
 
   @prop [onAttach] {function}
 A function to call when the PageMod attaches content scripts to
