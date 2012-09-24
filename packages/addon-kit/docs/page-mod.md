@@ -77,14 +77,16 @@ A page-mod only attaches scripts to documents loaded in tabs. It will not
 attach scripts to add-on panels, page-workers, widgets, or Firefox hidden
 windows.
 
-To stop a page-mod from making any more modifications, call its `destroy`
+To stop a page-mod from making any more modifications, call its `destroy()`
 method.
 
 The `PageMod` constructor takes a number of other options to control its
 behavior, all documented in detail in the
 [API Reference](packages/addon-kit/page-mod.html#API Reference) section below:
 
-* `contentStyle` or `contentStyleFile` list stylesheets to attach
+* `contentStyle` or `contentStyleFile` list stylesheets to attach.
+* `contentScriptOptions` defines read-only values accessible to content
+scripts.
 * `attachTo` controls whether to attach scripts to tabs
 that were already open when the page-mod was created, and whether to attach
 scripts to iframes as well as the topmost document.
