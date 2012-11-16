@@ -103,8 +103,17 @@ This page lists more theoretical in-depth articles about the SDK.
   <tr>
     <td>
       <h4><a href="dev-guide/guides/content-scripts/accessing-the-dom.html">Accessing the DOM</a></h4>
-	  Detail about the access content scripts get to the DOM.
+      Detail about the access content scripts get to the DOM.
     </td>
+
+    <td>
+      <h4><a href="dev-guide/guides/content-scripts/cross-domain.html">Cross-domain content scripts</a></h4>
+      How to enable content scripts to interact with content served from different domains.
+    </td>
+
+  </tr>
+
+  <tr>
 
     <td>
       <h4><a href="dev-guide/guides/content-scripts/communicating-with-other-scripts.html">Communicating with other scripts</a></h4>
@@ -112,16 +121,15 @@ This page lists more theoretical in-depth articles about the SDK.
 	  content scripts, and with scripts loaded by the web page itself.
     </td>
 
-  </tr>
-
-  <tr>
-
     <td>
       <h4><a href="dev-guide/guides/content-scripts/using-port.html">Using "port"</a></h4>
       Communicating between a content script and the rest of your add-on
       using the <code>port</code> object.
     </td>
 
+  </tr>
+
+  <tr>
 
     <td>
       <h4><a href="dev-guide/guides/content-scripts/using-postmessage.html">Using "postMessage()"</a></h4>
@@ -129,10 +137,6 @@ This page lists more theoretical in-depth articles about the SDK.
       using the <code>postMessage()</code> API, and a comparison between
       this technique and the <code>port</code> object.
     </td>
-
-  </tr>
-
-  <tr>
 
     <td>
       <h4><a href="dev-guide/guides/content-scripts/reddit-example.html">Reddit example</a></h4>

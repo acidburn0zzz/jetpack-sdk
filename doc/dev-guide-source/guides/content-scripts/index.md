@@ -80,6 +80,8 @@ how to attach content scripts to web pages, and how to control the point at
 which they are executed
 * [Accessing the DOM](dev-guide/guides/content-scripts/accessing-the-dom.html):
 detail about the access content scripts get to the DOM
+* [Cross-domain Content Scripts](dev-guide/guides/content-scripts/cross-domain.html):
+how to enable a content script to interact with content served from other domains.
 * [Communicating With Other Scripts](dev-guide/guides/content-scripts/communicating-with-other-scripts.html):
 detail about how content scripts can communicate with "main.js", with other
 content scripts, and with scripts loaded by the web page itself
