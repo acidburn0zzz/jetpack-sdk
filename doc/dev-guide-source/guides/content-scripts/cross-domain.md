@@ -111,7 +111,7 @@ The "panel.html" just includes a `<div>` block for the tweet:
 &lt;!-- panel.html --&gt;
 
 &lt;html&gt;
-  &lt;header&gt;&lt;/header&gt;
+  &lt;head&gt;&lt;/head&gt;
   &lt;body&gt;
     &lt;div id="mozhacks_tweet">&lt;/div&gt;
   &lt;/body&gt;
