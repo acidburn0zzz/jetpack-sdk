@@ -18,10 +18,13 @@ under the `"content-permissions"` key:
 "content-permissions": ["http://example.org/", "http://example.com/"]
 </pre>
 
-The domains listed must include the scheme and fully qualified domain name,
+* The domains listed must include the scheme and fully qualified domain name,
 and these must exactly match the domains serving the content - so in the
 example above, the content script will not be allowed to access content
-served from `https://example.com/`. Wildcards are not allowed.
+served from `https://example.com/`.
+* Wildcards are not allowed.
+* This feature is currently only available for content scripts, not for page
+scripts included in HTML files shipped with your add-on.
 
 ## Cross-domain iframes ##
 
@@ -118,7 +121,7 @@ The "panel.html" just includes a `<div>` block for the tweet:
 &lt;/html&gt;
 </pre>
 
-The "panel-script.js" uses [XMLHTTPRequest](https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest)
+The "panel-script.js" uses [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest)
 to fetch the latest tweet:
 
     // panel-script.js
@@ -150,5 +153,6 @@ a line like:
     // content-script.js:
     unsafeWindow.myCustomAPI = function () {};
 
-If the page script tries to access `myCustomAPI`, this will result in
-a "permission denied" exception.
+If you have included the `"content-permissions"` key, when the page script
+tries to access `myCustomAPI` this will result in a "permission denied"
+exception.
