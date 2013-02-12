@@ -33,4 +33,4 @@ These modules are still in active development, and we expect to
 make incompatible changes to them in future releases.
 
 
-<ul id="module-index"></ul>
+<ul class="module-index"></ul>

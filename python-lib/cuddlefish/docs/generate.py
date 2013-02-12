@@ -148,7 +148,6 @@ def generate_docs_from_scratch(env_root, version, base_url):
     third_party_module_list = [module_info for module_info in module_list if module_info.level() == "third-party"]
     write_module_index(env_root, web_docs, third_party_index_file, third_party_module_list, must_rewrite_links)
 
-
     # generate high-level module index
     high_level_index_file = os.sep.join([env_root, "doc", "module-source", "high-level-modules.md"])
     high_level_module_list = [module_info for module_info in module_list if module_info.level() == "high"]
@@ -162,6 +161,10 @@ def generate_docs_from_scratch(env_root, version, base_url):
     # generate dev-guide docs
     devguide_list = get_devguide_list(env_root)
     [write_devguide_doc(env_root, web_docs, devguide_info, must_rewrite_links) for devguide_info in devguide_list]
+
+    # generate mobile compatibility tables
+    module_compatibility_html = web_docs.create_mobile_compatibility_page(os.sep.join([env_root, "doc", "module-source", "mobile-compatibility.md"]))
+    write_file(env_root, module_compatibility_html, os.sep.join([env_root, "doc", "modules"]), "mobile-compatibility", must_rewrite_links)
 
     # make /md/dev-guide/welcome.html the top level index file
     doc_html = web_docs.create_guide_page(os.path.join(docs_dir, 'dev-guide-source', 'index.md'))

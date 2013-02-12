@@ -15,4 +15,4 @@ Unless the documentation explicitly says otherwise, all these modules are
 "supported": meaning that they are relatively stable, and that we'll avoid
 making incompatible changes to them unless absolutely necessary.
 
-<ul id="module-index"></ul>
+<ul class="module-index"></ul>

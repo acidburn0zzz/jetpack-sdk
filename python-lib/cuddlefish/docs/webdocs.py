@@ -13,10 +13,14 @@ from cuddlefish._version import get_versions
 INDEX_PAGE = '/doc/static-files/base.html'
 BASE_URL_INSERTION_POINT = '<base '
 VERSION_INSERTION_POINT = '<div id="version">'
-MODULE_INDEX_INSERTION_POINT = '<ul id="module-index">'
+MODULE_INDEX_INSERTION_POINT = '<ul class="module-index">'
 THIRD_PARTY_MODULE_SUMMARIES = '<ul id="third-party-module-summaries">'
 HIGH_LEVEL_MODULE_SUMMARIES = '<ul id="high-level-module-summaries">'
 LOW_LEVEL_MODULE_SUMMARIES = '<ul id="low-level-module-summaries">'
+HL_MOBILE_SUPPORTED = 'id="high-level-mobile-supported">'
+HL_MOBILE_UNSUPPORTED = 'id="high-level-mobile-unsupported">'
+LL_MOBILE_SUPPORTED = 'id="low-level-mobile-supported">'
+LL_MOBILE_UNSUPPORTED = 'id="low-level-mobile-unsupported">'
 CONTENT_ID = '<div id="main-content">'
 TITLE_ID = '<title>'
 DEFAULT_TITLE = 'Add-on SDK Documentation'
@@ -36,6 +40,9 @@ class WebDocs(object):
     def __init__(self, root, module_list, version=get_versions()["version"], base_url = None):
         self.root = root
         self.module_list = module_list
+        self.third_party_module_list = [module_info for module_info in self.module_list if module_info.level() == "third-party"]
+        self.high_level_module_list = [module_info for module_info in self.module_list if module_info.level() == "high"]
+        self.low_level_module_list = [module_info for module_info in self.module_list if module_info.level() == "low"]
         self.version = version
         self.pkg_cfg = packaging.build_pkg_cfg(root)
         self.packages_json = packaging.build_pkg_index(self.pkg_cfg)
@@ -55,6 +62,25 @@ class WebDocs(object):
                                                      "href":"dev-guide/guides/stability.html"})
         module_content = stability_note + module_content
         return self._create_page(module_content)
+
+    def create_mobile_compatibility_page(self, source_filename):
+        md_content = unicode(open(source_filename, 'r').read(), 'utf8')
+        compatibility_page_content = markdown.markdown(md_content)
+
+        supported = lambda module: module.is_supported_on_mobile()
+        unsupported = lambda module: not module.is_supported_on_mobile()
+
+        compatibility_page_content = self.insert_module_list(compatibility_page_content, self.high_level_module_list, supported, HL_MOBILE_SUPPORTED)
+        compatibility_page_content = self.insert_module_list(compatibility_page_content, self.high_level_module_list, unsupported, HL_MOBILE_UNSUPPORTED)
+        compatibility_page_content = self.insert_module_list(compatibility_page_content, self.low_level_module_list, supported, LL_MOBILE_SUPPORTED)
+        compatibility_page_content = self.insert_module_list(compatibility_page_content, self.low_level_module_list, unsupported, LL_MOBILE_UNSUPPORTED)
+
+        return self._create_page(compatibility_page_content)
+
+    def insert_module_list(self, content, module_list, conditional, insertion_point_id):
+        module_subset = [module for module in module_list if conditional(module)]
+        module_text = self._make_module_text(module_subset)
+        return insert_after(content, insertion_point_id, module_text)
 
     def create_module_index(self, path, module_list):
         md_content = unicode(open(path, 'r').read(), 'utf8')
@@ -84,18 +110,15 @@ class WebDocs(object):
             base_page = insert_after(base_page, BASE_URL_INSERTION_POINT, base_tag)
         base_page = insert_after(base_page, VERSION_INSERTION_POINT, "Version " + self.version)
 
-        third_party_module_list = [module_info for module_info in self.module_list if module_info.level() == "third-party"]
-        third_party_module_text = self._make_module_text(third_party_module_list)
+        third_party_module_text = self._make_module_text(self.third_party_module_list)
         base_page = insert_after(base_page, \
             THIRD_PARTY_MODULE_SUMMARIES, third_party_module_text)
 
-        high_level_module_list = [module_info for module_info in self.module_list if module_info.level() == "high"]
-        high_level_module_text = self._make_module_text(high_level_module_list)
+        high_level_module_text = self._make_module_text(self.high_level_module_list)
         base_page = insert_after(base_page, \
             HIGH_LEVEL_MODULE_SUMMARIES, high_level_module_text)
 
-        low_level_module_list = [module_info for module_info in self.module_list if module_info.level() == "low"]
-        low_level_module_text = self._make_module_text(low_level_module_list)
+        low_level_module_text = self._make_module_text(self.low_level_module_list)
         base_page = insert_after(base_page, \
             LOW_LEVEL_MODULE_SUMMARIES, low_level_module_text)
         return base_page

@@ -441,7 +441,7 @@ ul.tree ul li:last-child {
   background: #fff url("../media/icons/lastnode.png") no-repeat;
 }
 
-ul#module-index,
+ul.module-index,
 h2[id="Module Compatibility"] ~ ul {
   border-color: #a0d0fb;
   border: solid 1px #a0d0fb;
