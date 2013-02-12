@@ -27,9 +27,11 @@ Mobile, and just specify some extra options to `cfx run`, `cfx test`,
 and `cfx xpi` when targeting Firefox Mobile.
 
 Right now not all modules are fully functional, but we're working on adding
-support for more modules.
-The [tables on the "Mobile Compatibility" page](modules/mobile-compatibility.html)
-list the modules that are currently supported on Firefox Mobile.
+support for more modules. To see which modules are currently supported on
+mobile, check:
+
+* [the High-level Modules summary page](modules/high-level-modules.html)
+* [the Low-level Modules summary page](modules/low-level-modules.html)
 
 This tutorial explains how to run SDK add-ons on an Android
 device connected via USB to your development machine.
