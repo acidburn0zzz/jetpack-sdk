@@ -16,6 +16,6 @@ Unless the documentation explicitly says otherwise, all these modules are
 making incompatible changes to them unless absolutely necessary.
 
 Not all modules are supported on Firefox for Android yet: the mobile phone
-icon beside each module indicates that it is supported.
+icon beside a module indicates that it is supported.
 
 <ul id="module-index"></ul>
