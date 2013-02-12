@@ -455,5 +455,6 @@ ul#module-index {
 }
 
 ul#module-index li.supported-on-mobile {
-  list-style-type: circle;
+  padding-left: 25px;
+  background:url(../media/icons/vaga-mobile.png) left center no-repeat;
 }
