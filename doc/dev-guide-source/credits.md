@@ -92,7 +92,7 @@ We'd like to thank our many Jetpack project contributors!  They include:
 
 * Siavash Askari Nasr
 * Joe R. Nassimian ([placidrage](https://github.com/placidrage))
-* Dương H. Nguyễn <cmpitg@gmail.com>
+* Dương H. Nguyễn
 * Nick Nguyen
 
 <!--end-->
