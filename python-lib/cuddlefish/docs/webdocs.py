@@ -85,8 +85,7 @@ class WebDocs(object):
         for module in module_list:
             module_name = self._make_linked_module_name(module) + "<br>"
             stability = module.metadata.get("stability", "undefined")
-            module_stability = tag_wrap(stability, "a", {"class":"stability-note-listing stability-" + stability, \
-                                      "href":"dev-guide/guides/stability.html"})
+            module_stability = tag_wrap(stability, "span", {"class":"stability-note-listing stability-" + stability})
             module_supported_on = tag_wrap("", "i", {"class":"supported-on-firefox"})
             if module.is_supported_on("Fennec"):
                 module_supported_on = module_supported_on + tag_wrap("", "i", {"class":"supported-on-fennec"})

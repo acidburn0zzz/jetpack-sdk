@@ -29,10 +29,12 @@ more restricted analogs among the "High-Level APIs" (for
 example, [windows](modules/sdk/windows.html) or
 [request](modules/sdk/request.html)).
 
-These modules are still in active development, and we expect to
-make incompatible changes to them in future releases.
+Most of these modules are not yet
+["stable"](dev-guide/guides/stability.html). This means that there
+is a higher chance that we will have to make incompatible changes to
+them in future releases.
 
-Not all modules are supported on Firefox for Android yet: the mobile phone
-icon beside a module indicates that it is supported.
+In the list below, the icons indicate whether the module is compatible
+with Firefox for Android, Firefox Desktop, or both.
 
 <ul id="module-index"></ul>

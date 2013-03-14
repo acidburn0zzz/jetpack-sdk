@@ -411,7 +411,7 @@ a.stability-note-api {
   float: right;
 }
 
-a.stability-note-listing {
+.stability-note-listing {
   display: block;
   position: absolute;
   right: 4px;
@@ -420,28 +420,28 @@ a.stability-note-listing {
   width: 80px;
 }
 
-a.stability-deprecated,
-a.stability-undefined,
-a.stability-stable,
-a.stability-unstable,
-a.stability-experimental {
+.stability-deprecated,
+.stability-undefined,
+.stability-stable,
+.stability-unstable,
+.stability-experimental {
   text-align: center;
   text-decoration: none;
 }
 
-a.stability-deprecated, a.stability-undefined {
+.stability-deprecated, .stability-undefined {
   background-color: #E65252;
   border: 1px solid #BA0202;
   color: white;
 }
 
-a.stability-stable {
+.stability-stable {
   background-color: #46DF86;
   border: 1px solid green;
   color: black;
 }
 
-a.stability-unstable, a.stability-experimental {
+.stability-unstable, .stability-experimental {
   background-color: #FFFAAE;
   border: 1px solid #D7DF01;
   color: black;

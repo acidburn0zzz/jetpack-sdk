@@ -11,11 +11,11 @@ building add-ons:
 * interacting with the web
 * interacting with the browser
 
-Unless the documentation explicitly says otherwise, all these modules are
-"supported": meaning that they are relatively stable, and that we'll avoid
-making incompatible changes to them unless absolutely necessary.
+Most of these modules are ["stable"](dev-guide/guides/stability.html),
+meaning that they are a fully-supported part of the SDK and we will
+avoid making incompatible changes to them unless absolutely necessary.
 
-Not all modules are supported on Firefox for Android yet: the mobile phone
-icon beside a module indicates that it is supported.
+In the list below, the icons indicate whether the module is compatible
+with Firefox for Android, Firefox Desktop, or both.
 
 <ul id="module-index"></ul>
