@@ -51,7 +51,7 @@ class WebDocs(object):
         md_path = path + '.md'
         module_content = apirenderer.md_to_div(md_path, module_info.name())
         stability = module_info.metadata.get("stability", "undefined")
-        stability_note = tag_wrap(stability, "a", {"class":"stability-note stability-" + stability, \
+        stability_note = tag_wrap(stability, "a", {"class":"stability-note-api stability-" + stability, \
                                                      "href":"dev-guide/guides/stability.html"})
         module_content = stability_note + module_content
         return self._create_page(module_content)
@@ -59,7 +59,7 @@ class WebDocs(object):
     def create_module_index(self, path, module_list):
         md_content = unicode(open(path, 'r').read(), 'utf8')
         index_content = markdown.markdown(md_content)
-        module_list_content = self._make_module_text(module_list)
+        module_list_content = self._make_module_details_list(module_list)
         index_content = insert_after(index_content, MODULE_INDEX_INSERTION_POINT, module_list_content)
         return self._create_page(index_content)
 
@@ -68,15 +68,30 @@ class WebDocs(object):
         page = insert_after(page, CONTENT_ID, page_content)
         return page.encode('utf8')
 
-    def _make_module_text(self, module_list):
+    def _make_linked_module_name(self, module_info):
+        return tag_wrap(module_info.name(), 'a', \
+            {'href': "/".join(["modules", module_info.relative_url()])})
+
+    def _make_module_summary_list(self, module_list):
         module_text = ''
         for module in module_list:
-            module_link = tag_wrap(module.name(), 'a', \
-                {'href': "/".join(["modules", module.relative_url()])})
-            if module.is_supported_on_mobile():
-                module_list_item = tag_wrap(module_link, "li", {"class":"supported-on-mobile"})
-            else:
-                module_list_item = tag_wrap(module_link, "li")
+            module_name = self._make_linked_module_name(module)
+            module_list_item = tag_wrap(module_name, "li")
+            module_text += module_list_item
+        return module_text
+
+    def _make_module_details_list(self, module_list):
+        module_text = ''
+        for module in module_list:
+            module_name = self._make_linked_module_name(module) + "<br>"
+            stability = module.metadata.get("stability", "undefined")
+            module_stability = tag_wrap(stability, "a", {"class":"stability-note-listing stability-" + stability, \
+                                      "href":"dev-guide/guides/stability.html"})
+            module_supported_on = tag_wrap("", "i", {"class":"supported-on-firefox"})
+            if module.is_supported_on("Fennec"):
+                module_supported_on = module_supported_on + tag_wrap("", "i", {"class":"supported-on-fennec"})
+            module_list_item = tag_wrap(module_name + module_stability + module_supported_on, "li", \
+                                       {"class":"module-list-item"})
             module_text += module_list_item
         return module_text
 
@@ -88,17 +103,17 @@ class WebDocs(object):
         base_page = insert_after(base_page, VERSION_INSERTION_POINT, "Version " + self.version)
 
         third_party_module_list = [module_info for module_info in self.module_list if module_info.level() == "third-party"]
-        third_party_module_text = self._make_module_text(third_party_module_list)
+        third_party_module_text = self._make_module_summary_list(third_party_module_list)
         base_page = insert_after(base_page, \
             THIRD_PARTY_MODULE_SUMMARIES, third_party_module_text)
 
         high_level_module_list = [module_info for module_info in self.module_list if module_info.level() == "high"]
-        high_level_module_text = self._make_module_text(high_level_module_list)
+        high_level_module_text = self._make_module_summary_list(high_level_module_list)
         base_page = insert_after(base_page, \
             HIGH_LEVEL_MODULE_SUMMARIES, high_level_module_text)
 
         low_level_module_list = [module_info for module_info in self.module_list if module_info.level() == "low"]
-        low_level_module_text = self._make_module_text(low_level_module_list)
+        low_level_module_text = self._make_module_summary_list(low_level_module_list)
         base_page = insert_after(base_page, \
             LOW_LEVEL_MODULE_SUMMARIES, low_level_module_text)
         return base_page

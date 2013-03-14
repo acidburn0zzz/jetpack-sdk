@@ -381,16 +381,57 @@ table.catalog>tbody tr:last-child td {
   padding-bottom: 0em;
 }
 
-a.stability-note {
+li.module-list-item {
+  width: 16em;
+  border: 1px solid rgb(160, 208, 251);
+  padding: 0.5em;
+  margin: 1.0em 0.2em;
+  display: inline-block;
+  position: relative;
+}
+
+li.module-list-item>i.supported-on-firefox, li.module-list-item>i.supported-on-fennec {
+  display: inline-block;
+  float: right;
+  margin: 8px 2px 0px 2px;
+  width: 16px;
+  height: 16px;
+  background: url("../media/icons/application-support.png");
+}
+
+li.module-list-item>i.supported-on-fennec {
+  background-position: -16px 0px;
+}
+
+a.stability-note-api {
   padding: 0.2em 0.5em;
   width: 8em;
-  text-align: center;
-  text-decoration: none;
-  color: white;
   display: block;
   float: right;
+}
+
+a.stability-note-listing {
+  display: block;
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  font-size: 10px;
+  width: 80px;
+}
+
+a.stability-deprecated,
+a.stability-undefined,
+a.stability-stable,
+a.stability-unstable,
+a.stability-experimental {
+  text-align: center;
+  text-decoration: none;
+}
+
+a.stability-deprecated, a.stability-undefined {
   background-color: #E65252;
   border: 1px solid #BA0202;
+  color: white;
 }
 
 a.stability-stable {
@@ -442,8 +483,6 @@ ul.tree ul li:last-child {
 }
 
 ul#module-index {
-  border-color: #a0d0fb;
-  border: solid 1px #a0d0fb;
   padding: 1em;
   list-style-type: none;
   -moz-column-count: 3;
