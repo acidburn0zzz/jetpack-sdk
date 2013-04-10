@@ -5,10 +5,7 @@
 import os, re, errno
 import markdown
 import cgi
-
-from cuddlefish import packaging
-from cuddlefish.docs import apirenderer
-from cuddlefish._version import get_versions
+import apirenderer
 
 INDEX_PAGE = '/doc/static-files/base.html'
 BASE_URL_INSERTION_POINT = '<base '
@@ -33,12 +30,10 @@ def insert_after(target, insertion_point_id, text_to_insert):
     return target[:insertion_point] + text_to_insert + target[insertion_point:]
 
 class WebDocs(object):
-    def __init__(self, root, module_list, version=get_versions()["version"], base_url = None):
+    def __init__(self, root, module_list, version, base_url = None):
         self.root = root
         self.module_list = module_list
         self.version = version
-        self.pkg_cfg = packaging.build_pkg_cfg(root)
-        self.packages_json = packaging.build_pkg_index(self.pkg_cfg)
         self.base_page = self._create_base_page(root, base_url)
 
     def create_guide_page(self, path):
@@ -82,7 +77,7 @@ class WebDocs(object):
         if base_url:
             base_tag = 'href="' + base_url + '"'
             base_page = insert_after(base_page, BASE_URL_INSERTION_POINT, base_tag)
-        base_page = insert_after(base_page, VERSION_INSERTION_POINT, "Version " + self.version)
+        base_page = insert_after(base_page, VERSION_INSERTION_POINT, self.version)
 
         third_party_module_list = [module_info for module_info in self.module_list if module_info.level() == "third-party"]
         third_party_module_text = self._make_module_text(third_party_module_list)

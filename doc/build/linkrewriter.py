@@ -8,7 +8,7 @@ import HTMLParser
 import urlparse
 
 def rewrite_links(env_root, sdk_docs_path, page, dest_path):
-    dest_path_depth = len(dest_path.split(os.sep)) -1 # because dest_path includes filename
+    dest_path_depth = len(dest_path.split(os.sep)) -2 # because dest_path includes filename
     docs_root_depth = len(sdk_docs_path.split(os.sep))
     relative_depth = dest_path_depth - docs_root_depth
     linkRewriter = LinkRewriter("../" * relative_depth)

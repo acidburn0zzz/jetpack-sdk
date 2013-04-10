@@ -9,10 +9,9 @@ import hashlib
 import tarfile
 import StringIO
 
-from cuddlefish._version import get_versions
-from cuddlefish.docs import apiparser
-from cuddlefish.docs import apirenderer
-from cuddlefish.docs import webdocs
+import apiparser
+import apirenderer
+import webdocs
 from documentationitem import get_module_list
 from documentationitem import get_devguide_list
 from documentationitem import ModuleInfo
@@ -44,20 +43,20 @@ def clean_generated_docs(docs_dir):
     if os.path.exists(api_doc_dir):
         shutil.rmtree(api_doc_dir)
 
-def generate_static_docs(env_root, override_version=get_versions()["version"]):
+def generate_static_docs(env_root, version):
     clean_generated_docs(get_sdk_docs_path(env_root))
-    generate_docs(env_root, override_version, stdout=StringIO.StringIO())
+    generate_docs(env_root, version, stdout=StringIO.StringIO())
     tgz = tarfile.open(TGZ_FILENAME, 'w:gz')
     tgz.add(get_sdk_docs_path(env_root), "doc")
     tgz.close()
     return TGZ_FILENAME
 
 def generate_local_docs(env_root):
-    return generate_docs(env_root, get_versions()["version"], get_base_url(env_root))
+    return generate_docs(env_root, version, get_base_url(env_root))
 
 def generate_named_file(env_root, filename_and_path):
     module_list = get_module_list(env_root)
-    web_docs = webdocs.WebDocs(env_root, module_list, get_versions()["version"], get_base_url(env_root))
+    web_docs = webdocs.WebDocs(env_root, module_list, version, get_base_url(env_root))
     abs_path = os.path.abspath(filename_and_path)
     path, filename = os.path.split(abs_path)
     if abs_path.startswith(os.path.join(env_root, 'doc', 'module-source')):
@@ -71,7 +70,7 @@ def generate_named_file(env_root, filename_and_path):
     else:
         raise ValueError("Not a valid path to a documentation file")
 
-def generate_docs(env_root, version=get_versions()["version"], base_url=None, stdout=sys.stdout):
+def generate_docs(env_root, version, base_url=None, stdout=sys.stdout):
     docs_dir = get_sdk_docs_path(env_root)
     # if the generated docs don't exist, generate everything
     if not os.path.exists(os.path.join(docs_dir, "dev-guide")):
@@ -196,3 +195,10 @@ def replace_file(env_root, dest_path, file_contents, must_rewrite_links):
     if must_rewrite_links and dest_path.endswith(".html"):
         file_contents = rewrite_links(env_root, get_sdk_docs_path(env_root), file_contents, dest_path)
     open(dest_path, "w").write(file_contents)
+
+if __name__ == "__main__":
+    if (len(sys.argv) < 3):
+        print 'Supply the version of these docs, and the path to the the SDK root'
+    version = sys.argv[1]
+    env_root = sys.argv[2]
+    generate_static_docs(env_root, version)
