@@ -6,10 +6,9 @@ import os
 import unittest
 import shutil
 
-from cuddlefish.tests import env_root
-from cuddlefish.docs import webdocs
-from cuddlefish.docs.documentationitem import get_module_list
-from cuddlefish.docs.documentationitem import get_devguide_list
+from build import webdocs
+from build.documentationitem import get_module_list
+from build.documentationitem import get_devguide_list
 
 class WebDocTests(unittest.TestCase):
 
@@ -98,12 +97,19 @@ class WebDocTests(unittest.TestCase):
         self.assertTrue(\
             '<a href="modules/sdk/aardvark-feeder.html">aardvark-feeder</a>' in doc)
 
+    def env_root(self): 
+        this_directory = os.path.dirname(__file__)
+        this_directory_pieces = this_directory.split(os.sep)
+        # this_directory is root + "doc" + "build" + "test"
+        return os.sep.join(this_directory_pieces[:-3])
+
+    # copy static-files (base.html, CSS, images, JS,...) from the SDK clone into the test root
     def static_files_dir(self, root):
         return os.path.join(root, "doc", "static-files")
 
     def copy_static_files(self, test_root):
         self.rm_static_files(test_root)
-        static_files_src = self.static_files_dir(env_root)
+        static_files_src = self.static_files_dir(self.env_root())
         static_files_dst = self.static_files_dir(test_root)
         shutil.copytree(static_files_src, static_files_dst)
 

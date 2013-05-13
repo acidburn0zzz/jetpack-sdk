@@ -8,7 +8,6 @@ import cgi
 import apirenderer
 
 INDEX_PAGE = '/doc/static-files/base.html'
-BASE_URL_INSERTION_POINT = '<base '
 VERSION_INSERTION_POINT = '<div id="version">'
 MODULE_INDEX_INSERTION_POINT = '<ul id="module-index">'
 THIRD_PARTY_MODULE_SUMMARIES = '<ul id="third-party-module-summaries">'
@@ -30,11 +29,11 @@ def insert_after(target, insertion_point_id, text_to_insert):
     return target[:insertion_point] + text_to_insert + target[insertion_point:]
 
 class WebDocs(object):
-    def __init__(self, root, module_list, version, base_url = None):
+    def __init__(self, root, module_list, version):
         self.root = root
         self.module_list = module_list
         self.version = version
-        self.base_page = self._create_base_page(root, base_url)
+        self.base_page = self._create_base_page(root)
 
     def create_guide_page(self, path):
         md_content = unicode(open(path, 'r').read(), 'utf8')
@@ -72,11 +71,8 @@ class WebDocs(object):
             module_text += module_list_item
         return module_text
 
-    def _create_base_page(self, root, base_url):
+    def _create_base_page(self, root):
         base_page = unicode(open(root + INDEX_PAGE, 'r').read(), 'utf8')
-        if base_url:
-            base_tag = 'href="' + base_url + '"'
-            base_page = insert_after(base_page, BASE_URL_INSERTION_POINT, base_tag)
         base_page = insert_after(base_page, VERSION_INSERTION_POINT, self.version)
 
         third_party_module_list = [module_info for module_info in self.module_list if module_info.level() == "third-party"]
