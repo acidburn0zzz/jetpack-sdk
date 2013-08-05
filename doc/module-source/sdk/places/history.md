@@ -2,17 +2,19 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-The `places/history` module provides a function for querying user browsing history.
+The `places/history` module provides a single function, [`search()`](modules/sdk/places/history.html#search(queries%2C%20options)), for querying the user's browsing history.
+
+It synchronously returns a [`PlacesEmitter`](modules/sdk/places/history.html#PlacesEmitter) object which then asynchronously emits [`data`](modules/sdk/places/history.html#data) and [`end`](modules/sdk/places/history.html#end) or [`error`](modules/sdk/places/history.html#error) events that contain information about the state of the operation.
 
 ## Example
 
-    let { search } = require('sdk/places/history');
+    let { search } = require("sdk/places/history");
 
     // Simple query
     search(
-      { url: 'https://developers.mozilla.org/*' },
-      { sort: 'visitCount' }
-    ).on('end', function (results) {
+      { url: "https://developers.mozilla.org/*" },
+      { sort: "visitCount" }
+    ).on("end", function (results) {
       // results is an array of objects containing
       // data about visits to any site on developers.mozilla.org
       // ordered by visit count
@@ -27,12 +29,12 @@ The `places/history` module provides a function for querying user browsing histo
     let lastWeek = Date.now - (1000*60*60*24*7);
     search(
       // First query looks for all entries before last week with 'ruby'
-      [{ query: 'ruby', to: lastWeek },
+      [{ query: "ruby", to: lastWeek },
       // Second query searches all entries after last week with 'javascript'
-       { query: 'javascript', from: lastWeek }],
+       { query: "javascript", from: lastWeek }],
       // We want to order chronologically by visit date
-      { sort: 'date' }
-    ).on('end', function (results) {
+      { sort: "date" }
+    ).on("end", function (results) {
       // results is an array of objects containing visit data,
       // sorted by visit date, with all entries from more than a week ago
       // that contain 'ruby', *in addition to* entries from this last week
@@ -49,19 +51,19 @@ An `Object` representing a query, or an `Array` of `Objects` representing querie
   @prop [url] {string}
     A string that matches bookmarks' URL. The following patterns are accepted:
     
-    '*.mozilla.com': matches any URL with 'mozilla.com' as the host, accepting any subhost.
+    `'*.mozilla.com'`: matches any URL with 'mozilla.com' as the host, accepting any subhost.
     
-    'mozilla.com': matches any URL with 'mozilla.com' as the host.
+    `'mozilla.com'`: matches any URL with 'mozilla.com' as the host.
     
-    'http://mozilla.com': matches 'http://mozilla.com' directlry.
+    `'http://mozilla.com'`: matches 'http://mozilla.com' directlry.
     
-    'http://mozilla.com/*': matches any URL that starts with 'http://mozilla.com/'.
+    `'http://mozilla.com/*'`: matches any URL that starts with 'http://mozilla.com/'.
   @prop [query] {string}
     A string that matches bookmarks' URL, or title.
   @prop [from] {number|date}
-    Time relative from the [epoch](http://en.wikipedia.org/wiki/Unix_time) that history results should be limited to occuring after. Can accept a Date object, or milliseconds from the epoch. Default is from the epoch (all time).
+    Time relative from the [Unix epoch](http://en.wikipedia.org/wiki/Unix_time) that history results should be limited to occuring after. Can accept a [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object, or milliseconds from the epoch. Default is to return all items since the epoch (all time).
   @prop [to] {number|date}
-    Time relative from the [epoch](http://en.wikipedia.org/wiki/Unix_time) that history results should be limited to occuring before. Can accept a Date object, or milliseconds from the epoch. Default is the current time.
+    Time relative from the [Unix epoch](http://en.wikipedia.org/wiki/Unix_time) that history results should be limited to occuring before. Can accept a [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object, or milliseconds from the epoch. Default is the current time.
 
 @param [options] {object}
 An `Object` with options for the search query.
